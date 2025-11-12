@@ -1,0 +1,22 @@
+:root{--bg:#071428;--card:#08111a;--muted:#9aa4b2;--accent:#f1c40f}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#e7eef7}
+.site-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;background:linear-gradient(90deg,#061324,#0b1b2a)}
+.logo{font-weight:800;font-size:20px}
+.subtitle{color:var(--muted)}
+.container{max-width:1100px;margin:28px auto;padding:0 16px}
+.note{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;color:var(--muted);margin-bottom:16px}
+.section{margin-top:22px}
+.section-title{font-size:20px;margin:0 0 12px;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.03)}
+.card img{width:100%;height:190px;object-fit:cover;border-radius:8px;background:rgba(255,255,255,0.02)}
+.card h3{margin:10px 0 6px;font-size:16px}
+.meta{color:var(--muted);font-size:13px;margin-bottom:6px}
+.price{font-weight:800;color:var(--accent);font-size:18px}
+.retail{font-weight:600;color:#c9d1d8;font-size:12px;margin-left:8px}
+.contact{display:flex;gap:8px;margin-top:10px;align-items:center}
+.btn{background:#0f2b3a;padding:8px 10px;border-radius:8px;color:#dff3ff;text-decoration:none;font-weight:700}
+.notes{color:var(--muted);font-size:13px}
+.footer{padding:18px;text-align:center;color:var(--muted);font-size:13px}
+@media (max-width:520px){ .card img{height:160px} }

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ninjago Marketplace — Demo</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">Ninjago Marketplace — Demo</div>
+    <div class="subtitle">Display-only listings — contact to buy</div>
+  </header>
+
+  <main class="container" id="content">
+    <p class="note">Items shown for preview. Click Contact to email seller. Replace example@domain.com with your real contact before going live.</p>
+    <div id="products-grid"></div>
+  </main>
+
+  <footer class="footer">Demo • Replace contact details before publishing</footer>
+
+<script>
+async function loadProducts(){
+  const res = await fetch('products.json');
+  if(!res.ok) throw new Error('products.json load failed');
+  const data = await res.json();
+  const grid = document.getElementById('products-grid');
+
+  // group by category
+  const categories = {};
+  data.forEach(p => (categories[p.category] ??= []).push(p));
+
+  // define display order
+  const order = ["Sets","Figures","Blind Bags","Books","Books (Rent)"];
+
+  for(const cat of order){
+    if(!categories[cat]) continue;
+    const section = document.createElement('section');
+    section.className = 'section';
+    section.innerHTML = `<h2 class="section-title">${escapeHtml(cat)}</h2>`;
+    const g = document.createElement('div');
+    g.className = 'grid';
+    categories[cat].forEach(p => g.insertAdjacentHTML('beforeend', productCard(p)));
+    section.appendChild(g);
+    grid.appendChild(section);
+  }
+}
+
+function productCard(p){
+  const retailHtml = p.retail_price_sar ? `<span class="retail">RRP ${p.retail_price_sar} SAR</span>` : '';
+  const pieceHtml = p.piece_count ? ` • ${p.piece_count} pcs` : '';
+  const originHtml = p.origin ? `<div class="meta">Origin: ${escapeHtml(p.origin)}${pieceHtml}</div>` : '';
+  const contactHref = `mailto:example@domain.com?subject=Inquiry%20about%20${encodeURIComponent(p.title)}&body=Hi%2C%0A%0AI%20want%20to%20check%20the%20availability%20of%20${encodeURIComponent(p.title)}.%0A%0AThanks%2C`;
+  return `
+  <article class="card">
+    <img src="${p.image}" alt="${escapeHtml(p.title)}" onerror="this.src='images/placeholder.jpg'">
+    <h3>${escapeHtml(p.title)}</h3>
+    ${originHtml}
+    <div class="meta">${escapeHtml(p.condition || '')}</div>
+    <div class="price">SAR ${p.price_sar}${retailHtml}</div>
+    <div class="contact">
+      <a class="btn" href="${contactHref}">Contact seller</a>
+      ${p.notes ? `<span class="notes">${escapeHtml(p.notes)}</span>` : ''}
+    </div>
+  </article>`;
+}
+
+function escapeHtml(s){ return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+loadProducts().catch(e => {
+  document.getElementById('content').innerHTML = '<p style="color:salmon">Failed to load products.json — check file exists</p>';
+  console.error(e);
+});
+</script>
+</body>
+</html>
