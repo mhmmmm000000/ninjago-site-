@@ -10,41 +10,23 @@
   <header class="site-header">
     <div>
       <div class="logo">Ninjago Marketplace</div>
-      <div class="subtitle">Browse • Request • Pay (demo) — No personal contact shown</div>
+      <div class="subtitle">Browse • Request • Pay (demo)</div>
     </div>
     <div class="controls">
       <input id="search" class="search" placeholder="Search sets, figures, books...">
-      <div id="cartBtn" class="btn">Cart (<span id="cartCount">0</span>)</div>
+      <button id="themeToggle" class="btn small">🌙</button>
+      <div id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></div>
+      <a class="btn small" href="admin.html" target="_blank">Admin</a>
     </div>
   </header>
 
   <main class="container">
     <div class="top-row">
-      <div class="hint">Tip: click a sub-theme to filter sets. Click a card → View item for details & buy.</div>
-      <div class="hint">Payments are simulated. Giftcard overpay gives in-store credit.</div>
+      <div class="hint">Tip: click a category (e.g., Sets). Inside it you'll find subtheme filters, product details, and related items.</div>
     </div>
 
-    <div class="layout">
-      <aside class="sidebar">
-        <h4>Sub-themes</h4>
-        <div id="subthemes" class="subthemes"></div>
-        <hr style="margin:12px 0">
-        <div>
-          <h4>Request product</h4>
-          <div class="request-wrap">
-            <div id="chat" class="chat"></div>
-            <div class="request-form">
-              <input id="reqInput" class="input" placeholder="Ask for a set/figure or say 'add this'">
-              <button id="reqSend" class="btn">Send</button>
-            </div>
-            <div class="hint">Use this to request items, box/instructions, or give feedback. Messages are saved locally.</div>
-          </div>
-        </div>
-      </aside>
-
-      <section class="content">
-        <div id="products-grid"></div>
-      </section>
+    <div id="mainArea" class="main-area">
+      <!-- categories view or category content injected here -->
     </div>
   </main>
 
@@ -52,111 +34,164 @@
 
 <script>
 /* ---------- helpers ---------- */
-function escapeHtml(s){
-  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function $(q){ return document.querySelector(q) }
-function $$ (q){ return Array.from(document.querySelectorAll(q)) }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const $ = q => document.querySelector(q);
+const $$ = q => Array.from(document.querySelectorAll(q));
 
 /* ---------- load products ---------- */
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')||'[]');
 let credits = Number(localStorage.getItem('storeCredit')||0);
-const subthemeOrder = [];
-const dom = {grid:$('#products-grid'), subthemes:$('#subthemes'), cartCount:$('#cartCount'), modalBackdrop:$('#modalBackdrop'), modal:$('#modal'), chat:$('#chat')};
+const mainArea = $('#mainArea');
 
 async function load(){
-  const res = await fetch('products.json'); 
-  products = await res.json();
-  renderSubthemes();
-  renderProducts();
+  try{
+    const res = await fetch('products.json');
+    products = await res.json();
+  }catch(e){
+    mainArea.innerHTML = '<p style="color:salmon">Failed to load products.json — check file.</p>'; return;
+  }
+  renderCategoriesView();
   renderCartCount();
-  loadChat();
   attachSearch();
+  initTheme();
+  loadChat();
 }
-function unique(arr){ return [...new Set(arr)] }
 
-/* ---------- subthemes ---------- */
-function renderSubthemes(){
-  const sets = products.filter(p=>p.category==='Sets');
-  const subs = unique(sets.map(s=>s.subtheme || 'Misc'));
-  dom.subthemes.innerHTML = '';
-  subs.forEach((s,i)=>{
-    const el = document.createElement('div');
-    el.className='subtheme';
-    el.innerHTML = `<img src="images/subtheme-${s.replace(/\s/g,'-').toLowerCase()}.jpg" onerror="this.src='images/placeholder.jpg'"><span>${escapeHtml(s)}</span>`;
-    dom.subthemes.appendChild(el);
-    // stagger animation
-    setTimeout(()=>el.classList.add('show'), 120*i);
-    el.onclick = ()=> { filterBySubtheme(s) };
+/* ---------- THEME ---------- */
+function initTheme(){
+  const t = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  $('#themeToggle').textContent = t==='dark' ? '🌙' : '☀️';
+  $('#themeToggle').onclick = ()=>{
+    const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = cur==='dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    $('#themeToggle').textContent = next==='dark' ? '🌙' : '☀️';
+  }
+}
+
+/* ---------- CATEGORIES VIEW ---------- */
+function getCategories(){
+  return Array.from(new Set(products.map(p=>p.category)));
+}
+function categoryIconName(cat){
+  // simple emoji icons per category (change as you like)
+  const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Books':'📚','Books (Rent)':'📖'};
+  return map[cat]||'📦';
+}
+function renderCategoriesView(){
+  mainArea.innerHTML = '';
+  const cats = getCategories();
+  const wrap = document.createElement('div'); wrap.className='categories-grid';
+  cats.forEach((cat, i)=>{
+    const el = document.createElement('button');
+    el.className = 'category-tile';
+    el.innerHTML = `<div class="cat-emoji">${categoryIconName(cat)}</div><div class="cat-title">${escapeHtml(cat)}</div><div class="cat-count">${products.filter(p=>p.category===cat).length} items</div>`;
+    wrap.appendChild(el);
+    setTimeout(()=>el.classList.add('show'), 80*i);
+    el.onclick = ()=> renderCategoryPage(cat);
   });
-  // add 'All' button
-  const allBtn = document.createElement('div'); allBtn.className='subtheme show'; allBtn.style.gridColumn='1/-1'; allBtn.innerHTML = `<img src="images/all.jpg" onerror="this.src='images/placeholder.jpg'"><span>All Sets</span>`;
-  dom.subthemes.prepend(allBtn);
-  allBtn.onclick = ()=> { renderProducts() };
+  mainArea.appendChild(wrap);
 }
 
-/* ---------- products listing ---------- */
-function renderProducts(filterFn){
-  dom.grid.innerHTML='';
-  const order = ["Sets","Figures","Blind Bags","Books","Books (Rent)"];
+/* ---------- CATEGORY PAGE ---------- */
+function renderCategoryPage(category){
+  mainArea.innerHTML = `
+    <div class="category-header">
+      <button id="catBack" class="btn small">← Back</button>
+      <h2>${escapeHtml(category)}</h2>
+      <div class="controls-inline">
+        <select id="subFilter" class="small"></select>
+        <button id="clearFilter" class="small">Clear filter</button>
+      </div>
+    </div>
+    <div id="categoryProducts"></div>
+  `;
+  $('#catBack').onclick = ()=> renderCategoriesView();
+  // build subtheme filter
+  const items = products.filter(p=>p.category===category);
+  const subs = Array.from(new Set(items.map(i=>i.subtheme||'Misc')));
+  const sel = $('#subFilter');
+  sel.innerHTML = `<option value="">All subthemes</option>` + subs.map(s=>`<option>${escapeHtml(s)}</option>`).join('');
+  $('#clearFilter').onclick = ()=> { sel.value=''; renderCategoryProducts(category); };
+  sel.onchange = ()=> renderCategoryProducts(category, sel.value);
+  renderCategoryProducts(category);
+}
+function renderCategoryProducts(category, subfilter){
+  const cont = $('#categoryProducts');
   const search = $('#search').value.trim().toLowerCase();
-  order.forEach(cat=>{
-    let items = products.filter(p=>p.category===cat);
-    if(filterFn) items = items.filter(filterFn);
-    if(search) items = items.filter(p => (p.title+p.origin+p.subtheme).toLowerCase().includes(search));
-    if(items.length===0) return;
-    const section = document.createElement('section');
-    section.innerHTML = `<h3 class="section-title">${escapeHtml(cat)}</h3>`;
-    const grid = document.createElement('div'); grid.className='grid';
-    items.forEach((p, i)=>{
-      const card = document.createElement('div'); card.className='card';
-      card.innerHTML = `
-        <img src="${p.image}" alt="${escapeHtml(p.title)}">
-        <h3>${escapeHtml(p.title)}</h3>
-        <div class="meta">${escapeHtml(p.origin || '')}</div>
-        <div class="meta">${escapeHtml(p.condition||'')}</div>
-        <div class="price">SAR ${p.price_sar}</div>
-        <div class="contact">
-          <button class="btn view" data-id="${p.id}">View item</button>
-          <button class="small add" data-id="${p.id}">Add to cart</button>
-        </div>`;
-      grid.appendChild(card);
-      setTimeout(()=>card.classList.add('show'), 80*i);
-    });
-    section.appendChild(grid);
-    dom.grid.appendChild(section);
+  let items = products.filter(p=>p.category===category);
+  if(subfilter) items = items.filter(p=> (p.subtheme||'')===subfilter);
+  if(search) items = items.filter(p => (p.title+p.origin+p.subtheme).toLowerCase().includes(search));
+  if(items.length===0){ cont.innerHTML = '<p class="hint">No items found.</p>'; return; }
+  const grid = document.createElement('div'); grid.className='grid';
+  items.forEach((p,i)=>{
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML = `
+      <img src="${p.image}" alt="${escapeHtml(p.title)}">
+      <h3>${escapeHtml(p.title)}</h3>
+      <div class="meta">${escapeHtml(p.origin||'')}</div>
+      <div class="meta">${escapeHtml(p.condition||'')}</div>
+      <div class="price">SAR ${p.price_sar}</div>
+      <div class="contact">
+        <button class="btn view" data-id="${p.id}">View</button>
+        <button class="small add" data-id="${p.id}">➕</button>
+      </div>`;
+    grid.appendChild(card);
+    setTimeout(()=>card.classList.add('show'), 60*i);
   });
+  cont.innerHTML = ''; cont.appendChild(grid);
   attachCardEvents();
 }
 
-/* ---------- subtheme filter ---------- */
-function filterBySubtheme(sub){
-  renderProducts(p=>p.subtheme===sub);
-}
-
-/* ---------- search ---------- */
+/* ---------- SEARCH ---------- */
 function attachSearch(){
-  $('#search').addEventListener('input', ()=>renderProducts());
+  $('#search').addEventListener('input', ()=> {
+    // If currently in a category view, re-render that category's products,
+    // otherwise re-render categories (nothing to filter)
+    const catHeader = document.querySelector('.category-header');
+    if(catHeader){
+      const cat = catHeader.querySelector('h2').textContent;
+      const sub = $('#subFilter') ? $('#subFilter').value : '';
+      renderCategoryProducts(cat, sub);
+    } else {
+      // keep categories view but also allow searching across all: show category tiles and small results below.
+      renderCategoriesView();
+      const s = $('#search').value.trim();
+      if(!s) return;
+      // show quick results
+      const results = products.filter(p=> (p.title+p.origin+p.subtheme).toLowerCase().includes(s.toLowerCase()));
+      if(results.length){
+        const resWrap = document.createElement('div'); resWrap.className='search-results';
+        resWrap.innerHTML = `<h3 class="section-title">Quick results</h3><div class="grid"></div>`;
+        results.forEach(p=>{
+          resWrap.querySelector('.grid').insertAdjacentHTML('beforeend', `<div class="card show">
+            <img src="${p.image}"><h3>${escapeHtml(p.title)}</h3><div class="meta">${escapeHtml(p.category)}</div><div class="price">SAR ${p.price_sar}</div>
+            <div class="contact"><button class="btn view" data-id="${p.id}">View</button></div>
+          </div>`);
+        });
+        mainArea.appendChild(resWrap);
+        attachCardEvents();
+      }
+    }
+  });
 }
 
 /* ---------- card events ---------- */
 function attachCardEvents(){
-  $$('.view').forEach(btn=>{
-    btn.onclick = ()=> openDetail(btn.dataset.id);
-  });
-  $$('.add').forEach(btn=>{
-    btn.onclick = ()=> addToCart(btn.dataset.id);
-  });
+  $$('.view').forEach(btn=> btn.onclick = ()=> openDetail(btn.dataset.id));
+  $$('.add').forEach(btn=> btn.onclick = ()=> addToCart(btn.dataset.id));
 }
 
 /* ---------- modal / product detail ---------- */
 function openDetail(id){
   const p = products.find(x=>x.id===id);
-  dom.modal.innerHTML = `
+  $('#modal').innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center">
       <h2>${escapeHtml(p.title)}</h2>
-      <button id="closeModal" class="btn">Close</button>
+      <div><button id="closeModal" class="btn small">Close</button></div>
     </div>
     <div class="modal-grid">
       <div>
@@ -169,21 +204,13 @@ function openDetail(id){
           <button class="btn" id="modalAdd">Add to cart</button>
           <button class="small" id="modalBuy">Buy now</button>
         </div>
-
         <div class="price-compare">
           <h4>Price comparisons</h4>
           ${p.price_comparisons.map(c=>`<div class="item ${c.overpriced? 'over':''}"><a href="${c.url}" target="_blank">${escapeHtml(c.site)}</a><div>${escapeHtml(c.price)}</div></div>`).join('')}
         </div>
-
         <div class="recommended">
           <h4>Recommended</h4>
-          <div class="grid-small">${(p.recommended||[]).map(id=>{
-            const r = products.find(x=>x.id===id);
-            return r? `<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-              <img style="width:60px;height:48px;object-fit:cover;border-radius:6px" src="${r.image}" onerror="this.src='images/placeholder.jpg'">
-              <div><strong>${escapeHtml(r.title)}</strong><div class="meta">SAR ${r.price_sar}</div></div>
-            </div>`:'';
-          }).join('')}</div>
+          <div>${(p.recommended||[]).map(id=>{const r=products.find(x=>x.id===id); return r? `<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><img style="width:60px;height:48px;object-fit:cover;border-radius:6px" src="${r.image}"><div><strong>${escapeHtml(r.title)}</strong><div class="meta">SAR ${r.price_sar}</div></div></div>`:''}).join('')}</div>
         </div>
       </div>
 
@@ -199,46 +226,44 @@ function openDetail(id){
       </aside>
     </div>
   `;
-  dom.modalBackdrop.classList.add('show');
-  setTimeout(()=>dom.modal.classList.add('show'),10);
-
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
   $('#closeModal').onclick = closeModal;
   $('#modalAdd').onclick = ()=>{ addToCart(p.id); updateQuickCart(); }
   $('#modalBuy').onclick = ()=>{ addToCart(p.id); openCheckout(); }
-  $('#gotoCheckout').onclick = ()=> openCheckout();
+  $('#gotoCheckout').onclick = openCheckout;
   updateQuickCart();
 }
-function closeModal(){ dom.modal.classList.remove('show'); setTimeout(()=>dom.modalBackdrop.classList.remove('show'),250) }
+function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=>$('#modalBackdrop').classList.remove('show'),200); }
 
 /* ---------- cart ---------- */
 function addToCart(id){
   const p = products.find(x=>x.id===id);
   const item = cart.find(c=>c.id===id);
-  if(item) item.qty++;
-  else cart.push({id:p.id,title:p.title,price:p.price_sar,qty:1,image:p.image});
+  if(item) item.qty++; else cart.push({id:p.id,title:p.title,price:p.price_sar,qty:1,image:p.image});
   localStorage.setItem('cart', JSON.stringify(cart));
-  renderCartCount();
-  updateQuickCart();
+  renderCartCount(); updateQuickCart();
 }
 function renderCartCount(){ $('#cartCount').innerText = cart.reduce((s,i)=>s+i.qty,0) }
 function updateQuickCart(){
   const el = $('#quickCartList'); const sumEl = $('#quickSummary');
   if(!el) return;
-  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-    <img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px" onerror="this.src='images/placeholder.jpg'">
-    <div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div>
-  </div>`).join('') || '<div class="meta">Cart is empty</div>';
+  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px"><div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
 
-/* ---------- checkout / payment ---------- */
-let checkoutOpen = false;
+/* ---------- checkout ---------- */
 function openCheckout(){
-  checkoutOpen = true;
-  dom.modal.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h2>Checkout</h2><button id="closeModal2" class="btn">Close</button>
+  $('#modal').innerHTML = checkoutHtml();
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
+  renderCheckoutCart();
+  $('#closeModal2').onclick = closeModal;
+  $('#cashPay').onclick = handleCashPay;
+  $('#giftPay').onclick = handleGiftPay;
+}
+function checkoutHtml(){
+  return `<div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Checkout</h2><div><button id="closeModal2" class="btn small">Close</button></div>
     </div>
     <div style="display:flex;gap:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:320px">
@@ -262,24 +287,13 @@ function openCheckout(){
           <input id="giftAmount" class="input" placeholder="Amount (SAR)" type="number" min="0" step="0.01">
           <button class="btn" id="giftPay">Pay with giftcard</button>
         </div>
-        <div class="hint">If your giftcard amount is more than total, remaining becomes in-store credit. Example: pay SAR 10 for a SAR 7 item → SAR 3 store credit.</div>
+        <div class="hint">If your giftcard amount is more than total, remaining becomes in-store credit.</div>
       </div>
-    </div>
-  `;
-  dom.modalBackdrop.classList.add('show');
-  setTimeout(()=>dom.modal.classList.add('show'),10);
-
-  $('#closeModal2').onclick = closeModal;
-  renderCheckoutCart();
-  $('#cashPay').onclick = handleCashPay;
-  $('#giftPay').onclick = handleGiftPay;
+    </div>`;
 }
 function renderCheckoutCart(){
   const el = $('#checkoutCart'); const sumEl = $('#checkoutSummary');
-  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-    <img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px" onerror="this.src='images/placeholder.jpg'">
-    <div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div>
-  </div>`).join('') || '<div class="meta">Cart is empty</div>';
+  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px"><div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
@@ -288,61 +302,67 @@ function handleCashPay(){
   if(!name){ alert('Enter name'); return; }
   const date = $('#custDate').value;
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const order = {id:'order-'+Date.now(),name,date,email:$('#custEmail').value,cart, total, method:'cash', msg:$('#custMsg').value};
-  // save locally (simulate)
+  const order = {id:'order-'+Date.now(),name,date,email:$('#custEmail').value,cart, total, method:'cash', msg:$('#custMsg').value, done:false, created:Date.now()};
   let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
-  alert('Cash reservation saved — Order ID: '+order.id + '\\nPlease pay in person on pickup');
-  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); renderProducts(); closeModal();
+  alert('Cash reservation saved — Order ID: '+order.id);
+  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryViewAfterOrder();
 }
 function handleGiftPay(){
   const code = $('#giftCode').value.trim() || ('GC-'+Math.floor(Math.random()*99999));
   const amount = Number($('#giftAmount').value) || 0;
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  if(amount<total){ // partial pay allowed - reduce remaining to pay
+  if(amount < total){
     const remaining = total - amount;
-    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, remaining};
+    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, remaining, done:false, created:Date.now()};
     let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
-    alert(`Paid SAR ${amount} with giftcard ${code}. Remaining: SAR ${remaining.toFixed(2)} (pay on pickup).`);
+    alert(`Partial paid SAR ${amount}. Remaining: SAR ${remaining.toFixed(2)}`);
   } else {
     const credit = +(amount - total);
-    credits = +(credits + credit).toFixed(2);
-    localStorage.setItem('storeCredit', credits);
-    alert(`Payment successful. You gained SAR ${credit.toFixed(2)} in-store credit. Current credit: SAR ${credits.toFixed(2)}`);
-    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, storeCreditGained:credit};
+    credits = +(credits + credit).toFixed(2); localStorage.setItem('storeCredit', credits);
+    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, storeCreditGained:credit, done:true, created:Date.now()};
     let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+    alert(`Payment successful. You gained SAR ${credit.toFixed(2)} in-store credit. Current credit: SAR ${credits.toFixed(2)}`);
   }
-  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); renderProducts(); closeModal();
+  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryViewAfterOrder();
+}
+function renderCategoryViewAfterOrder(){ // keep user in same place when they return
+  const catHeader = document.querySelector('.category-header');
+  if(catHeader){ const cat = catHeader.querySelector('h2').textContent; renderCategoryProducts(cat); } else renderCategoriesView();
 }
 
 /* ---------- cart button ---------- */
 $('#cartBtn').onclick = ()=> openCheckout();
 
-/* ---------- chat/request ---------- */
+/* ---------- request chat ---------- */
 function loadChat(){
   const msgs = JSON.parse(localStorage.getItem('requests')||'[]');
-  dom.chat.innerHTML = msgs.map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${escapeHtml(m.text)}</div>`).join('') || '<div class="meta">No requests yet.</div>';
-  $('#reqSend').onclick = ()=> {
-    const text = $('#reqInput').value.trim(); if(!text) return;
-    const m = {from:'user', text, time:Date.now()};
-    const existing = JSON.parse(localStorage.getItem('requests')||'[]'); existing.push(m); localStorage.setItem('requests', JSON.stringify(existing));
-    $('#reqInput').value='';
-    // simulate quick owner reply
-    setTimeout(()=> {
-      const reply = {from:'owner', text:'Thanks — we noted your request: ' + text};
-      const e2 = JSON.parse(localStorage.getItem('requests')||'[]'); e2.push(reply); localStorage.setItem('requests', JSON.stringify(e2));
+  // if current view has request area, render (we embed chat into category page sidebar; but if not, skip)
+  // we'll render in a small floating control for now
+  if(!document.querySelector('.chat-floating')){
+    const wrap = document.createElement('div'); wrap.className='chat-floating';
+    wrap.innerHTML = `<div class="chat-head">Request product 💬</div><div class="chat-body"><div id="miniChat" class="chat"></div><div style="display:flex;gap:8px;margin-top:6px"><input id="miniReq" class="input" placeholder="Request a set or figure"><button id="miniSend" class="btn small">Send</button></div></div>`;
+    document.body.appendChild(wrap);
+    $('#miniSend').onclick = ()=> {
+      const text = $('#miniReq').value.trim(); if(!text) return;
+      const m = {from:'user', text, time:Date.now()};
+      const existing = JSON.parse(localStorage.getItem('requests')||'[]'); existing.push(m); localStorage.setItem('requests', JSON.stringify(existing));
+      $('#miniReq').value='';
+      // owner auto reply
+      setTimeout(()=> { const reply = {from:'owner', text:'Thanks — we noted: ' + text}; const e2 = JSON.parse(localStorage.getItem('requests')||'[]'); e2.push(reply); localStorage.setItem('requests', JSON.stringify(e2)); loadChat(); }, 700);
       loadChat();
-    },700);
-    loadChat();
+    }
   }
+  const mini = $('#miniChat');
+  const all = JSON.parse(localStorage.getItem('requests')||'[]');
+  if(mini) mini.innerHTML = all.map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${escapeHtml(m.text)}</div>`).join('') || '<div class="meta">No requests yet.</div>';
 }
 
 /* ---------- init ---------- */
 load();
 
-/* ---------- keyboard shortucts ---------- */
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape') closeModal();
-});
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') { document.getElementById('modalBackdrop').classList.remove('show'); document.getElementById('modal').classList.remove('show'); } });
+
 </script>
 </body>
 </html>

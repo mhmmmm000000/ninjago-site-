@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin — Ninjago Marketplace</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main style="max-width:900px;margin:24px auto;padding:16px">
+    <h1>Admin — Orders & Requests</h1>
+    <div id="loginBox">
+      <p>Enter admin password:</p>
+      <input id="pwd" class="input" type="password" placeholder="Password">
+      <div style="margin-top:8px">
+        <button id="loginBtn" class="btn">Login</button>
+      </div>
+    </div>
+
+    <div id="adminArea" style="display:none">
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+        <button id="logoutBtn" class="small">Logout</button>
+        <button id="exportOrders" class="small">Export Orders JSON</button>
+        <button id="exportReq" class="small">Export Requests JSON</button>
+      </div>
+
+      <h2 style="margin-top:18px">Orders</h2>
+      <div id="ordersList"></div>
+
+      <h2 style="margin-top:18px">Requests</h2>
+      <div id="requestsList"></div>
+    </div>
+  </main>
+
+<script>
+// ADMIN PASSWORD - change this to a strong secret before using
+const ADMIN_PASSWORD = 'letmein';
+
+// login
+document.getElementById('loginBtn').onclick = ()=>{
+  if(document.getElementById('pwd').value === ADMIN_PASSWORD){
+    document.getElementById('loginBox').style.display='none';
+    document.getElementById('adminArea').style.display='block';
+    renderAdmin();
+  } else alert('Wrong password');
+};
+document.getElementById('logoutBtn').onclick = ()=> { document.getElementById('pwd').value=''; document.getElementById('adminArea').style.display='none'; document.getElementById('loginBox').style.display='block'; };
+
+// render
+function renderAdmin(){
+  const orders = JSON.parse(localStorage.getItem('orders')||'[]');
+  const requests = JSON.parse(localStorage.getItem('requests')||'[]');
+  const ol = document.getElementById('ordersList'); ol.innerHTML = '';
+  if(orders.length===0) ol.innerHTML = '<div class="meta">No orders yet</div>';
+  orders.slice().reverse().forEach(o=>{
+    const d = document.createElement('div'); d.className='card show';
+    d.style.marginBottom='8px';
+    d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><strong>Order ${o.id}</strong><div><button class="small done">${o.done? '✔ Done':'Mark done'}</button> <button class="small del">Delete</button></div></div>
+      <div class="meta">Method: ${o.method || '—'} • Total: SAR ${o.total || o.amount || 0}</div>
+      <div class="meta">Name: ${o.name || '-' } • Date: ${o.date||'-'}</div>
+      <div style="margin-top:8px">${(o.cart||[]).map(it=>`<div>${it.title} × ${it.qty} — SAR ${it.price}</div>`).join('')}</div>
+      <div class="meta">Notes: ${o.msg || (o.remaining? 'Remaining: ' + o.remaining : '')}</div>`;
+    ol.appendChild(d);
+    d.querySelector('.done').onclick = ()=>{
+      o.done = !o.done;
+      let arr = JSON.parse(localStorage.getItem('orders')||'[]');
+      arr = arr.map(x=> x.id===o.id ? o : x);
+      localStorage.setItem('orders', JSON.stringify(arr));
+      renderAdmin();
+    };
+    d.querySelector('.del').onclick = ()=>{
+      if(!confirm('Delete order?')) return;
+      let arr = JSON.parse(localStorage.getItem('orders')||'[]');
+      arr = arr.filter(x=> x.id!==o.id);
+      localStorage.setItem('orders', JSON.stringify(arr));
+      renderAdmin();
+    };
+  });
+
+  const rl = document.getElementById('requestsList'); rl.innerHTML = '';
+  if(requests.length===0) rl.innerHTML = '<div class="meta">No requests yet</div>';
+  requests.slice().reverse().forEach((r, idx)=>{
+    const e = document.createElement('div'); e.className='card show'; e.style.marginBottom='8px';
+    e.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div>${new Date(r.time||Date.now()).toLocaleString()}</div><div><button class="small rdel">Delete</button></div></div><div class="msg ${r.from==='user'?'user':'owner'}" style="padding:8px;margin-top:8px">${r.text}</div>`;
+    rl.appendChild(e);
+    e.querySelector('.rdel').onclick = ()=>{
+      if(!confirm('Delete request?')) return;
+      let arr = JSON.parse(localStorage.getItem('requests')||'[]');
+      arr.splice(arr.length-1-idx,1); // remove the right one
+      localStorage.setItem('requests', JSON.stringify(arr));
+      renderAdmin();
+    };
+  });
+
+  document.getElementById('exportOrders').onclick = ()=> downloadJSON(localStorage.getItem('orders')||'[]','orders.json');
+  document.getElementById('exportReq').onclick = ()=> downloadJSON(localStorage.getItem('requests')||'[]','requests.json');
+}
+
+function downloadJSON(content, filename){
+  const blob = new Blob([content], {type:'application/json'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
