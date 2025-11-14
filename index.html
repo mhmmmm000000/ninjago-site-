@@ -3,76 +3,345 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Ninjago Marketplace — Demo</title>
+<title>Ninjago Marketplace — Full Site</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="site-header">
-    <div class="logo">Ninjago Marketplace — Demo</div>
-    <div class="subtitle">Display-only listings</div>
+    <div>
+      <div class="logo">Ninjago Marketplace</div>
+      <div class="subtitle">Browse • Request • Pay (demo) — No personal contact shown</div>
+    </div>
+    <div class="controls">
+      <input id="search" class="search" placeholder="Search sets, figures, books...">
+      <div id="cartBtn" class="btn">Cart (<span id="cartCount">0</span>)</div>
+    </div>
   </header>
 
-  <main class="container" id="content">
-    <p class="note">Items shown for preview only.</p>
-    <div id="products-grid"></div>
+  <main class="container">
+    <div class="top-row">
+      <div class="hint">Tip: click a sub-theme to filter sets. Click a card → View item for details & buy.</div>
+      <div class="hint">Payments are simulated. Giftcard overpay gives in-store credit.</div>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h4>Sub-themes</h4>
+        <div id="subthemes" class="subthemes"></div>
+        <hr style="margin:12px 0">
+        <div>
+          <h4>Request product</h4>
+          <div class="request-wrap">
+            <div id="chat" class="chat"></div>
+            <div class="request-form">
+              <input id="reqInput" class="input" placeholder="Ask for a set/figure or say 'add this'">
+              <button id="reqSend" class="btn">Send</button>
+            </div>
+            <div class="hint">Use this to request items, box/instructions, or give feedback. Messages are saved locally.</div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="content">
+        <div id="products-grid"></div>
+      </section>
+    </div>
   </main>
 
-  <footer class="footer">Demo version</footer>
+  <div id="modalBackdrop" class="modal-backdrop"><div id="modal" class="modal" role="dialog"></div></div>
 
 <script>
-async function loadProducts(){
-  const res = await fetch('products.json');
-  if(!res.ok) throw new Error('products.json load failed');
-  const data = await res.json();
-  const grid = document.getElementById('products-grid');
+/* ---------- helpers ---------- */
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function $(q){ return document.querySelector(q) }
+function $$ (q){ return Array.from(document.querySelectorAll(q)) }
 
-  const categories = {};
-  data.forEach(p => (categories[p.category] ??= []).push(p));
+/* ---------- load products ---------- */
+let products = [];
+let cart = JSON.parse(localStorage.getItem('cart')||'[]');
+let credits = Number(localStorage.getItem('storeCredit')||0);
+const subthemeOrder = [];
+const dom = {grid:$('#products-grid'), subthemes:$('#subthemes'), cartCount:$('#cartCount'), modalBackdrop:$('#modalBackdrop'), modal:$('#modal'), chat:$('#chat')};
+
+async function load(){
+  const res = await fetch('products.json'); 
+  products = await res.json();
+  renderSubthemes();
+  renderProducts();
+  renderCartCount();
+  loadChat();
+  attachSearch();
+}
+function unique(arr){ return [...new Set(arr)] }
+
+/* ---------- subthemes ---------- */
+function renderSubthemes(){
+  const sets = products.filter(p=>p.category==='Sets');
+  const subs = unique(sets.map(s=>s.subtheme || 'Misc'));
+  dom.subthemes.innerHTML = '';
+  subs.forEach((s,i)=>{
+    const el = document.createElement('div');
+    el.className='subtheme';
+    el.innerHTML = `<img src="images/subtheme-${s.replace(/\s/g,'-').toLowerCase()}.jpg" onerror="this.src='images/placeholder.jpg'"><span>${escapeHtml(s)}</span>`;
+    dom.subthemes.appendChild(el);
+    // stagger animation
+    setTimeout(()=>el.classList.add('show'), 120*i);
+    el.onclick = ()=> { filterBySubtheme(s) };
+  });
+  // add 'All' button
+  const allBtn = document.createElement('div'); allBtn.className='subtheme show'; allBtn.style.gridColumn='1/-1'; allBtn.innerHTML = `<img src="images/all.jpg" onerror="this.src='images/placeholder.jpg'"><span>All Sets</span>`;
+  dom.subthemes.prepend(allBtn);
+  allBtn.onclick = ()=> { renderProducts() };
+}
+
+/* ---------- products listing ---------- */
+function renderProducts(filterFn){
+  dom.grid.innerHTML='';
   const order = ["Sets","Figures","Blind Bags","Books","Books (Rent)"];
-
-  for(const cat of order){
-    if(!categories[cat]) continue;
+  const search = $('#search').value.trim().toLowerCase();
+  order.forEach(cat=>{
+    let items = products.filter(p=>p.category===cat);
+    if(filterFn) items = items.filter(filterFn);
+    if(search) items = items.filter(p => (p.title+p.origin+p.subtheme).toLowerCase().includes(search));
+    if(items.length===0) return;
     const section = document.createElement('section');
-    section.className = 'section';
-    section.innerHTML = `<h2 class="section-title">${escapeHtml(cat)}</h2>`;
-    const g = document.createElement('div');
-    g.className = 'grid';
-    categories[cat].forEach(p => g.insertAdjacentHTML('beforeend', productCard(p)));
-    section.appendChild(g);
-    grid.appendChild(section);
+    section.innerHTML = `<h3 class="section-title">${escapeHtml(cat)}</h3>`;
+    const grid = document.createElement('div'); grid.className='grid';
+    items.forEach((p, i)=>{
+      const card = document.createElement('div'); card.className='card';
+      card.innerHTML = `
+        <img src="${p.image}" alt="${escapeHtml(p.title)}">
+        <h3>${escapeHtml(p.title)}</h3>
+        <div class="meta">${escapeHtml(p.origin || '')}</div>
+        <div class="meta">${escapeHtml(p.condition||'')}</div>
+        <div class="price">SAR ${p.price_sar}</div>
+        <div class="contact">
+          <button class="btn view" data-id="${p.id}">View item</button>
+          <button class="small add" data-id="${p.id}">Add to cart</button>
+        </div>`;
+      grid.appendChild(card);
+      setTimeout(()=>card.classList.add('show'), 80*i);
+    });
+    section.appendChild(grid);
+    dom.grid.appendChild(section);
+  });
+  attachCardEvents();
+}
+
+/* ---------- subtheme filter ---------- */
+function filterBySubtheme(sub){
+  renderProducts(p=>p.subtheme===sub);
+}
+
+/* ---------- search ---------- */
+function attachSearch(){
+  $('#search').addEventListener('input', ()=>renderProducts());
+}
+
+/* ---------- card events ---------- */
+function attachCardEvents(){
+  $$('.view').forEach(btn=>{
+    btn.onclick = ()=> openDetail(btn.dataset.id);
+  });
+  $$('.add').forEach(btn=>{
+    btn.onclick = ()=> addToCart(btn.dataset.id);
+  });
+}
+
+/* ---------- modal / product detail ---------- */
+function openDetail(id){
+  const p = products.find(x=>x.id===id);
+  dom.modal.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>${escapeHtml(p.title)}</h2>
+      <button id="closeModal" class="btn">Close</button>
+    </div>
+    <div class="modal-grid">
+      <div>
+        <img src="${p.image}" onerror="this.src='images/placeholder.jpg'">
+        <div class="meta">Origin: ${escapeHtml(p.origin||'')}</div>
+        <div class="meta">Condition: ${escapeHtml(p.condition||'')}</div>
+        <div class="meta">${p.piece_count? p.piece_count + ' pcs' : ''} ${p.figures_count? '• ' + p.figures_count + ' figs' : ''}</div>
+        <div class="price">SAR ${p.price_sar}</div>
+        <div style="margin-top:8px">
+          <button class="btn" id="modalAdd">Add to cart</button>
+          <button class="small" id="modalBuy">Buy now</button>
+        </div>
+
+        <div class="price-compare">
+          <h4>Price comparisons</h4>
+          ${p.price_comparisons.map(c=>`<div class="item ${c.overpriced? 'over':''}"><a href="${c.url}" target="_blank">${escapeHtml(c.site)}</a><div>${escapeHtml(c.price)}</div></div>`).join('')}
+        </div>
+
+        <div class="recommended">
+          <h4>Recommended</h4>
+          <div class="grid-small">${(p.recommended||[]).map(id=>{
+            const r = products.find(x=>x.id===id);
+            return r? `<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+              <img style="width:60px;height:48px;object-fit:cover;border-radius:6px" src="${r.image}" onerror="this.src='images/placeholder.jpg'">
+              <div><strong>${escapeHtml(r.title)}</strong><div class="meta">SAR ${r.price_sar}</div></div>
+            </div>`:'';
+          }).join('')}</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="cart-mini">
+          <h4>Quick cart</h4>
+          <div id="quickCartList" class="cart-list"></div>
+          <div class="order-summary" id="quickSummary"></div>
+          <div style="margin-top:8px">
+            <button class="btn" id="gotoCheckout">Go to checkout</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  `;
+  dom.modalBackdrop.classList.add('show');
+  setTimeout(()=>dom.modal.classList.add('show'),10);
+
+  $('#closeModal').onclick = closeModal;
+  $('#modalAdd').onclick = ()=>{ addToCart(p.id); updateQuickCart(); }
+  $('#modalBuy').onclick = ()=>{ addToCart(p.id); openCheckout(); }
+  $('#gotoCheckout').onclick = ()=> openCheckout();
+  updateQuickCart();
+}
+function closeModal(){ dom.modal.classList.remove('show'); setTimeout(()=>dom.modalBackdrop.classList.remove('show'),250) }
+
+/* ---------- cart ---------- */
+function addToCart(id){
+  const p = products.find(x=>x.id===id);
+  const item = cart.find(c=>c.id===id);
+  if(item) item.qty++;
+  else cart.push({id:p.id,title:p.title,price:p.price_sar,qty:1,image:p.image});
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCartCount();
+  updateQuickCart();
+}
+function renderCartCount(){ $('#cartCount').innerText = cart.reduce((s,i)=>s+i.qty,0) }
+function updateQuickCart(){
+  const el = $('#quickCartList'); const sumEl = $('#quickSummary');
+  if(!el) return;
+  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px" onerror="this.src='images/placeholder.jpg'">
+    <div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div>
+  </div>`).join('') || '<div class="meta">Cart is empty</div>';
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
+}
+
+/* ---------- checkout / payment ---------- */
+let checkoutOpen = false;
+function openCheckout(){
+  checkoutOpen = true;
+  dom.modal.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Checkout</h2><button id="closeModal2" class="btn">Close</button>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:320px">
+        <h4>Cart</h4>
+        <div id="checkoutCart"></div>
+        <div class="order-summary" id="checkoutSummary"></div>
+      </div>
+      <div style="width:340px">
+        <h4>Pay with Cash (Reserve)</h4>
+        <div class="checkout-forms">
+          <input id="custName" class="input" placeholder="Full name">
+          <input id="custEmail" class="input" placeholder="Email (optional)">
+          <input id="custDate" class="input" type="date">
+          <textarea id="custMsg" class="textarea" placeholder="Message or pickup instructions"></textarea>
+          <button class="btn" id="cashPay">Reserve with cash</button>
+        </div>
+
+        <h4 style="margin-top:12px">Pay with Giftcard</h4>
+        <div class="checkout-forms">
+          <input id="giftCode" class="input" placeholder="Giftcard code (any text)">
+          <input id="giftAmount" class="input" placeholder="Amount (SAR)" type="number" min="0" step="0.01">
+          <button class="btn" id="giftPay">Pay with giftcard</button>
+        </div>
+        <div class="hint">If your giftcard amount is more than total, remaining becomes in-store credit. Example: pay SAR 10 for a SAR 7 item → SAR 3 store credit.</div>
+      </div>
+    </div>
+  `;
+  dom.modalBackdrop.classList.add('show');
+  setTimeout(()=>dom.modal.classList.add('show'),10);
+
+  $('#closeModal2').onclick = closeModal;
+  renderCheckoutCart();
+  $('#cashPay').onclick = handleCashPay;
+  $('#giftPay').onclick = handleGiftPay;
+}
+function renderCheckoutCart(){
+  const el = $('#checkoutCart'); const sumEl = $('#checkoutSummary');
+  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px" onerror="this.src='images/placeholder.jpg'">
+    <div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div>
+  </div>`).join('') || '<div class="meta">Cart is empty</div>';
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
+}
+function handleCashPay(){
+  const name = $('#custName').value.trim();
+  if(!name){ alert('Enter name'); return; }
+  const date = $('#custDate').value;
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const order = {id:'order-'+Date.now(),name,date,email:$('#custEmail').value,cart, total, method:'cash', msg:$('#custMsg').value};
+  // save locally (simulate)
+  let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+  alert('Cash reservation saved — Order ID: '+order.id + '\\nPlease pay in person on pickup');
+  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); renderProducts(); closeModal();
+}
+function handleGiftPay(){
+  const code = $('#giftCode').value.trim() || ('GC-'+Math.floor(Math.random()*99999));
+  const amount = Number($('#giftAmount').value) || 0;
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  if(amount<total){ // partial pay allowed - reduce remaining to pay
+    const remaining = total - amount;
+    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, remaining};
+    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+    alert(`Paid SAR ${amount} with giftcard ${code}. Remaining: SAR ${remaining.toFixed(2)} (pay on pickup).`);
+  } else {
+    const credit = +(amount - total);
+    credits = +(credits + credit).toFixed(2);
+    localStorage.setItem('storeCredit', credits);
+    alert(`Payment successful. You gained SAR ${credit.toFixed(2)} in-store credit. Current credit: SAR ${credits.toFixed(2)}`);
+    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, storeCreditGained:credit};
+    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+  }
+  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); renderProducts(); closeModal();
+}
+
+/* ---------- cart button ---------- */
+$('#cartBtn').onclick = ()=> openCheckout();
+
+/* ---------- chat/request ---------- */
+function loadChat(){
+  const msgs = JSON.parse(localStorage.getItem('requests')||'[]');
+  dom.chat.innerHTML = msgs.map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${escapeHtml(m.text)}</div>`).join('') || '<div class="meta">No requests yet.</div>';
+  $('#reqSend').onclick = ()=> {
+    const text = $('#reqInput').value.trim(); if(!text) return;
+    const m = {from:'user', text, time:Date.now()};
+    const existing = JSON.parse(localStorage.getItem('requests')||'[]'); existing.push(m); localStorage.setItem('requests', JSON.stringify(existing));
+    $('#reqInput').value='';
+    // simulate quick owner reply
+    setTimeout(()=> {
+      const reply = {from:'owner', text:'Thanks — we noted your request: ' + text};
+      const e2 = JSON.parse(localStorage.getItem('requests')||'[]'); e2.push(reply); localStorage.setItem('requests', JSON.stringify(e2));
+      loadChat();
+    },700);
+    loadChat();
   }
 }
 
-function productCard(p){
-  const retailHtml = p.retail_price_sar ? `<span class="retail">RRP ${p.retail_price_sar} SAR</span>` : '';
-  const pieceHtml = p.piece_count ? ` • ${p.piece_count} pcs` : '';
-  const originHtml = p.origin ? `<div class="meta">Origin: ${escapeHtml(p.origin)}${pieceHtml}</div>` : '';
-  return `
-  <article class="card">
-    <img src="${p.image}" alt="${escapeHtml(p.title)}" onerror="this.src='images/placeholder.jpg'">
-    <h3>${escapeHtml(p.title)}</h3>
-    ${originHtml}
-    <div class="meta">${escapeHtml(p.condition || '')}</div>
-    <div class="price">SAR ${p.price_sar}${retailHtml}</div>
-    <div class="contact">
-      <a class="btn" href="#">View item</a>
-      ${p.notes ? `<span class="notes">${escapeHtml(p.notes)}</span>` : ''}
-    </div>
-  </article>`;
-}
+/* ---------- init ---------- */
+load();
 
-function escapeHtml(s){
-  return String(s || '').replace(/[&<>"']/g, c => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-  })[c]);
-}
-
-loadProducts().catch(e => {
-  document.getElementById('content').innerHTML = '<p style="color:salmon">Failed to load products.json</p>';
+/* ---------- keyboard shortucts ---------- */
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape') closeModal();
 });
 </script>
 </body>
