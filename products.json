@@ -9,9 +9,9 @@
     "piece_count":6163,
     "figures_count":21,
     "price_sar":1899,
-    "image":["https://picsum.photos/id/1011/1000/700"],
+    "image":["https://www.lego.com/en-us/product/ninjago-city-markets-71799"], 
     "notes":"",
-    "recommended":["sets-zane-small"],
+    "recommended":["sets-zane-bike"],
     "price_comparisons":[],
     "hard_to_find": false
   },
@@ -20,13 +20,13 @@
     "id":"sets-lloyd-small-dragon",
     "category":"Sets",
     "subtheme":"Dragons",
-    "title":"Lloyd — Green Forest Dragon (small)",
+    "title":"Lloyd — Green Forest Dragon (71829)",
     "origin":"LEGO NINJAGO Dragons Rising",
     "condition":"New",
     "piece_count":120,
     "figures_count":2,
     "price_sar":95,
-    "image":["https://picsum.photos/id/1025/1000/700"],
+    "image":["https://www.lego.com/en-sa/product/lloyds-green-forest-dragon-71829"],
     "notes":"",
     "hard_to_find": false
   },
@@ -35,13 +35,13 @@
     "id":"sets-zane-bike",
     "category":"Sets",
     "subtheme":"Vehicles",
-    "title":"Zane — Bike (Dragon Rising)",
-    "origin":"Small vehicle",
+    "title":"Zane — Bike (Dragon Rising) (71816)",
+    "origin":"LEGO NINJAGO",
     "condition":"New",
     "piece_count":48,
     "figures_count":1,
     "price_sar":45,
-    "image":["https://picsum.photos/id/1033/1000/700"],
+    "image":["https://www.lego.com/en-us/product/zanes-ice-motorcycle-71816"],
     "notes":"",
     "hard_to_find": false
   },
@@ -50,13 +50,13 @@
     "id":"set-thundefang",
     "category":"Sets",
     "subtheme":"Dragons",
-    "title":"Thundefang — Dragon of Chaos (71832)",
+    "title":"Thunderfang — Dragon of Chaos (71832)",
     "origin":"LEGO NINJAGO",
     "condition":"New box — heavily damaged",
     "piece_count":668,
     "figures_count":6,
     "price_sar":230,
-    "image":["https://picsum.photos/id/1067/1000/700"],
+    "image":["https://www.lego.com/en-us/product/thunderfang-dragon-of-chaos-71832"],
     "notes":"Box heavily damaged",
     "hard_to_find": false
   },
@@ -66,12 +66,27 @@
     "category":"Sets",
     "subtheme":"Mechs",
     "title":"Zane — Ultra Combiner Mech (71834)",
-    "origin":"LEGO NINJAGO 4-in-1 (mech/jet/car/dragon)",
+    "origin":"LEGO NINJAGO 4-in-1",
     "condition":"New",
     "piece_count":420,
     "figures_count":6,
     "price_sar":350,
-    "image":["https://picsum.photos/id/1041/1000/700"],
+    "image":["https://www.lego.com/en-us/product/zanes-ultra-combiner-mech-71834"],
+    "notes":"",
+    "hard_to_find": false
+  },
+
+  {
+    "id":"sets-71818",
+    "category":"Sets",
+    "subtheme":"Arena",
+    "title":"Tournament Battle Arena (71818)",
+    "origin":"LEGO NINJAGO",
+    "condition":"New",
+    "piece_count":659,
+    "figures_count":6,
+    "price_sar":219,
+    "image":["https://www.lego.com/en-sa/product/tournament-battle-arena-71818"],
     "notes":"",
     "hard_to_find": false
   },
@@ -80,11 +95,11 @@
     "id":"polyb-30700",
     "category":"Polybags",
     "subtheme":"Polybags",
-    "title":"30700 — Arin vs Dragonian (polybags/paperbag)",
-    "origin":"Polybags",
+    "title":"30700 — Arin vs Dragonian Battle (paperbag / polybag)",
+    "origin":"LEGO NINJAGO (paperbag / polybag)",
     "condition":"Sealed",
     "price_sar":35,
-    "image":["https://picsum.photos/id/1063/1000/700"],
+    "image":["https://www.lego.com/en-in/product/arin-vs-dragonian-battle-30700"],
     "notes":"Polybags / paperbag release — Hard to find",
     "hard_to_find": true
   },
@@ -97,7 +112,7 @@
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":30,
-    "image":["https://picsum.photos/id/1064/1000/700"],
+    "image":["https://www.lego.com/search?q=zane%204-in-1%20polybags"],
     "notes":"Hard to find",
     "hard_to_find": true
   },
@@ -110,7 +125,7 @@
     "origin":"Blind bag booster",
     "condition":"Sealed",
     "price_sar":15,
-    "image":["https://picsum.photos/id/1062/1000/700"],
+    "image":["images/placeholder-blind.jpg"],
     "notes":"",
     "hard_to_find": false
   },
@@ -122,7 +137,7 @@
     "title":"Ninja Army — Villain figures (blind bag)",
     "condition":"Sealed",
     "price_sar":15,
-    "image":["https://picsum.photos/id/1068/1000/700"],
+    "image":["images/placeholder-blind.jpg"],
     "notes":"",
     "hard_to_find": false
   },
@@ -134,7 +149,7 @@
     "title":"Ninja & Allies (blind bag)",
     "condition":"Sealed",
     "price_sar":25,
-    "image":["https://picsum.photos/id/1070/1000/700"],
+    "image":["images/placeholder-blind.jpg"],
     "notes":"",
     "hard_to_find": false
   },
@@ -147,8 +162,9 @@
     "origin":"Seasonal minifigure",
     "condition":"Loose — very good",
     "price_sar":75,
-    "image":["https://picsum.photos/id/1047/1000/700"],
-    "notes":"Most other single figures may be inside blind bags — request specifically to check availability"
+    "image":["images/placeholder-fig.jpg"],
+    "notes":"Most other single figures may be inside blind bags — request specifically to check availability",
+    "hard_to_find": false
   },
 
   {
@@ -159,8 +175,9 @@
     "origin":"Promo set",
     "condition":"Sealed",
     "price_sar":80,
-    "image":["https://picsum.photos/id/1050/1000/700"],
-    "notes":"Most other figures are in blind bags; request them specifically if you want them."
+    "image":["images/placeholder-fig.jpg"],
+    "notes":"Most other figures are in blind bags; request them specifically if you want them.",
+    "hard_to_find": false
   },
 
   {
@@ -173,9 +190,9 @@
     "price_sar":32,
     "price_discounted":15,
     "discount_percent":53,
-    "price_discounted_text":"50% off (special)",
-    "image":["https://picsum.photos/id/1065/1000/700"],
-    "notes":"Includes one curated Ninjago set (picked monthly) and curated content links (legal sources only)."
+    "price_discounted_text":"~50% off (special)",
+    "image":["images/placeholder-sub.jpg"],
+    "notes":"Includes one curated Ninjago set and curated legal content links."
   },
 
   {
@@ -186,7 +203,7 @@
     "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":89,
-    "image":["https://picsum.photos/id/1080/1000/700"],
+    "image":["images/placeholder-pab.jpg"],
     "notes":"Small pick-a-brick cup"
   },
 
@@ -198,7 +215,7 @@
     "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":129,
-    "image":["https://picsum.photos/id/1081/1000/700"],
+    "image":["images/placeholder-pab.jpg"],
     "notes":"Big pick-a-brick cup"
   },
 
@@ -208,7 +225,7 @@
     "subtheme":"Dark Island",
     "title":"Dark Island Trilogy — Part One (hardcover / comic)",
     "price_sar":200,
-    "image":["https://picsum.photos/id/1066/1000/700"],
+    "image":["images/placeholder-book.jpg"],
     "condition":"Like new",
     "notes":"Comic/hardcover"
   },
@@ -219,7 +236,7 @@
     "subtheme":"Dark Island",
     "title":"Quest of Lost Power",
     "price_sar":60,
-    "image":["https://picsum.photos/id/1100/1000/700"],
+    "image":["images/placeholder-book.jpg"],
     "condition":"Paperback — kinda damaged",
     "notes":"Kinda damaged"
   },
@@ -230,7 +247,7 @@
     "subtheme":"Spinjitzu",
     "title":"Spinjitzu Brother — Part 1 (Hardcover)",
     "price_sar":65,
-    "image":["https://picsum.photos/id/1102/1000/700"],
+    "image":["images/placeholder-book.jpg"],
     "condition":"Hardcover — good",
     "notes":"Hardcover"
   },
@@ -241,7 +258,7 @@
     "subtheme":"Spinjitzu",
     "title":"Spinjitzu Brother — Part 2 (Hardcover)",
     "price_sar":55,
-    "image":["https://picsum.photos/id/1103/1000/700"],
+    "image":["images/placeholder-book.jpg"],
     "condition":"Hardcover — good",
     "notes":"Hardcover"
   },
@@ -252,7 +269,7 @@
     "subtheme":"Dark Island",
     "title":"Dark Island Trilogy — Rent 1 week",
     "price_sar":70,
-    "image":["https://picsum.photos/id/1066/1000/700"],
+    "image":["images/placeholder-book.jpg"],
     "condition":"Hardcover, like new",
     "notes":"1 week rental"
   },
@@ -263,7 +280,7 @@
     "subtheme":"Dark Island",
     "title":"Quest of Lost Power — Rent 1 week",
     "price_sar":45,
-    "image":["https://picsum.photos/id/1100/1000/700"],
+    "image":["images/placeholder-book.jpg"],
     "condition":"Paperback — good",
     "notes":"1 week rental"
   }
