@@ -3,28 +3,78 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Ninjago Marketplace — Full Site</title>
-<link rel="stylesheet" href="styles.css">
+<title>Ninjago Marketplace — Final</title>
+<style>
+  :root{
+    --bg:#ffffff;--card:#ffffff;--muted:#6b7280;--accent:#0b72ff;--glass:rgba(0,0,0,0.04);
+    --surface:#f8fafc;--text:#0b1220;--border:#eee;--price:#D22B2B;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);min-height:100vh}
+  .site-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .logo{font-weight:800;font-size:20px}
+  .subtitle{color:var(--muted);font-size:13px}
+  .container{max-width:1200px;margin:20px auto;padding:0 16px}
+  .controls{display:flex;gap:12px;align-items:center}
+  .search{padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);min-width:220px}
+  .categories-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+  .category-tile{background:var(--card);border-radius:12px;padding:18px;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transform:translateY(8px);opacity:0;transition:all .35s}
+  .category-tile.show{opacity:1;transform:none}
+  .cat-emoji{font-size:34px}
+  .cat-title{font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:12px}
+  .card{background:var(--card);border-radius:12px;padding:12px;border:1px solid var(--border);opacity:0;transform:translateY(8px);transition:all .35s}
+  .card.show{opacity:1;transform:none}
+  .card img{width:100%;height:160px;object-fit:cover;border-radius:8px;background:var(--glass)}
+  .card h3{margin:8px 0;font-size:16px}
+  .meta{color:var(--muted);font-size:13px}
+  .price{font-weight:800;color:var(--price)}
+  .btn{background:#111;padding:8px 10px;border-radius:8px;color:#fff;border:0;cursor:pointer}
+  .small{background:transparent;color:var(--muted);border:1px solid var(--border);padding:6px 8px;border-radius:8px}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;z-index:60}
+  .modal-backdrop.show{display:flex}
+  .modal{background:var(--bg);width:92%;max-width:980px;border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,0.12);transform:translateY(12px);opacity:0;transition:all .22s;max-height:88vh;overflow:auto}
+  .modal.show{transform:none;opacity:1}
+  .modal-grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+  .gallery-main img{width:100%;height:320px;object-fit:contain;background:#f2f6fb;border-radius:8px}
+  .gallery-thumbs{display:flex;gap:8px;margin-top:8px}
+  .gallery-thumbs img{width:68px;height:48px;object-fit:cover;border-radius:6px;cursor:pointer;opacity:0.95}
+  .gallery-thumbs img.active{outline:3px solid var(--accent);opacity:1}
+  .price-compare .item{display:flex;justify-content:space-between;padding:8px;border-radius:8px;background:var(--glass);margin-bottom:6px}
+  .price-compare .over{border-left:4px solid #ff6b6b;padding-left:8px}
+  .cart-mini{background:var(--surface);padding:10px;border-radius:8px;border:1px solid var(--border)}
+  .order-summary{background:var(--glass);padding:12px;border-radius:8px;margin-top:10px}
+  .checkout-forms{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+  .input,.textarea,select{width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg)}
+  .textarea{min-height:80px}
+  .chat-floating{position:fixed;right:16px;bottom:16px;width:300px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--card);z-index:70;box-shadow:0 12px 30px rgba(0,0,0,0.08)}
+  .chat-head{padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);font-weight:700}
+  .chat-body{padding:10px}
+  .chat{height:160px;overflow:auto;padding:8px;background:var(--glass);display:flex;flex-direction:column;gap:8px}
+  .msg{max-width:78%;padding:8px;border-radius:8px}
+  .msg.user{align-self:flex-end;background:#111;color:#fff}
+  .msg.owner{align-self:flex-start;background:var(--border)}
+  @media(max-width:920px){ .modal-grid{grid-template-columns:1fr} .categories-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))} }
+  /* small helpers */
+  .muted{color:var(--muted);font-size:13px}
+  .section-title{font-weight:800;margin:12px 0}
+</style>
 </head>
 <body>
   <header class="site-header">
     <div>
       <div class="logo">Ninjago Marketplace</div>
-      <div class="subtitle">Browse • Request • Pay (demo)</div>
+      <div class="subtitle">Browse • Request • Reserve • Giftcard</div>
     </div>
     <div class="controls">
       <input id="search" class="search" placeholder="Search sets, figures, books...">
-      <div id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></div>
-      <a class="btn small" href="admin.html" target="_blank" rel="noopener noreferrer">Admin</a>
+      <button id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></button>
+      <a class="btn small" href="admin.html" target="_blank" rel="noopener">Admin</a>
     </div>
   </header>
 
   <main class="container">
-    <div class="top-row">
-      <div class="hint">Tip: click a category (e.g., Sets). Inside you'll find subtheme filters, product details, and related items.</div>
-    </div>
-
-    <div id="mainArea" class="main-area"></div>
+    <div id="mainArea"></div>
   </main>
 
   <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
@@ -32,319 +82,287 @@
   </div>
 
 <script>
-/* ---------- Helpers ---------- */
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* ---------- single-file final site JS ---------- */
 const $ = q => document.querySelector(q);
 const $$ = q => Array.from(document.querySelectorAll(q));
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ---------- State ---------- */
-let products = [];
+/* ---------- Products data (inline) ----------
+   Images use picsum.photos with seed= product id — replace these URLs with your real images easily.
+*/
+const products = [
+  {"id":"sets-71799","category":"Sets","subtheme":"City","title":"71799 — City Markets","price_sar":1899,"piece_count":6163,"figures_count":20,"origin":"LEGO NINJAGO Set 71799 (Dragons Rising)","condition":"New in box","image":["https://picsum.photos/seed/71799/800/600"],"recommended":["sets-zane-small","fig-deepstone-kai"],"price_comparisons":[{"site":"Official LEGO (USD)","url":"https://www.lego.com","price":"$369.99","overpriced":false},{"site":"Reseller example","url":"https://example.com","price":"SAR 3500","overpriced":true}]},
+  {"id":"sets-zane-big","category":"Sets","subtheme":"Mechs","title":"Zane — Big Mech (Jan 2025)","price_sar":350,"piece_count":420,"figures_count":1,"origin":"Zane mech (2025)","condition":"New","image":["https://picsum.photos/seed/zane-big/800/600"],"recommended":["sets-zane-small","blind-ninja-allies"],"price_comparisons":[]},
+  {"id":"sets-zane-small","category":"Sets","subtheme":"Mechs","title":"Small Zane","price_sar":35,"piece_count":12,"figures_count":1,"origin":"Minifigure / small set","condition":"New","image":["https://picsum.photos/seed/zane-small/800/600"],"recommended":["fig-santa-garmadon"],"price_comparisons":[]},
+  {"id":"sets-thundefang","category":"Sets","subtheme":"Dragons","title":"Thundefang (Dragon of Chaos) — 71832","price_sar":230,"piece_count":668,"figures_count":6,"origin":"LEGO NINJAGO Set 71832","condition":"New box — heavily damaged","image":["https://picsum.photos/seed/thundefang/800/600"],"notes":"Box heavily damaged","recommended":["sets-71799"],"price_comparisons":[{"site":"noon.com","url":"https://noon.com","price":"SAR 388.50","overpriced":false}]},
+
+  {"id":"fig-santa-garmadon","category":"Figures","subtheme":"Characters","title":"Santa Garmadon","price_sar":75,"piece_count":1,"origin":"Seasonal minifigure","condition":"Loose — very good","image":["https://picsum.photos/seed/santa-garmadon/800/600"]},
+  {"id":"fig-deepstone-kai","category":"Figures","subtheme":"Characters","title":"Deepstone Suit Kai","price_sar":80,"piece_count":1,"origin":"Deepstone set / sealed","condition":"Sealed","image":["https://picsum.photos/seed/deepstone-kai/800/600"],"recommended":["fig-young-wu-foil"]},
+  {"id":"fig-young-wu-foil","category":"Figures","subtheme":"Promos","title":"Sealed Young Wu — Foil Pack","price_sar":55,"origin":"Promo","condition":"Sealed","image":["https://picsum.photos/seed/young-wu/800/600"]},
+
+  {"id":"blind-booster-island","category":"Blind Bags","subtheme":"Blind","title":"Booster Pack — Island","price_sar":15,"origin":"Blind bag booster","condition":"Sealed","image":["https://picsum.photos/seed/blind1/800/600"],"recommended":["blind-ninja-army"]},
+  {"id":"blind-ninja-army","category":"Blind Bags","subtheme":"Blind","title":"Ninja Army — Villain Figures (blind bag)","price_sar":15,"origin":"Blind bag","condition":"Sealed","image":["https://picsum.photos/seed/blind2/800/600"]},
+  {"id":"blind-ninja-allies","category":"Blind Bags","subtheme":"Blind","title":"Ninja & Allies (blind bag)","price_sar":25,"origin":"Blind bag","condition":"Sealed","image":["https://picsum.photos/seed/ninja-allies/800/600"],"recommended":["blind-booster-island"]},
+
+  {"id":"book-dark-island-1","category":"Books","subtheme":"Dark Island","title":"Dark Island Trilogy — Part One (hardcover)","price_sar":200,"origin":"Book — hardcover","condition":"Like new — hardcover","image":["https://picsum.photos/seed/darkisland1/800/600"],"recommended":["book-quest-of-lost-power"]},
+  {"id":"book-quest-of-lost-power","category":"Books","subtheme":"Dark Island","title":"Quest of Lost Power","price_sar":60,"origin":"Book — paperback","condition":"Paperback — good","image":["https://picsum.photos/seed/questlost/800/600"]},
+  {"id":"book-spinjitzu-1","category":"Books","subtheme":"Spinjitzu","title":"Spinjitzu Brother — Part 1 (Hardcover)","price_sar":65,"origin":"Book — hardcover","condition":"Hardcover — good","image":["https://picsum.photos/seed/spinjitzu1/800/600"],"recommended":["book-spinjitzu-2"]},
+  {"id":"book-spinjitzu-2","category":"Books","subtheme":"Spinjitzu","title":"Spinjitzu Brother — Part 2 (Hardcover)","price_sar":55,"origin":"Book — hardcover","condition":"Hardcover — good","image":["https://picsum.photos/seed/spinjitzu2/800/600"]}
+];
+
+/* ---------- local state ---------- */
 let cart = JSON.parse(localStorage.getItem('cart')||'[]');
-let credits = Number(localStorage.getItem('storeCredit')||0);
+let storeCredits = JSON.parse(localStorage.getItem('storeCredits')||'{}'); // map email->amount
+let giftcards = JSON.parse(localStorage.getItem('giftcards')||'[]'); // local-managed giftcards for demo (admin can create)
+
+/* ---------- utils ---------- */
+function saveState(){ localStorage.setItem('cart', JSON.stringify(cart)); localStorage.setItem('storeCredits', JSON.stringify(storeCredits)); localStorage.setItem('giftcards', JSON.stringify(giftcards)); updateCartCount(); }
+function updateCartCount(){ $('#cartCount').innerText = cart.reduce((s,i)=>s+i.qty,0) }
+function unique(arr){ return Array.from(new Set(arr)); }
+
+/* ---------- UI renderers ---------- */
 const mainArea = $('#mainArea');
-
-/* ---------- Load products.json ---------- */
-async function load(){
-  try{
-    const res = await fetch('products.json');
-    products = await res.json();
-  }catch(e){
-    mainArea.innerHTML = '<p style="color:salmon">Failed to load products.json — check file.</p>';
-    console.error(e);
-    return;
-  }
-  renderCategoriesView();
-  renderCartCount();
-  attachSearch();
-  loadChat();
-}
-
-/* ---------- Categories ---------- */
-function getCategories(){ return Array.from(new Set(products.map(p=>p.category))); }
-function categoryIconName(cat){
-  const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Books':'📚','Books (Rent)':'📖'};
-  return map[cat]||'📦';
-}
-function renderCategoriesView(){
+function renderCategories(){
   mainArea.innerHTML = '';
-  const cats = getCategories();
+  const cats = unique(products.map(p=>p.category));
   const wrap = document.createElement('div'); wrap.className='categories-grid';
-  cats.forEach((cat, i)=>{
-    const el = document.createElement('button');
-    el.className = 'category-tile';
-    el.innerHTML = `<div class="cat-emoji">${categoryIconName(cat)}</div><div class="cat-title">${escapeHtml(cat)}</div><div class="cat-count">${products.filter(p=>p.category===cat).length} items</div>`;
-    wrap.appendChild(el);
-    setTimeout(()=>el.classList.add('show'), 80*i);
-    el.onclick = ()=> renderCategoryPage(cat);
+  cats.forEach((cat,i)=>{
+    const btn = document.createElement('button'); btn.className='category-tile';
+    const emoji = {Sets:'🏗️',Figures:'🧍', 'Blind Bags':'🎁','Books':'📚'}[cat]||'📦';
+    btn.innerHTML = `<div class="cat-emoji">${emoji}</div><div class="cat-title">${esc(cat)}</div><div class="muted">${products.filter(p=>p.category===cat).length} items</div>`;
+    wrap.appendChild(btn);
+    setTimeout(()=>btn.classList.add('show'), 60*i);
+    btn.onclick = ()=> renderCategory(cat);
   });
   mainArea.appendChild(wrap);
 }
 
-/* ---------- Category page ---------- */
-function renderCategoryPage(category){
-  mainArea.innerHTML = `
-    <div class="category-header">
-      <button id="catBack" class="btn small">← Back</button>
-      <h2>${escapeHtml(category)}</h2>
-      <div class="controls-inline">
-        <select id="subFilter" class="small"></select>
-        <button id="clearFilter" class="small">Clear filter</button>
-      </div>
+function renderCategory(category){
+  mainArea.innerHTML = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+    <button id="back" class="btn small">← Back</button>
+    <h2 style="margin:0">${esc(category)}</h2>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <select id="subfilter" class="small"></select>
+      <button id="clear" class="small">Clear</button>
+      <button id="createGift" class="small">Create Giftcard (demo)</button>
     </div>
-    <div id="categoryProducts"></div>
-  `;
-  $('#catBack').onclick = ()=> renderCategoriesView();
+  </div><div id="categoryProducts"></div>`;
+
+  $('#back').onclick = renderCategories;
   const items = products.filter(p=>p.category===category);
-  const subs = Array.from(new Set(items.map(i=>i.subtheme||'Misc')));
-  const sel = $('#subFilter');
-  sel.innerHTML = `<option value="">All subthemes</option>` + subs.map(s=>`<option>${escapeHtml(s)}</option>`).join('');
-  $('#clearFilter').onclick = ()=> { sel.value=''; renderCategoryProducts(category); };
+  const subs = unique(items.map(i=>i.subtheme||'Misc'));
+  const sel = $('#subfilter');
+  sel.innerHTML = `<option value="">All subthemes</option>` + subs.map(s=>`<option>${esc(s)}</option>`).join('');
   sel.onchange = ()=> renderCategoryProducts(category, sel.value);
+  $('#clear').onclick = ()=> { sel.value=''; renderCategoryProducts(category); };
+  $('#createGift').onclick = adminCreateGiftcard;
   renderCategoryProducts(category);
 }
 function renderCategoryProducts(category, subfilter){
   const cont = $('#categoryProducts');
-  const search = ($('#search')?$('#search').value.trim().toLowerCase():'');
+  const q = ($('#search') ? $('#search').value.trim().toLowerCase() : '');
   let items = products.filter(p=>p.category===category);
   if(subfilter) items = items.filter(p=> (p.subtheme||'')===subfilter);
-  if(search) items = items.filter(p => (p.title + p.origin + (p.subtheme||'')).toLowerCase().includes(search));
-  if(items.length===0){ cont.innerHTML = '<p class="hint">No items found.</p>'; return; }
-  const grid = document.createElement('div'); grid.className='grid';
+  if(q) items = items.filter(p=> (p.title + p.origin + (p.subtheme||'')).toLowerCase().includes(q));
+  if(!items.length){ cont.innerHTML = '<div class="muted">No items found.</div>'; return; }
+  const g = document.createElement('div'); g.className='grid';
   items.forEach((p,i)=>{
+    const thumb = Array.isArray(p.image)?p.image[0]:p.image;
     const card = document.createElement('div'); card.className='card';
-    const thumb = Array.isArray(p.image) ? p.image[0] : p.image;
-    card.innerHTML = `
-      <img src="${thumb}" alt="${escapeHtml(p.title)}">
-      <h3>${escapeHtml(p.title)}</h3>
-      <div class="meta">${escapeHtml(p.origin||'')}</div>
-      <div class="meta">${escapeHtml(p.condition||'')}</div>
-      <div class="price">SAR ${p.price_sar}</div>
-      <div class="contact">
-        <button class="btn view" data-id="${p.id}">View</button>
-        <button class="small add" data-id="${p.id}">➕</button>
-      </div>`;
-    grid.appendChild(card);
-    setTimeout(()=>card.classList.add('show'), 60*i);
+    card.innerHTML = `<img src="${thumb}" alt="${esc(p.title)}"><h3>${esc(p.title)}</h3><div class="meta">${esc(p.origin||'')}</div><div class="meta">${esc(p.condition||'')}</div><div class="price">SAR ${p.price_sar}</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn view" data-id="${p.id}">View</button><button class="small add" data-id="${p.id}">Add</button></div>`;
+    g.appendChild(card);
+    setTimeout(()=>card.classList.add('show'), 50*i);
   });
-  cont.innerHTML = ''; cont.appendChild(grid);
-  attachCardEvents();
+  cont.innerHTML = ''; cont.appendChild(g);
+  $$('.view').forEach(b=> b.onclick = ()=> openDetail(b.dataset.id));
+  $$('.add').forEach(b=> b.onclick = ()=> addToCart(b.dataset.id));
 }
 
-/* ---------- Search ---------- */
-function attachSearch(){
-  const sEl = $('#search');
-  if(!sEl) return;
-  sEl.addEventListener('input', ()=> {
-    const catHeader = document.querySelector('.category-header');
-    if(catHeader){
-      const cat = catHeader.querySelector('h2').textContent;
-      const sub = $('#subFilter') ? $('#subFilter').value : '';
-      renderCategoryProducts(cat, sub);
-    } else {
-      renderCategoriesView();
-      const s = sEl.value.trim();
-      if(!s) return;
-      const results = products.filter(p=> (p.title+p.origin+(p.subtheme||'')).toLowerCase().includes(s.toLowerCase()));
-      if(results.length){
-        const resWrap = document.createElement('div'); resWrap.className='search-results';
-        resWrap.innerHTML = `<h3 class="section-title">Quick results</h3><div class="grid"></div>`;
-        results.forEach(p=> resWrap.querySelector('.grid').insertAdjacentHTML('beforeend', `<div class="card show"><img src="${Array.isArray(p.image)?p.image[0]:p.image}"><h3>${escapeHtml(p.title)}</h3><div class="meta">${escapeHtml(p.category)}</div><div class="price">SAR ${p.price_sar}</div><div class="contact"><button class="btn view" data-id="${p.id}">View</button></div></div>`));
-        mainArea.appendChild(resWrap);
-        attachCardEvents();
-      }
-    }
-  });
-}
+/* ---------- search ---------- */
+$('#search')?.addEventListener('input', ()=>{
+  const catHeader = document.querySelector('.category-header');
+  if(catHeader){ // if inside a category, re-render same
+    const cat = document.querySelector('h2')?.textContent || '';
+    const sub = $('#subfilter') ? $('#subfilter').value : '';
+    if(cat) renderCategoryProducts(cat, sub);
+  } else renderCategories();
+});
 
-/* ---------- Card events ---------- */
-function attachCardEvents(){
-  $$('.view').forEach(btn=> btn.onclick = ()=> openDetail(btn.dataset.id));
-  $$('.add').forEach(btn=> btn.onclick = ()=> addToCart(btn.dataset.id));
-}
-
-/* ---------- Product modal / detail ---------- */
+/* ---------- product detail modal ---------- */
 function openDetail(id){
   const p = products.find(x=>x.id===id);
-  const imgs = Array.isArray(p.image) ? p.image : [p.image];
-  $('#modal').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h2>${escapeHtml(p.title)}</h2>
-      <div><button id="closeModal" class="btn small">Close</button></div>
-    </div>
-    <div class="modal-grid">
-      <div>
-        <div class="gallery">
-          <div class="gallery-main"><img id="galleryMain" src="${imgs[0]}" onerror="this.src='images/placeholder.jpg'"></div>
-          <div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gthumb ${i===0?'active':''}" data-src="${u}" src="${u}" onerror="this.src='images/placeholder.jpg'">`).join('')}</div>
-        </div>
-
-        <div class="meta">Origin: ${escapeHtml(p.origin||'')}</div>
-        <div class="meta">Condition: ${escapeHtml(p.condition||'')}</div>
-        <div class="meta">${p.piece_count? p.piece_count + ' pcs' : ''} ${p.figures_count? '• ' + p.figures_count + ' figs' : ''}</div>
-        <div class="price">SAR ${p.price_sar}</div>
-
-        <div style="margin-top:8px">
-          <button class="btn" id="modalAdd">Add to cart</button>
-          <button class="small" id="modalBuy">Buy now</button>
-        </div>
-
-        <div class="price-compare">
-          <h4>Price comparisons</h4>
-          ${ (p.price_comparisons||[]).map(c=>`<div class="item ${c.overpriced? 'over':''}"><a href="${c.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.site)}</a><div>${escapeHtml(c.price)}</div></div>`).join('') }
-        </div>
-
-        <div class="recommended">
-          <h4>Recommended</h4>
-          ${(p.recommended||[]).map(id=>{
-            const r = products.find(x=>x.id===id);
-            return r ? `<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><img style="width:60px;height:48px;object-fit:cover;border-radius:6px" src="${Array.isArray(r.image)?r.image[0]:r.image}"><div><strong>${escapeHtml(r.title)}</strong><div class="meta">SAR ${r.price_sar}</div></div></div>` : '';
-          }).join('')}
-        </div>
+  const imgs = Array.isArray(p.image)?p.image:p.image?[p.image]:['https://picsum.photos/800/600'];
+  $('#modal').innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+    <h2>${esc(p.title)}</h2><div><button id="closeModal" class="btn small">Close</button></div>
+  </div>
+  <div class="modal-grid">
+    <div>
+      <div class="gallery">
+        <div class="gallery-main"><img id="galleryMain" src="${imgs[0]}"></div>
+        <div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="${i===0?'active':''}" data-src="${u}" src="${u}">`).join('')}</div>
       </div>
-
-      <aside>
-        <div class="cart-mini">
-          <h4>Quick cart</h4>
-          <div id="quickCartList" class="cart-list"></div>
-          <div class="order-summary" id="quickSummary"></div>
-          <div style="margin-top:8px"><button class="btn" id="gotoCheckout">Go to checkout</button></div>
-        </div>
-      </aside>
+      <div class="muted">Origin: ${esc(p.origin||'')}</div>
+      <div class="muted">Condition: ${esc(p.condition||'')}</div>
+      <div class="muted">${p.piece_count? p.piece_count + ' pcs' : ''} ${p.figures_count? '• ' + p.figures_count + ' figs' : ''}</div>
+      <div class="price">SAR ${p.price_sar}</div>
+      <div style="margin-top:10px"><button id="modalAdd" class="btn">Add to cart</button> <button id="modalBuy" class="small">Buy now</button></div>
+      <div style="margin-top:12px" class="price-compare"><h4>Price comparisons</h4>${(p.price_comparisons||[]).map(c=>`<div class="item ${c.overpriced? 'over':''}"><a href="${c.url}" target="_blank" rel="noopener">${esc(c.site)}</a><div>${esc(c.price)}</div></div>`).join('')}</div>
+      <div style="margin-top:10px" class="recommended"><h4>Recommended</h4>${(p.recommended||[]).map(id=>{const r = products.find(x=>x.id===id); return r?`<div style="display:flex;gap:8px;align-items:center;margin:8px 0"><img src="${Array.isArray(r.image)?r.image[0]:r.image}" style="width:64px;height:48px;object-fit:cover;border-radius:6px"><div><strong>${esc(r.title)}</strong><div class='muted'>SAR ${r.price_sar}</div></div></div>`:'';}).join('')}</div>
     </div>
-  `;
+    <aside>
+      <div class="cart-mini">
+        <h4>Quick cart</h4>
+        <div id="quickCart" class="cart-list"></div>
+        <div id="quickTotal" class="order-summary"></div>
+        <div style="margin-top:8px"><button id="gotoCheckout" class="btn">Go to checkout</button></div>
+      </div>
+    </aside>
+  </div>`;
   $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
   $('#closeModal').onclick = closeModal;
-  $('#modalAdd').onclick = ()=>{ addToCart(p.id); updateQuickCart(); }
-  $('#modalBuy').onclick = ()=>{ addToCart(p.id); openCheckout(); }
+  $('#modalAdd').onclick = ()=>{ addToCart(p.id); updateQuick(); };
+  $('#modalBuy').onclick = ()=>{ addToCart(p.id); openCheckout(); };
   $('#gotoCheckout').onclick = openCheckout;
-
-  $$('.gthumb').forEach(t=>{
-    t.onclick = ()=> { $('#galleryMain').src = t.dataset.src; $$('.gthumb').forEach(x=>x.classList.remove('active')); t.classList.add('active'); };
-  });
-  updateQuickCart();
+  $$('.gallery-thumbs img').forEach(img=> img.onclick = ()=>{ $('#galleryMain').src = img.dataset.src; $$('.gallery-thumbs img').forEach(x=>x.classList.remove('active')); img.classList.add('active'); });
+  updateQuick();
 }
-function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=>$('#modalBackdrop').classList.remove('show'),200); }
-
-/* ---------- Cart ---------- */
-function addToCart(id){
-  const p = products.find(x=>x.id===id);
-  if(!p) return;
-  const item = cart.find(c=>c.id===id);
-  if(item) item.qty++; else cart.push({id:p.id,title:p.title,price:p.price_sar,qty:1,image: Array.isArray(p.image)?p.image[0]:p.image});
-  localStorage.setItem('cart', JSON.stringify(cart));
-  renderCartCount(); updateQuickCart();
-}
-function renderCartCount(){ $('#cartCount').innerText = cart.reduce((s,i)=>s+i.qty,0) }
-function updateQuickCart(){
-  const el = $('#quickCartList'); const sumEl = $('#quickSummary');
-  if(!el) return;
-  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px"><div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
+function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=>$('#modalBackdrop').classList.remove('show'),220); }
+function updateQuick(){
+  const list = $('#quickCart'); const tot = $('#quickTotal');
+  if(!list) return;
+  list.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px"><div style="flex:1"><strong>${esc(it.title)}</strong><div class="muted">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="muted">Cart empty</div>';
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
+  tot.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
 
-/* ---------- Checkout ---------- */
-function openCheckout(){
-  $('#modal').innerHTML = checkoutHtml();
-  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
-  renderCheckoutCart();
-  $('#closeModal2').onclick = closeModal;
-  $('#cashPay').onclick = handleCashPay;
-  $('#giftPay').onclick = handleGiftPay;
+/* ---------- cart ---------- */
+function addToCart(id){
+  const p = products.find(x=>x.id===id); if(!p) return;
+  const item = cart.find(c=>c.id===id);
+  if(item) item.qty++; else cart.push({id:p.id,title:p.title,price:p.price_sar,qty:1,image:Array.isArray(p.image)?p.image[0]:p.image});
+  saveState();
 }
-function checkoutHtml(){
-  return `<div style="display:flex;justify-content:space-between;align-items:center"><h2>Checkout</h2><div><button id="closeModal2" class="btn small">Close</button></div></div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap">
-      <div style="flex:1;min-width:320px"><h4>Cart</h4><div id="checkoutCart"></div><div class="order-summary" id="checkoutSummary"></div></div>
+function removeFromCart(id){ cart = cart.filter(c=>c.id!==id); saveState(); renderCartView(); }
+
+/* ---------- checkout (client-side giftcard implementation) ---------- */
+function openCheckout(){
+  $('#modal').innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><h2>Checkout</h2><div><button id="closeCheckout" class="btn small">Close</button></div></div>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <div style="flex:1;min-width:320px"><h4>Cart</h4><div id="checkoutCart"></div><div id="checkoutSummary" class="order-summary"></div></div>
       <div style="width:340px">
-        <h4>Pay with Cash (Reserve)</h4>
-        <div class="checkout-forms">
+        <h4>Reserve with Cash</h4><div class="checkout-forms">
           <input id="custName" class="input" placeholder="Full name">
           <input id="custEmail" class="input" placeholder="Email (optional)">
           <input id="custDate" class="input" type="date">
           <textarea id="custMsg" class="textarea" placeholder="Pickup notes"></textarea>
-          <button class="btn" id="cashPay">Reserve with cash</button>
+          <button id="cashPay" class="btn">Reserve (Cash)</button>
         </div>
-        <h4 style="margin-top:12px">Pay with Giftcard</h4>
-        <div class="checkout-forms">
-          <input id="giftCode" class="input" placeholder="Giftcard code">
-          <input id="giftAmount" class="input" placeholder="Amount (SAR)" type="number" min="0" step="0.01">
-          <button class="btn" id="giftPay">Pay with giftcard</button>
-        </div><div class="hint">If you overpay, the remainder becomes in-store credit.</div>
+        <h4 style="margin-top:12px">Pay with Giftcard</h4><div class="checkout-forms">
+          <input id="giftCode" class="input" placeholder="Giftcard code (demo)">
+          <input id="giftAmount" class="input" placeholder="Use amount (SAR)" type="number" min="0" step="0.01">
+          <button id="giftPay" class="btn">Pay with Giftcard</button>
+        </div>
+        <div class="muted" style="margin-top:8px">If you overpay, remainder becomes in-store credit for the email provided.</div>
       </div>
     </div>`;
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
+  $('#closeCheckout').onclick = closeModal;
+  renderCheckoutCart();
+  $('#cashPay').onclick = handleCashPay;
+  $('#giftPay').onclick = handleGiftPay;
 }
 function renderCheckoutCart(){
   const el = $('#checkoutCart'); const sumEl = $('#checkoutSummary');
-  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px"><div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart empty</div>';
+  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px"><div style="flex:1"><strong>${esc(it.title)}</strong><div class="muted">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="muted">Cart empty</div>';
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
 function handleCashPay(){
   const name = $('#custName').value.trim(); if(!name){ alert('Enter name'); return; }
   const date = $('#custDate').value; const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const order = {id:'order-'+Date.now(),name,date,email:$('#custEmail').value,cart,total,method:'cash',msg:$('#custMsg').value,done:false,created:Date.now()};
-  let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
-  alert('Cash reservation saved — Order ID: '+order.id);
-  cart=[]; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryViewAfterOrder();
+  const order = {id:'order-'+Date.now(), name, date, email:$('#custEmail').value, cart, total, method:'cash', msg:$('#custMsg').value, created:Date.now()};
+  // store locally
+  const orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+  alert('Cash reservation saved locally — Order ID: '+order.id);
+  cart = []; saveState(); closeModal(); renderCategories();
 }
 function handleGiftPay(){
-  const code = $('#giftCode').value.trim() || ('GC-'+Math.floor(Math.random()*99999));
-  const amount = Number($('#giftAmount').value) || 0;
+  const code = $('#giftCode').value.trim(); const amount = Number($('#giftAmount').value)||0;
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  if(amount < total){
-    const remaining = total - amount;
-    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, remaining, done:false, created:Date.now()};
-    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
-    alert(`Partial paid SAR ${amount}. Remaining: SAR ${remaining.toFixed(2)}`);
-  } else {
-    const credit = +(amount - total);
-    credits = +(credits + credit).toFixed(2); localStorage.setItem('storeCredit', credits);
-    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, storeCreditGained:credit, done:true, created:Date.now()};
-    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
-    alert(`Payment successful. You gained SAR ${credit.toFixed(2)} in-store credit. Current credit: SAR ${credits.toFixed(2)}`);
-  }
-  cart=[]; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryViewAfterOrder();
-}
-
-/* ---------- Keep user in same place after ordering ---------- */
-function renderCategoryViewAfterOrder(){
-  const catHeader = document.querySelector('.category-header');
-  if(catHeader){
-    const cat = catHeader.querySelector('h2').textContent;
-    renderCategoryProducts(cat);
-  } else {
-    renderCategoriesView();
-  }
-}
-
-/* ---------- Cart button ---------- */
-$('#cartBtn').onclick = ()=> openCheckout();
-
-/* ---------- Request chat (floating) ---------- */
-function loadChat(){
-  if(!document.querySelector('.chat-floating')){
-    const wrap = document.createElement('div'); wrap.className='chat-floating';
-    wrap.innerHTML = `<div class="chat-head">Request product 💬</div><div class="chat-body"><div id="miniChat" class="chat"></div><div style="display:flex;gap:8px;margin-top:6px"><input id="miniReq" class="input" placeholder="Request a set or figure"><button id="miniSend" class="btn small">Send</button></div></div>`;
-    document.body.appendChild(wrap);
-    $('#miniSend').onclick = ()=> {
-      const text = $('#miniReq').value.trim(); if(!text) return;
-      const m = {from:'user', text, time:Date.now()};
-      const existing = JSON.parse(localStorage.getItem('requests')||'[]'); existing.push(m); localStorage.setItem('requests', JSON.stringify(existing));
-      $('#miniReq').value='';
-      setTimeout(()=>{ const reply = {from:'owner', text:'Thanks — we noted: ' + text}; const e2 = JSON.parse(localStorage.getItem('requests')||'[]'); e2.push(reply); localStorage.setItem('requests', JSON.stringify(e2)); loadChat(); }, 700);
-      loadChat();
+  if(!code){ alert('Enter giftcard code'); return; }
+  // find card in local giftcards
+  const idx = giftcards.findIndex(g=> g.code === code);
+  if(idx === -1){ alert('Giftcard not found (demo). You can create one in category view via "Create Giftcard (demo)".'); return; }
+  const card = giftcards[idx];
+  if(card.balance <= 0){ alert('Giftcard has zero balance'); return; }
+  // determine deduction: if amount provided, use min(amount, card.balance), else attempt to use min(total, card.balance)
+  let toDeduct = amount>0 ? Math.min(amount, card.balance) : Math.min(total, card.balance);
+  if(toDeduct <= 0){ alert('Nothing to deduct'); return; }
+  // apply deduction
+  card.balance = +(card.balance - toDeduct).toFixed(2);
+  giftcards[idx] = card; localStorage.setItem('giftcards', JSON.stringify(giftcards));
+  // if toDeduct > total => leftover credit
+  let creditGiven = 0;
+  if(toDeduct > total){
+    creditGiven = +(toDeduct - total).toFixed(2);
+    const email = $('#custEmail').value.trim().toLowerCase();
+    if(email){
+      storeCredits[email] = +( (storeCredits[email]||0) + creditGiven ).toFixed(2);
+      localStorage.setItem('storeCredits', JSON.stringify(storeCredits));
+    } else {
+      // return leftover to card if no email provided
+      card.balance = +(card.balance + creditGiven).toFixed(2); giftcards[idx]=card; localStorage.setItem('giftcards', JSON.stringify(giftcards));
+      creditGiven = 0;
     }
   }
-  const mini = $('#miniChat');
-  if(mini) mini.innerHTML = JSON.parse(localStorage.getItem('requests')||'[]').map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${escapeHtml(m.text)}</div>`).join('') || '<div class="meta">No requests yet.</div>';
+  // save order
+  const order = {id:'order-'+Date.now(), total, paid:toDeduct, method:'giftcard', code, storeCreditGained: creditGiven, created:Date.now()};
+  const orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+  alert(`Payment recorded. Deducted SAR ${toDeduct}. Remaining card balance: SAR ${card.balance}. Credit given: SAR ${creditGiven}`);
+  cart = []; saveState(); closeModal(); renderCategories();
 }
 
-/* ---------- Init ---------- */
-load();
+/* ---------- demo admin giftcard create (client-side) ---------- */
+function adminCreateGiftcard(){
+  const code = prompt('Enter new giftcard code (e.g. GC-100):'); if(!code) return;
+  const balStr = prompt('Enter starting balance (SAR):'); if(!balStr) return;
+  const bal = Number(balStr);
+  if(isNaN(bal) || bal <= 0){ alert('Invalid balance'); return; }
+  if(giftcards.find(g=>g.code===code)){ alert('Code exists'); return; }
+  giftcards.push({code, balance: +(bal).toFixed(2), created: Date.now()}); localStorage.setItem('giftcards', JSON.stringify(giftcards));
+  alert('Giftcard created for demo: ' + code + ' — balance SAR ' + bal.toFixed(2));
+}
 
-/* ---------- Keyboard: close modal ---------- */
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ $('#modalBackdrop').classList.remove('show'); $('#modal').classList.remove('show'); } });
+/* ---------- request chat floating ---------- */
+function initChat(){
+  if(document.querySelector('.chat-floating')) return;
+  const wrap = document.createElement('div'); wrap.className='chat-floating';
+  wrap.innerHTML = `<div class="chat-head">Request product 💬</div><div class="chat-body"><div id="miniChat" class="chat"></div><div style="display:flex;gap:8px;margin-top:8px"><input id="miniReq" class="input" placeholder="Request a set or figure"><button id="miniSend" class="btn small">Send</button></div></div>`;
+  document.body.appendChild(wrap);
+  $('#miniSend').onclick = ()=> {
+    const text = $('#miniReq').value.trim(); if(!text) return;
+    const arr = JSON.parse(localStorage.getItem('requests')||'[]'); arr.push({id:'r-'+Date.now(),from:'user',text,time:Date.now()}); localStorage.setItem('requests', JSON.stringify(arr));
+    $('#miniReq').value=''; loadMini();
+    setTimeout(()=>{ const arr2 = JSON.parse(localStorage.getItem('requests')||'[]'); arr2.push({id:'r-'+Date.now(),from:'owner',text:'Thanks — noted: '+text,time:Date.now()}); localStorage.setItem('requests', JSON.stringify(arr2)); loadMini(); },700);
+  };
+  loadMini();
+}
+function loadMini(){ const mini = $('#miniChat'); if(!mini) return; const all = JSON.parse(localStorage.getItem('requests')||'[]'); mini.innerHTML = all.slice(-12).map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${esc(m.text)}</div>`).join('') || '<div class="muted">No requests yet</div>'; }
+
+/* ---------- initial boot ---------- */
+function boot(){
+  // load saved demo giftcards if none exist (helpful)
+  if(!localStorage.getItem('giftcards')){ giftcards = [{code:'GC-DEMO-10',balance:10},{code:'GC-DEMO-50',balance:50}]; localStorage.setItem('giftcards', JSON.stringify(giftcards)); }
+  else giftcards = JSON.parse(localStorage.getItem('giftcards')||'[]');
+  storeCredits = JSON.parse(localStorage.getItem('storeCredits')||'{}');
+  cart = JSON.parse(localStorage.getItem('cart')||'[]');
+  renderCategories();
+  updateCartCount();
+  initChat();
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ $('#modalBackdrop').classList.remove('show'); $('#modal').classList.remove('show'); }});
+$('#cartBtn').onclick = ()=> openCheckout();
+boot();
 </script>
 </body>
 </html>
