@@ -1,98 +1,103 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin — Ninjago</title><link rel="stylesheet" href="styles.css"></head>
-<body style="background:#071428;color:#eaf6ff;font-family:Inter,system-ui,Roboto,Arial">
-<main style="max-width:1000px;margin:24px auto;padding:16px">
-  <h1>Admin — Ninjago (Local gate)</h1>
-  <div id="authArea"></div>
-  <div id="adminArea" style="display:none">
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
-      <button id="refreshBtn" class="small">Refresh</button>
-      <button id="exportLocal" class="small">Export local data</button>
-      <button id="clearLocal" class="small" style="margin-left:auto">Clear local orders & requests</button>
-    </div>
-
-    <h2>Orders (local)</h2>
-    <div id="ordersList"></div>
-
-    <h2>Requests (local)</h2>
-    <div id="requestsList"></div>
-  </div>
-  <div style="margin-top:12px;color:#9fb7ca;font-size:13px">
-    Note: To enable server-backed admin, configure server env variable ADMIN_SECRET in Vercel and the server /api endpoints. This local gate protects from casual visitors but is not a full server-side auth.
-  </div>
-</main>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin — Ninjago Bazaar</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+  <main class="container" id="adminRoot">
+    <!-- content will be injected after auth -->
+  </main>
 
 <script>
-/* simple sha256 helper */
-async function sha256(str){ const buf = new TextEncoder().encode(str); const hash = await crypto.subtle.digest('SHA-256', buf); return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+// Simple client-side admin gate.
+// WARNING: client-side auth prevents casual access but is NOT secure for secrets.
+// Change PASSWORD_PLAIN below to your chosen password (do it locally, not in public chat).
 
-const authArea = document.getElementById('authArea');
-const adminArea = document.getElementById('adminArea');
-
-async function renderAuth(){
-  const stored = localStorage.getItem('ninjago_admin_hash');
-  if(!stored){
-    authArea.innerHTML = `<div style="background:#05202b;padding:12px;border-radius:8px"><div style="font-weight:700;margin-bottom:8px">Set admin password (owner only)</div><input id="setPw" class="input" placeholder="New admin password"><div style="margin-top:8px"><button id="savePw" class="btn small">Save password</button></div></div>`;
-    document.getElementById('savePw').onclick = async ()=>{
-      const pw = document.getElementById('setPw').value.trim();
-      if(!pw) return alert('Enter password');
-      const h = await sha256(pw);
-      localStorage.setItem('ninjago_admin_hash', h);
-      alert('Password saved locally. Keep it safe.');
-      renderAuth();
-    };
-  } else {
-    authArea.innerHTML = `<div style="background:#05202b;padding:12px;border-radius:8px"><div style="font-weight:700;margin-bottom:8px">Enter admin password</div><input id="enterPw" class="input" placeholder="Password"><div style="margin-top:8px"><button id="enterBtn" class="btn small">Enter</button></div></div>`;
-    document.getElementById('enterBtn').onclick = async ()=>{
-      const v = document.getElementById('enterPw').value.trim(); if(!v) return;
-      const h = await sha256(v);
-      if(h === localStorage.getItem('ninjago_admin_hash')){
-        showAdmin();
-      } else {
-        alert('Wrong password');
-      }
-    };
+const PASSWORD_PLAIN = 'admin123'; // CHANGE THIS to a new password before deploying
+async function sha256(str){
+  const enc = new TextEncoder(); const data = enc.encode(str);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+(async ()=>{
+  const root = document.getElementById('adminRoot');
+  const stored = localStorage.getItem('admin_auth_sha');
+  const passwordToCheck = prompt('Admin password (enter to continue):');
+  if(!passwordToCheck){ root.innerHTML = '<p class="empty">Access denied.</p>'; return; }
+  // Compare hash
+  const inputHash = await sha256(passwordToCheck);
+  const correctHash = await sha256(PASSWORD_PLAIN);
+  if(inputHash !== correctHash){
+    root.innerHTML = '<p class="empty">Wrong password. Access denied.</p>';
+    return;
   }
+  // show admin UI
+  renderAdminUI();
+})();
+
+function readLocalOrders(){ return JSON.parse(localStorage.getItem('orders')||'[]'); }
+function readLocalRequests(){ return JSON.parse(localStorage.getItem('requests')||'[]'); }
+
+function renderAdminUI(){
+  const root = document.getElementById('adminRoot');
+  root.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h1>Admin panel</h1>
+      <div><button id="logout" class="small">Logout</button></div>
+    </div>
+
+    <section>
+      <h2>Orders (local)</h2>
+      <div id="ordersList"></div>
+    </section>
+
+    <section style="margin-top:18px">
+      <h2>Requests (local)</h2>
+      <div id="requestsList"></div>
+    </section>
+  `;
+  document.getElementById('logout').onclick = ()=> { localStorage.removeItem('admin_auth_sha'); location.reload(); };
+  loadOrders();
+  loadRequests();
 }
 
-function showAdmin(){
-  authArea.style.display = 'none';
-  adminArea.style.display = 'block';
-  loadAdminData();
-}
-
-function loadAdminData(){
-  const orders = JSON.parse(localStorage.getItem('orders')||'[]');
-  const requests = JSON.parse(localStorage.getItem('requests')||'[]');
-  const ol = document.getElementById('ordersList'); ol.innerHTML = '';
-  if(orders.length===0) ol.innerHTML = '<div class="meta">No orders</div>';
-  orders.slice().reverse().forEach(o=>{
-    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px'; d.innerHTML = `<div style="display:flex;justify-content:space-between"><strong>Order ${o.id}</strong><div><button class="small done">Toggle done</button> <button class="small del">Delete</button></div></div><div class="meta">Method: ${o.method||'-'} • Total: SAR ${o.total||0}</div><div class="meta">Name: ${o.name||'-'} • Date: ${o.date||'-'}</div><div style="margin-top:8px">${(o.cart||[]).map(it=>`<div>${it.title} × ${it.qty} — SAR ${it.price}</div>`).join('')}</div><div class="meta">Notes: ${o.msg||''}</div>`;
-    ol.appendChild(d);
-    d.querySelector('.del').onclick = ()=> { if(confirm('Delete order?')) { let arr = JSON.parse(localStorage.getItem('orders')||'[]'); arr = arr.filter(x=>x.id!==o.id); localStorage.setItem('orders', JSON.stringify(arr)); loadAdminData(); } };
-    d.querySelector('.done').onclick = ()=> { o.done = !o.done; let arr = JSON.parse(localStorage.getItem('orders')||'[]'); arr = arr.map(x=> x.id===o.id ? o : x); localStorage.setItem('orders', JSON.stringify(arr)); loadAdminData(); };
+function loadOrders(){
+  const el = document.getElementById('ordersList');
+  const orders = readLocalOrders();
+  if(!orders.length){ el.innerHTML = '<div class="empty">No orders yet</div>'; return; }
+  el.innerHTML = orders.slice().reverse().map(o => `
+    <div class="card show" style="margin-bottom:10px;padding:12px">
+      <div style="display:flex;justify-content:space-between"><strong>Order ${o.id}</strong><div><button class="small" data-id="${o.id}" data-action="del">Delete</button></div></div>
+      <div class="meta">Method: ${o.method||'-'} • Total: SAR ${o.total||0}</div>
+      <div class="meta">Name: ${o.name||'-'} • Date: ${o.date||'-'}</div>
+      <div style="margin-top:10px">${(o.cart||[]).map(i=>`<div>${i.title} × ${i.qty} — SAR ${i.price}</div>`).join('')}</div>
+    </div>`).join('');
+  el.querySelectorAll('button[data-action="del"]').forEach(b=>{
+    b.onclick = ()=>{
+      const id = b.dataset.id;
+      if(!confirm('Delete order '+id+' ?')) return;
+      let arr = JSON.parse(localStorage.getItem('orders')||'[]'); arr = arr.filter(x=> x.id !== id); localStorage.setItem('orders', JSON.stringify(arr));
+      loadOrders();
+    };
   });
-
-  const rl = document.getElementById('requestsList'); rl.innerHTML = '';
-  if(requests.length===0) rl.innerHTML = '<div class="meta">No requests</div>';
-  requests.slice().reverse().forEach(r=>{
-    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px'; d.innerHTML = `<div style="display:flex;justify-content:space-between"><div>${new Date(r.time||Date.now()).toLocaleString()}</div><div><button class="small rdel">Delete</button></div></div><div class="msg user" style="padding:8px;margin-top:8px">${r.name?('<strong>'+r.name+'</strong> — '):''}${r.type?('['+r.type+'] '):''}${r.text}</div>`;
-    rl.appendChild(d);
-    d.querySelector('.rdel').onclick = ()=>{ if(confirm('Delete request?')){ let arr = JSON.parse(localStorage.getItem('requests')||'[]'); arr = arr.filter(x=> x.id !== r.id); localStorage.setItem('requests', JSON.stringify(arr)); loadAdminData(); } };
-  });
 }
 
-document.getElementById('refreshBtn').onclick = loadAdminData;
-document.getElementById('exportLocal').onclick = ()=> {
-  const data = {orders: JSON.parse(localStorage.getItem('orders')||'[]'), requests: JSON.parse(localStorage.getItem('requests')||'[]')};
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ninjago-local-data.json'; a.click(); URL.revokeObjectURL(a.href);
-};
-document.getElementById('clearLocal').onclick = ()=> { if(confirm('Clear local orders and requests?')){ localStorage.removeItem('orders'); localStorage.removeItem('requests'); loadAdminData(); } };
-
-renderAuth();
-
+function loadRequests(){
+  const el = document.getElementById('requestsList');
+  const reqs = readLocalRequests();
+  if(!reqs.length){ el.innerHTML = '<div class="empty">No requests yet</div>'; return; }
+  el.innerHTML = reqs.slice().reverse().map(r => `
+    <div class="card show" style="margin-bottom:10px;padding:12px">
+      <div style="display:flex;justify-content:space-between"><div class="meta">${new Date(r.time||Date.now()).toLocaleString()}</div><div><button class="small" data-id="${r.id||r.time}" data-action="del">Delete</button></div></div>
+      <div style="margin-top:8px" class="msg user">${(r.name?('<strong>'+r.name+'</strong> — '):'')}${r.text || r}</div>
+    </div>`).join('');
+  el.querySelectorAll('button[data-action="del"]').forEach(b=>{
+    b.onclick = ()=>{
+      const id = b.dataset.id;
+      if(!confirm('Delete request?')) return;
+      let arr = JSON.parse(localStorage.getItem('requests')||'[]'); arr = arr.filter(x=> String(x.id||x.time) !== String(id)); localStorage.setItem('requests', JSON.stringify(arr));
+      loadRequests();
+    };
+  });
+}
 </script>
 </body>
 </html>

@@ -10,11 +10,10 @@
     "origin": "LEGO NINJAGO Set 71799 (Dragons Rising)",
     "condition": "New in box",
     "image": ["images/71799-city-markets.jpg"],
-    "notes": "",
     "recommended": ["sets-zane-small","fig-deepstone-kai"],
     "price_comparisons": [
-      {"site":"Official LEGO (USD)", "url":"https://www.lego.com","price":"$369.99","overpriced":false},
-      {"site":"Random reseller", "url":"https://example.com","price":"SAR 3500","overpriced":true}
+      {"site":"Official LEGO (USD)","url":"https://www.lego.com","price":"$369.99","overpriced":false},
+      {"site":"Random reseller","url":"https://example.com","price":"SAR 3500","overpriced":true}
     ]
   },
   {
@@ -28,8 +27,7 @@
     "origin": "2025 Zane mech (user-provided)",
     "condition": "New",
     "image": ["images/zane-big-mech.jpg"],
-    "recommended": ["sets-zane-small","blind-ninja-allies"],
-    "price_comparisons":[]
+    "recommended": ["sets-zane-small","blind-ninja-allies"]
   },
   {
     "id": "sets-zane-small",
@@ -42,8 +40,7 @@
     "origin": "Minifigure / small set",
     "condition": "New",
     "image": "images/zane-small.jpg",
-    "recommended": ["fig-santa-garmadon"],
-    "price_comparisons":[]
+    "recommended": ["fig-santa-garmadon"]
   },
   {
     "id": "sets-thundefang",
@@ -56,13 +53,8 @@
     "origin": "LEGO NINJAGO Set 71832",
     "condition": "New box — heavily damaged",
     "image": ["images/thundefang-dragon-of-chaos-71832.jpg"],
-    "notes": "Box heavily damaged",
-    "recommended": ["sets-71799"],
-    "price_comparisons":[
-      {"site":"noon.com (example)", "url":"https://noon.com", "price":"SAR 388.50", "overpriced":false}
-    ]
+    "recommended": ["sets-71799"]
   },
-
   {
     "id": "fig-santa-garmadon",
     "category": "Figures",
@@ -72,8 +64,7 @@
     "piece_count": 1,
     "origin": "Seasonal minifigure",
     "condition": "Loose — very good",
-    "image": "images/santa-garmadon.jpg",
-    "recommended": []
+    "image": "images/santa-garmadon.jpg"
   },
   {
     "id": "fig-deepstone-kai",
@@ -95,10 +86,8 @@
     "price_sar": 55,
     "origin": "Promo / foil pack",
     "condition": "Sealed",
-    "image": "images/young-wu-foil.jpg",
-    "recommended": []
+    "image": "images/young-wu-foil.jpg"
   },
-
   {
     "id": "blind-booster-island",
     "category": "Blind Bags",
@@ -107,8 +96,7 @@
     "price_sar": 15,
     "origin": "Blind bag booster",
     "condition": "Sealed",
-    "image": "images/blind-1.webp",
-    "recommended": ["blind-ninja-army"]
+    "image": "images/blind-1.webp"
   },
   {
     "id": "blind-ninja-army",
@@ -118,8 +106,7 @@
     "price_sar": 15,
     "origin": "Blind bag",
     "condition": "Sealed",
-    "image": "images/blind-2.webp",
-    "recommended": []
+    "image": "images/blind-2.webp"
   },
   {
     "id": "blind-ninja-allies",
@@ -129,10 +116,8 @@
     "price_sar": 25,
     "origin": "Blind bag",
     "condition": "Sealed",
-    "image": "images/ninja-allies.jpg",
-    "recommended": ["blind-booster-island"]
+    "image": "images/ninja-allies.jpg"
   },
-
   {
     "id": "book-dark-island-1",
     "category": "Books",
@@ -152,42 +137,6 @@
     "price_sar": 60,
     "origin": "Book — paperback",
     "condition": "Paperback — good",
-    "image": "images/quest-of-lost-power.jpg",
-    "recommended": []
-  },
-  {
-    "id": "book-spinjitzu-1",
-    "category": "Books",
-    "subtheme": "Spinjitzu",
-    "title": "Spinjitzu Brother — Part 1 (Hardcover)",
-    "price_sar": 65,
-    "origin": "Book — hardcover",
-    "condition": "Hardcover — good",
-    "image": "images/spinjitzu-1.jpg",
-    "recommended": ["book-spinjitzu-2"]
-  },
-  {
-    "id": "book-spinjitzu-2",
-    "category": "Books",
-    "subtheme": "Spinjitzu",
-    "title": "Spinjitzu Brother — Part 2 (Hardcover)",
-    "price_sar": 55,
-    "origin": "Book — hardcover",
-    "condition": "Hardcover — good",
-    "image": "images/spinjitzu-2.jpg",
-    "recommended": []
-  },
-
-  {
-    "id": "book-dark-island-rent",
-    "category": "Books (Rent)",
-    "subtheme": "Dark Island",
-    "title": "Dark Island Trilogy — Rent 1 week",
-    "price_sar": 70,
-    "origin": "Rental",
-    "condition": "Hardcover, like new",
-    "image": "images/dark-island-1.jpg",
-    "notes": "1 week rental",
-    "recommended":[]
+    "image": "images/quest-of-lost-power.jpg"
   }
 ]
