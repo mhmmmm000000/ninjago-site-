@@ -1,102 +1,69 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin — Ninjago Bazaar</title><link rel="stylesheet" href="styles.css"></head>
+<head><meta charset="utf-8"/><meta name="viewport"content="width=device-width,initial-scale=1"/><title>Admin — Ninjago Market</title><link rel="stylesheet" href="styles.css"></head>
 <body>
-  <main class="container" id="adminRoot">
-    <!-- content will be injected after auth -->
-  </main>
+<main style="max-width:1100px;margin:28px auto;padding:16px">
+  <h1>Admin</h1>
+  <div id="loginArea">
+    <p>Enter admin password to unlock admin tools.</p>
+    <input id="pw" class="input" placeholder="Password" type="password">
+    <button id="loginBtn" class="btn">Unlock</button>
+    <div id="loginMsg" class="hint"></div>
+  </div>
+
+  <div id="adminArea" style="display:none">
+    <h2>Orders</h2>
+    <div id="ordersList"></div>
+    <h2>Requests</h2>
+    <div id="requestsList"></div>
+    <h2>Products</h2>
+    <div id="productsList"></div>
+  </div>
+</main>
 
 <script>
-// Simple client-side admin gate.
-// WARNING: client-side auth prevents casual access but is NOT secure for secrets.
-// Change PASSWORD_PLAIN below to your chosen password (do it locally, not in public chat).
+// NOTE: This is client-side gate only. It prevents casual visitors from opening the admin page accidentally.
+// For production, use server-side authentication.
+const storedHash = '617ff591a17bd881fc46377829724aab9834d98447888bacfb72e5821881ef86'; // SHA-256 of default password 'ninjagoadmin2025'
 
-const PASSWORD_PLAIN = 'admin123'; // CHANGE THIS to a new password before deploying
-async function sha256(str){
-  const enc = new TextEncoder(); const data = enc.encode(str);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+async function sha256hex(msg){
+  const enc = new TextEncoder().encode(msg);
+  const hash = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-(async ()=>{
-  const root = document.getElementById('adminRoot');
-  const stored = localStorage.getItem('admin_auth_sha');
-  const passwordToCheck = prompt('Admin password (enter to continue):');
-  if(!passwordToCheck){ root.innerHTML = '<p class="empty">Access denied.</p>'; return; }
-  // Compare hash
-  const inputHash = await sha256(passwordToCheck);
-  const correctHash = await sha256(PASSWORD_PLAIN);
-  if(inputHash !== correctHash){
-    root.innerHTML = '<p class="empty">Wrong password. Access denied.</p>';
-    return;
+
+$('#loginBtn').onclick = async ()=>{
+  const pw = $('#pw').value || '';
+  const h = await sha256hex(pw);
+  if(h === storedHash){
+    $('#loginArea').style.display = 'none'; $('#adminArea').style.display = 'block';
+    loadAdmin();
+  } else {
+    $('#loginMsg').innerText = 'Invalid password';
   }
-  // show admin UI
-  renderAdminUI();
-})();
+};
 
-function readLocalOrders(){ return JSON.parse(localStorage.getItem('orders')||'[]'); }
-function readLocalRequests(){ return JSON.parse(localStorage.getItem('requests')||'[]'); }
+function $(q){return document.querySelector(q);}
+function loadAdmin(){
+  // load from local storage (demo)
+  const orders = JSON.parse(localStorage.getItem('orders')||'[]');
+  const requests = JSON.parse(localStorage.getItem('requests')||'[]');
+  const products = JSON.parse(localStorage.getItem('products')||'[]');
 
-function renderAdminUI(){
-  const root = document.getElementById('adminRoot');
-  root.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <h1>Admin panel</h1>
-      <div><button id="logout" class="small">Logout</button></div>
-    </div>
-
-    <section>
-      <h2>Orders (local)</h2>
-      <div id="ordersList"></div>
-    </section>
-
-    <section style="margin-top:18px">
-      <h2>Requests (local)</h2>
-      <div id="requestsList"></div>
-    </section>
-  `;
-  document.getElementById('logout').onclick = ()=> { localStorage.removeItem('admin_auth_sha'); location.reload(); };
-  loadOrders();
-  loadRequests();
-}
-
-function loadOrders(){
-  const el = document.getElementById('ordersList');
-  const orders = readLocalOrders();
-  if(!orders.length){ el.innerHTML = '<div class="empty">No orders yet</div>'; return; }
-  el.innerHTML = orders.slice().reverse().map(o => `
-    <div class="card show" style="margin-bottom:10px;padding:12px">
-      <div style="display:flex;justify-content:space-between"><strong>Order ${o.id}</strong><div><button class="small" data-id="${o.id}" data-action="del">Delete</button></div></div>
-      <div class="meta">Method: ${o.method||'-'} • Total: SAR ${o.total||0}</div>
-      <div class="meta">Name: ${o.name||'-'} • Date: ${o.date||'-'}</div>
-      <div style="margin-top:10px">${(o.cart||[]).map(i=>`<div>${i.title} × ${i.qty} — SAR ${i.price}</div>`).join('')}</div>
-    </div>`).join('');
-  el.querySelectorAll('button[data-action="del"]').forEach(b=>{
-    b.onclick = ()=>{
-      const id = b.dataset.id;
-      if(!confirm('Delete order '+id+' ?')) return;
-      let arr = JSON.parse(localStorage.getItem('orders')||'[]'); arr = arr.filter(x=> x.id !== id); localStorage.setItem('orders', JSON.stringify(arr));
-      loadOrders();
-    };
+  const ol = $('#ordersList'); ol.innerHTML = '';
+  if(orders.length===0) ol.innerHTML = '<div class="meta">No orders</div>';
+  orders.slice().reverse().forEach(o=>{
+    const d = document.createElement('div'); d.className='card show'; d.style.marginBottom='8px';
+    d.innerHTML = `<div style="display:flex;justify-content:space-between"><strong>${o.id}</strong><div>${o.method||''}</div></div><div class="meta">Name: ${o.name||'-'} Email: ${o.email||'-'}</div><div>${(o.cart||[]).map(it=>`<div>${it.title} ×${it.qty} — SAR ${it.price}</div>`).join('')}</div>`;
+    ol.appendChild(d);
   });
-}
 
-function loadRequests(){
-  const el = document.getElementById('requestsList');
-  const reqs = readLocalRequests();
-  if(!reqs.length){ el.innerHTML = '<div class="empty">No requests yet</div>'; return; }
-  el.innerHTML = reqs.slice().reverse().map(r => `
-    <div class="card show" style="margin-bottom:10px;padding:12px">
-      <div style="display:flex;justify-content:space-between"><div class="meta">${new Date(r.time||Date.now()).toLocaleString()}</div><div><button class="small" data-id="${r.id||r.time}" data-action="del">Delete</button></div></div>
-      <div style="margin-top:8px" class="msg user">${(r.name?('<strong>'+r.name+'</strong> — '):'')}${r.text || r}</div>
-    </div>`).join('');
-  el.querySelectorAll('button[data-action="del"]').forEach(b=>{
-    b.onclick = ()=>{
-      const id = b.dataset.id;
-      if(!confirm('Delete request?')) return;
-      let arr = JSON.parse(localStorage.getItem('requests')||'[]'); arr = arr.filter(x=> String(x.id||x.time) !== String(id)); localStorage.setItem('requests', JSON.stringify(arr));
-      loadRequests();
-    };
-  });
+  const rl = $('#requestsList'); rl.innerHTML = requests.length ? requests.map(r=>`<div class="card show" style="margin-bottom:8px"><div class="msg ${r.from==='user'?'user':'owner'}">${r.text}</div></div>`).join('') : '<div class="meta">No requests</div>';
+
+  // products: read products.json (if accessible) and show quick list
+  fetch('products.json').then(r=>r.json()).then(list=>{
+    const pl = $('#productsList'); pl.innerHTML = list.map(p=>`<div class="card show" style="margin-bottom:8px"><strong>${p.title}</strong> <div class="meta">SAR ${p.price_sar || p.price_discount || '-'}</div></div>`).join('') || '<div class="meta">No products found</div>';
+  }).catch(e=>{ $('#productsList').innerHTML = '<div class="meta">Failed to load products.json</div>'; });
 }
 </script>
 </body>
