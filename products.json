@@ -1,134 +1,187 @@
 [
   {
-    "id":"sets-71799",
-    "category":"Sets",
-    "subtheme":"City",
-    "title":"71799 — City Markets",
-    "origin":"LEGO NINJAGO (Dragons Rising)",
-    "condition":"New in box",
-    "piece_count":6163,
-    "figures_count":20,
-    "price_sar":1899,
-    "image":["https://picsum.photos/id/1011/800/600"],
-    "notes":"",
-    "recommended":["sets-zane-small"],
-    "price_comparisons":[]
-  },
-  {
-    "id":"sets-lloyd-small-dragon",
-    "category":"Sets",
-    "subtheme":"Dragons",
-    "title":"Lloyd — Small Dragon (Dragons Rising)",
-    "origin":"LEGO set (small dragon)",
-    "condition":"New",
-    "piece_count":120,
-    "figures_count":1,
-    "price_sar":95,
-    "image":["https://picsum.photos/id/1025/800/600"],
-    "notes":"",
-    "recommended":[]
-  },
-  {
-    "id":"sets-zane-bike",
-    "category":"Sets",
-    "subtheme":"Vehicles",
-    "title":"Zane — Bike (Dragon Rising)",
-    "origin":"Small vehicle",
-    "condition":"New",
-    "piece_count":48,
-    "figures_count":1,
-    "price_sar":45,
-    "image":"https://picsum.photos/id/1033/800/600",
-    "recommended":[]
+    "id": "sets-71799",
+    "category": "Sets",
+    "subtheme": "City",
+    "title": "71799 — City Markets",
+    "origin": "LEGO NINJAGO (Dragons Rising)",
+    "condition": "New in box",
+    "piece_count": 6163,
+    "figures_count": 20,
+    "price_sar": 1899,
+    "image": [
+      "https://picsum.photos/id/1011/800/600"
+    ],
+    "notes": "",
+    "recommended": ["sets-zane-small"],
+    "price_comparisons": []
   },
 
   {
-    "id":"fig-santa-garmadon",
-    "category":"Figures",
-    "subtheme":"Seasonal",
-    "title":"Santa Garmadon",
-    "origin":"Seasonal minifigure",
-    "condition":"Loose — very good",
-    "price_sar":75,
-    "image":"https://picsum.photos/id/1047/800/600",
-    "notes":"Most other single figs may be inside blind bags — request specifically to check availability"
-  },
-  {
-    "id":"fig-deepstone-kai",
-    "category":"Figures",
-    "subtheme":"Characters",
-    "title":"Deepstone Suit Kai (sealed)",
-    "origin":"Promo set",
-    "condition":"Sealed",
-    "price_sar":80,
-    "image":"https://picsum.photos/id/1050/800/600",
-    "notes":"Most other figures are in blind bags; request them specifically if you want them."
+    "id": "sets-lloyd-small-dragon",
+    "category": "Sets",
+    "subtheme": "Dragons",
+    "title": "Lloyd — Small Dragon (Dragons Rising)",
+    "origin": "Small dragon set",
+    "condition": "New",
+    "piece_count": 120,
+    "figures_count": 1,
+    "price_sar": 95,
+    "image": [
+      "https://picsum.photos/id/1025/800/600"
+    ],
+    "notes": "",
+    "recommended": [],
+    "price_comparisons": []
   },
 
   {
-    "id":"blind-booster-island",
-    "category":"Blind Bags",
-    "subtheme":"Booster",
-    "title":"Booster Pack — Island",
-    "price_sar":15,
-    "image":"https://picsum.photos/id/1062/800/600",
-    "condition":"Sealed"
+    "id": "sets-zane-bike",
+    "category": "Sets",
+    "subtheme": "Vehicles",
+    "title": "Zane — Bike (Dragons Rising)",
+    "origin": "Small vehicle",
+    "condition": "New",
+    "piece_count": 48,
+    "figures_count": 1,
+    "price_sar": 45,
+    "image": [
+      "https://picsum.photos/id/1033/800/600"
+    ],
+    "notes": "",
+    "recommended": [],
+    "price_comparisons": []
   },
 
   {
-    "id":"polyb-30070",
-    "category":"Polybags",
-    "subtheme":"Polybags",
-    "title":"30070 — Arin & Dragonian (Polybags)",
-    "origin":"Polybags collection",
-    "condition":"Sealed",
-    "price_sar":35,
-    "image":"https://picsum.photos/id/1063/800/600",
-    "notes":"Correct official name will be updated on request"
-  },
-  {
-    "id":"polyb-zane-car",
-    "category":"Polybags",
-    "subtheme":"Polybags",
-    "title":"Zane — 4-in-1 Car (Polybags, red)",
-    "origin":"Polybags",
-    "condition":"Sealed",
-    "price_sar":30,
-    "image":"https://picsum.photos/id/1064/800/600",
-    "notes":"Marked Hard to find"
+    "id": "set-thundefang",
+    "category": "Sets",
+    "subtheme": "Dragons",
+    "title": "Thundefang — Dragon of Chaos (71832)",
+    "origin": "LEGO NINJAGO Set 71832",
+    "condition": "New box — heavily damaged",
+    "piece_count": 668,
+    "figures_count": 3,
+    "price_sar": 230,
+    "image": [
+      "https://picsum.photos/id/1067/800/600"
+    ],
+    "notes": "",
+    "recommended": [],
+    "price_comparisons": []
   },
 
   {
-    "id":"misc-subscription",
-    "category":"Miscs",
-    "subtheme":"Subscription",
-    "title":"Monthly subscription (includes one Ninjago set pick)",
-    "origin":"Subscription",
-    "condition":"Service",
-    "price_sar":32,
-    "price_discounted":15,
-    "discount_percent": Math.round((1 - (15/32))*100),
-    "image":"https://picsum.photos/id/1065/800/600",
-    "notes":"Subscription includes one curated set and access to official episode links (you must provide or link legal sources)."
+    "id": "fig-santa-garmadon",
+    "category": "Figures",
+    "subtheme": "Seasonal",
+    "title": "Santa Garmadon",
+    "origin": "Seasonal minifigure",
+    "condition": "Loose — very good",
+    "price_sar": 75,
+    "image": [
+      "https://picsum.photos/id/1047/800/600"
+    ],
+    "notes": "Most other figures are inside blind bags — request them specifically to check availability.",
+    "recommended": [],
+    "price_comparisons": []
   },
 
   {
-    "id":"book-dark-island-1",
-    "category":"Books",
-    "subtheme":"Dark Island",
-    "title":"Dark Island Trilogy — Part One (hardcover)",
-    "price_sar":200,
-    "image":"https://picsum.photos/id/1066/800/600",
-    "condition":"Like new"
+    "id": "fig-deepstone-kai",
+    "category": "Figures",
+    "subtheme": "Characters",
+    "title": "Deepstone Suit Kai (sealed)",
+    "origin": "Promo set",
+    "condition": "Sealed",
+    "price_sar": 80,
+    "image": [
+      "https://picsum.photos/id/1050/800/600"
+    ],
+    "notes": "Most other figures are in blind bags — request them specifically.",
+    "recommended": [],
+    "price_comparisons": []
   },
 
   {
-    "id":"set-thundefang",
-    "category":"Sets",
-    "subtheme":"Dragons",
-    "title":"Thundefang — Dragon of Chaos (71832)",
-    "price_sar":230,
-    "image":"https://picsum.photos/id/1067/800/600",
-    "condition":"New box — heavily damaged"
+    "id": "blind-booster-island",
+    "category": "Blind Bags",
+    "subtheme": "Booster",
+    "title": "Booster Pack — Island",
+    "origin": "Blind bag booster",
+    "condition": "Sealed",
+    "price_sar": 15,
+    "image": [
+      "https://picsum.photos/id/1062/800/600"
+    ],
+    "notes": "",
+    "recommended": [],
+    "price_comparisons": []
+  },
+
+  {
+    "id": "polyb-30070",
+    "category": "Polybags",
+    "subtheme": "Polybags",
+    "title": "30070 — Arin & Dragonian",
+    "origin": "Ninjago polybag",
+    "condition": "Sealed",
+    "price_sar": 35,
+    "image": [
+      "https://picsum.photos/id/1063/800/600"
+    ],
+    "notes": "Hard to find",
+    "recommended": [],
+    "price_comparisons": []
+  },
+
+  {
+    "id": "polyb-zane-car",
+    "category": "Polybags",
+    "subtheme": "Polybags",
+    "title": "Zane — 4-in-1 Car Polybag (Red, Hard to find)",
+    "origin": "Ninjago polybag",
+    "condition": "Sealed",
+    "price_sar": 30,
+    "image": [
+      "https://picsum.photos/id/1064/800/600"
+    ],
+    "notes": "Hard to find",
+    "recommended": [],
+    "price_comparisons": []
+  },
+
+  {
+    "id": "misc-subscription",
+    "category": "Misc",
+    "subtheme": "Subscription",
+    "title": "Basic Monthly Subscription",
+    "origin": "Subscription service",
+    "condition": "Service",
+    "price_sar": 32,
+    "price_discounted": 15,
+    "discount_percent": 53,
+    "image": [
+      "https://picsum.photos/id/1065/800/600"
+    ],
+    "notes": "Includes 1 Ninjago set + leaks + Google Drive episodes access (you must provide legal links).",
+    "recommended": [],
+    "price_comparisons": []
+  },
+
+  {
+    "id": "book-dark-island-1",
+    "category": "Books",
+    "subtheme": "Dark Island",
+    "title": "Dark Island Trilogy — Part One",
+    "origin": "Hardcover",
+    "condition": "Like new",
+    "price_sar": 200,
+    "image": [
+      "https://picsum.photos/id/1066/800/600"
+    ],
+    "notes": "",
+    "recommended": [],
+    "price_comparisons": []
   }
 ]
