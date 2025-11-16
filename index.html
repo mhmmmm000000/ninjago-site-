@@ -3,191 +3,204 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Ninjago Market — Collector Sets & Minifigs</title>
+<title>Ninjago Market — final</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="site-header">
-  <div class="brand">
-    <div class="logo">Ninjago Market</div>
-    <div class="tag">Collector-grade sets, figures & more</div>
-  </div>
-
-  <div class="header-right">
-    <div class="search-wrap">
+  <header class="site-header">
+    <div class="brand">
+      <div class="logo">Ninjago Market</div>
+      <div class="subtitle">Browse • Request • Reserve • Giftcard</div>
+    </div>
+    <div class="controls">
       <input id="search" class="search" placeholder="Search sets, figures, books...">
+      <button id="themeToggle" class="btn small" title="Toggle theme">🌙</button>
+      <div id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></div>
+      <a class="btn small" id="adminOpen" href="#" title="Admin">Admin</a>
     </div>
-    <button id="themeToggle" class="btn small">🌙</button>
-    <button id="cartBtn" class="btn cart">🛒 <span id="cartCount">0</span></button>
-    <a href="admin.html" class="btn small admin-link" target="_blank" rel="noopener noreferrer">Admin</a>
+  </header>
+
+  <main class="container">
+    <div class="top-row">
+      <div class="hint">Tip: click a category (e.g., Sets). Click a tile to go inside a category and browse subthemes.</div>
+      <div class="filters">
+        <label><input id="showHardToFindOnly" type="checkbox"> Show only Hard-to-find</label>
+      </div>
+    </div>
+
+    <div id="mainArea" class="main-area"></div>
+  </main>
+
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div id="modal" class="modal" role="dialog" aria-modal="true"></div>
   </div>
-</header>
 
-<main class="container">
-  <section class="hero">
-    <div class="hero-left">
-      <h1>Official & collector Ninjago sets, figures, blind bags and books</h1>
-      <p class="muted">Curated picks, condition notes, rent options for books, subscriptions and secure giftcards (server-backed optional).</p>
-      <div class="hero-cta">
-        <button class="btn" id="browseSetsBtn">Browse sets</button>
-        <button class="btn small" id="subscribeBtn">Subscribe — save</button>
+  <!-- admin dialog (client-side only) -->
+  <div id="adminDialog" class="modal-backdrop" style="display:none">
+    <div class="modal small" role="dialog">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Admin</h3>
+        <button id="adminClose" class="btn small">Close</button>
       </div>
+      <div id="adminBody"></div>
     </div>
-    <div class="hero-right">
-      <div class="hero-card">
-        <h3>Ninjago</h3>
-        <p class="muted">Collector selection</p>
-      </div>
-    </div>
-  </section>
-
-  <nav class="category-nav" id="categoryNav"></nav>
-
-  <section id="mainArea" class="main-area">
-    <!-- categories view / category content will be injected here -->
-  </section>
-</main>
-
-<div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
-  <div id="modal" class="modal" role="dialog" aria-modal="true"></div>
-</div>
-
-<!-- floating request widget -->
-<div id="floatingRequestContainer"></div>
+  </div>
 
 <script>
-/* ---------- helpers ---------- */
-const $ = q=> document.querySelector(q);
-const $$ = q=> Array.from(document.querySelectorAll(q));
-function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* ---------- utilities ---------- */
+const $ = q => document.querySelector(q);
+const $$ = q => Array.from(document.querySelectorAll(q));
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const mainArea = $('#mainArea');
 
 /* ---------- state ---------- */
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')||'[]');
+let storeCredits = JSON.parse(localStorage.getItem('storeCredits')||'{}');
 let credits = Number(localStorage.getItem('storeCredit')||0);
+let dark = localStorage.getItem('theme') === 'dark';
+const ADMIN_FLAG_KEY = 'ninjago_admin_pass_hash'; // used only for local password fallback
+
+/* ---------- theme ---------- */
+function applyTheme(){
+  document.documentElement.classList.toggle('dark', dark);
+  $('#themeToggle').textContent = dark ? '☀️' : '🌙';
+  localStorage.setItem('theme', dark ? 'dark':'light');
+}
+$('#themeToggle').onclick = ()=> { dark = !dark; applyTheme(); }
+applyTheme();
 
 /* ---------- load products.json ---------- */
 async function load(){
   try{
-    const res = await fetch('products.json');
+    const res = await fetch('products.json', {cache:'no-store'});
     products = await res.json();
-  } catch(e){
-    $('#mainArea').innerHTML = '<p class="hint" style="color:salmon">Failed to load products.json — check file.</p>';
-    console.error(e); return;
+  }catch(e){
+    mainArea.innerHTML = '<p class="error">Failed to load products.json — check file.</p>';
+    console.error(e);
+    return;
   }
-  buildCategoryNav();
   renderCategoriesView();
-  attachSearch();
-  attachUI();
   renderCartCount();
-  initFloatingRequest();
+  attachSearch();
+  loadChatFloating();
 }
-
-/* ---------- theme toggle ---------- */
-function attachUI(){
-  const tgl = $('#themeToggle');
-  const cur = localStorage.getItem('theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', cur);
-  tgl.textContent = cur === 'dark' ? '🌙' : '☀️';
-  tgl.onclick = ()=> {
-    const now = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', now);
-    localStorage.setItem('theme', now);
-    tgl.textContent = now === 'dark' ? '🌙' : '☀️';
-  };
-  $('#browseSetsBtn').onclick = ()=> renderCategoryPage('Sets');
-  $('#subscribeBtn').onclick = ()=> openSubscribe();
-  $('#cartBtn').onclick = ()=> openCheckout();
-}
-
-/* ---------- categories nav ---------- */
-function getCategories(){ return Array.from(new Set(products.map(p=>p.category))); }
-function buildCategoryNav(){
-  const nav = $('#categoryNav'); nav.innerHTML = '';
-  getCategories().forEach(cat=>{
-    const b = document.createElement('button'); b.className='nav-pill';
-    b.innerHTML = `<span>${esc(cat)}</span>`;
-    b.onclick = ()=> renderCategoryPage(cat);
-    nav.appendChild(b);
-  });
-}
+load();
 
 /* ---------- categories view ---------- */
+function getCategories(){ return Array.from(new Set(products.map(p=>p.category))); }
+function categoryIconName(cat){
+  const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Polybags':'🛍️','Books':'📚','Miscs':'⚙️','Books (Rent)':'📖'};
+  return map[cat]||'📦';
+}
 function renderCategoriesView(){
-  const main = $('#mainArea'); main.innerHTML = '';
+  mainArea.innerHTML = '';
   const cats = getCategories();
   const wrap = document.createElement('div'); wrap.className='categories-grid';
   cats.forEach((cat,i)=>{
+    const tile = document.createElement('button');
+    tile.className='category-tile';
     const count = products.filter(p=>p.category===cat).length;
-    const tile = document.createElement('div'); tile.className='category-card';
-    tile.innerHTML = `<div class="cat-title">${esc(cat)}</div><div class="cat-count">${count} items</div>`;
-    tile.onclick = ()=> renderCategoryPage(cat);
+    tile.innerHTML = `<div class="cat-emoji">${categoryIconName(cat)}</div><div class="cat-title">${escapeHtml(cat)}</div><div class="cat-count">${count} items</div>`;
     wrap.appendChild(tile);
-    setTimeout(()=> tile.classList.add('enter'), 80*i);
+    setTimeout(()=>tile.classList.add('show'), 70*i);
+    tile.onclick = ()=> renderCategoryPage(cat);
   });
-  main.appendChild(wrap);
+  mainArea.appendChild(wrap);
 }
 
 /* ---------- category page ---------- */
 function renderCategoryPage(category){
-  const main = $('#mainArea'); main.innerHTML = `
+  mainArea.innerHTML = `
     <div class="category-header">
-      <button id="backBtn" class="btn small">← Back</button>
-      <h2>${esc(category)}</h2>
-      <div class="category-controls">
+      <button id="catBack" class="btn small">← Back</button>
+      <h2>${escapeHtml(category)}</h2>
+      <div class="controls-inline">
         <select id="subFilter" class="small"></select>
-        <select id="sortBy" class="small"><option value="popular">Popular</option><option value="price-asc">Price ↑</option><option value="price-desc">Price ↓</option></select>
+        <button id="clearFilter" class="small">Clear</button>
       </div>
     </div>
     <div id="categoryProducts"></div>
   `;
-  $('#backBtn').onclick = ()=> renderCategoriesView();
-  // populate subthemes
+  $('#catBack').onclick = ()=> renderCategoriesView();
+
   const items = products.filter(p=>p.category===category);
-  const subs = Array.from(new Set(items.map(x=>x.subtheme||'Misc')));
-  $('#subFilter').innerHTML = '<option value="">All subthemes</option>' + subs.map(s=>`<option>${esc(s)}</option>`).join('');
-  $('#subFilter').onchange = ()=> renderCategoryProducts(category, $('#subFilter').value);
-  $('#sortBy').onchange = ()=> renderCategoryProducts(category, $('#subFilter').value);
+  const subs = Array.from(new Set(items.map(i=>i.subtheme||'Misc')));
+  const sel = $('#subFilter');
+  sel.innerHTML = `<option value="">All subthemes</option>` + subs.map(s=>`<option>${escapeHtml(s)}</option>`).join('');
+  $('#clearFilter').onclick = ()=> { sel.value=''; renderCategoryProducts(category); };
+  sel.onchange = ()=> renderCategoryProducts(category, sel.value);
   renderCategoryProducts(category);
 }
+
 function renderCategoryProducts(category, subfilter){
   const cont = $('#categoryProducts');
   const search = ($('#search')?$('#search').value.trim().toLowerCase():'');
-  let items = products.filter(p=>p.category === category);
+  const hardOnly = $('#showHardToFindOnly').checked;
+  let items = products.filter(p=>p.category===category);
   if(subfilter) items = items.filter(p=> (p.subtheme||'') === subfilter);
-  if(search) items = items.filter(p => (p.title + p.origin + (p.subtheme||'')).toLowerCase().includes(search));
-  // sort
-  const sort = $('#sortBy') ? $('#sortBy').value : 'popular';
-  if(sort === 'price-asc') items.sort((a,b)=> (a.price_sar||0)-(b.price_sar||0));
-  if(sort === 'price-desc') items.sort((a,b)=> (b.price_sar||0)-(a.price_sar||0));
-  cont.innerHTML = '';
-  if(items.length === 0){
-    cont.innerHTML = '<p class="hint">No items found in this category.</p>'; return;
-  }
-  const grid = document.createElement('div'); grid.className='grid grid-large';
+  if(search) items = items.filter(p => (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(search));
+  if(hardOnly) items = items.filter(p=> p.hard_to_find );
+  if(items.length === 0){ cont.innerHTML = '<p class="hint">No items found.</p>'; return; }
+
+  const grid = document.createElement('div'); grid.className = 'grid large';
   items.forEach((p,i)=>{
-    const img = Array.isArray(p.image) ? p.image[0] : p.image;
-    const card = document.createElement('article'); card.className='product-card';
-    card.innerHTML = `
-      <div class="img-wrap"><img loading="lazy" src="${esc(img)}" alt="${esc(p.title)}" onerror="this.src='images/placeholder.jpg'"></div>
-      <div class="prod-body">
-        <h3>${esc(p.title)}</h3>
-        <div class="meta">${esc(p.origin || '')}</div>
-        <div class="meta small">${esc(p.condition || '')}</div>
-        <div class="price-row">
-          <div class="price">SAR ${p.price_sar}</div>
-          <div class="actions">
+    const thumb = Array.isArray(p.image) ? p.image[0] : p.image;
+    // badges
+    const badges = [];
+    if(p.hard_to_find) badges.push('<span class="badge hard">Hard to find</span>');
+    if(p.price_discounted) badges.push(`<span class="badge sale">${p.price_discounted_text||'Discount'}</span>`);
+    const pieceInfo = (p.piece_count? `${p.piece_count} pcs` : '') + (p.figures_count? ` • ${p.figures_count} figs` : '');
+    const price = p.price_sar ? `SAR ${p.price_sar}` : '-';
+    grid.insertAdjacentHTML('beforeend', `
+      <article class="card big show">
+        <div class="card-media"><img src="${thumb}" alt="${escapeHtml(p.title)}"></div>
+        <div class="card-body">
+          <h3>${escapeHtml(p.title)}</h3>
+          <div class="meta">${escapeHtml(p.origin||p.subtheme||'')}</div>
+          <div class="meta small-note">${escapeHtml(p.condition||'')}</div>
+          <div class="meta">${escapeHtml(pieceInfo)}</div>
+          <div class="price-row"><div class="price">${price}</div><div class="badges">${badges.join(' ')}</div></div>
+          <div class="card-actions">
             <button class="btn view" data-id="${p.id}">View</button>
-            <button class="small add" data-id="${p.id}">Add</button>
+            <button class="small add" data-id="${p.id}">➕ Add</button>
           </div>
         </div>
-      </div>
-    `;
-    grid.appendChild(card);
-    setTimeout(()=> card.classList.add('enter'), 50*i);
+      </article>
+    `);
+    setTimeout(()=> {
+      const c = grid.children[grid.children.length-1];
+      c.classList.add('show');
+    }, 60*i);
   });
-  cont.appendChild(grid);
+  cont.innerHTML = ''; cont.appendChild(grid);
   attachCardEvents();
+}
+
+/* ---------- search ---------- */
+function attachSearch(){
+  const s = $('#search');
+  if(!s) return;
+  s.addEventListener('input', ()=>{
+    const catHeader = document.querySelector('.category-header');
+    if(catHeader){
+      const cat = catHeader.querySelector('h2').textContent;
+      const sub = $('#subFilter') ? $('#subFilter').value : '';
+      renderCategoryProducts(cat, sub);
+    } else {
+      renderCategoriesView();
+      const q = s.value.trim();
+      if(!q) return;
+      const results = products.filter(p=> (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(q.toLowerCase()));
+      if(results.length){
+        const resWrap = document.createElement('div'); resWrap.className='search-results';
+        resWrap.innerHTML = `<h3 class="section-title">Quick results</h3><div class="grid large"></div>`;
+        results.forEach(p=> resWrap.querySelector('.grid').insertAdjacentHTML('beforeend', `<article class="card big show"><div class="card-media"><img src="${Array.isArray(p.image)?p.image[0]:p.image}"></div><div class="card-body"><h3>${escapeHtml(p.title)}</h3><div class="meta">${escapeHtml(p.category||'')}</div><div class="price">SAR ${p.price_sar||'-'}</div><div class="card-actions"><button class="btn view" data-id="${p.id}">View</button></div></div></article>`));
+        mainArea.appendChild(resWrap);
+        attachCardEvents();
+      }
+    }
+  });
 }
 
 /* ---------- card events ---------- */
@@ -196,186 +209,247 @@ function attachCardEvents(){
   $$('.add').forEach(b=> b.onclick = ()=> addToCart(b.dataset.id));
 }
 
-/* ---------- product modal ---------- */
+/* ---------- modal detail ---------- */
 function openDetail(id){
   const p = products.find(x=>x.id===id);
   if(!p) return;
-  const imgs = Array.isArray(p.image)? p.image : [p.image];
+  const imgs = Array.isArray(p.image)?p.image:[p.image];
   $('#modal').innerHTML = `
-    <div class="modal-header"><h2>${esc(p.title)}</h2><button id="closeModal" class="btn small">Close</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>${escapeHtml(p.title)}</h2>
+      <div><button id="closeModal" class="btn small">Close</button></div>
+    </div>
     <div class="modal-grid">
-      <div class="modal-left">
-        <div class="gallery-main"><img id="galleryMain" src="${esc(imgs[0])}" onerror="this.src='images/placeholder.jpg'"></div>
-        <div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gthumb ${i===0?'active':''}" data-src="${esc(u)}" src="${esc(u)}" onerror="this.src='images/placeholder.jpg'">`).join('')}</div>
-        <p class="muted">${esc(p.notes||'')}</p>
+      <div>
+        <div class="gallery">
+          <div class="gallery-main"><img id="galleryMain" src="${imgs[0]}" alt="${escapeHtml(p.title)}"></div>
+          <div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gthumb ${i===0?'active':''}" data-src="${u}" src="${u}">`).join('')}</div>
+        </div>
+        <div class="meta">Origin: ${escapeHtml(p.origin||'')}</div>
+        <div class="meta">Condition: ${escapeHtml(p.condition||'')}</div>
+        <div class="meta">${p.piece_count? p.piece_count + ' pcs' : ''} ${p.figures_count? '• ' + p.figures_count + ' figs' : ''}</div>
+        <div class="price">SAR ${p.price_sar||'-'}</div>
+        <div style="margin-top:8px"><button class="btn" id="modalAdd">Add to cart</button> <button class="small" id="modalBuy">Buy now</button></div>
+        <div class="notes">${escapeHtml(p.notes||'')}</div>
+        <div class="recommended">
+          <h4>Recommended</h4>
+          ${(p.recommended||[]).map(id=>{ const r=products.find(x=>x.id===id); return r? `<div class="rec-item"><img src="${Array.isArray(r.image)?r.image[0]:r.image}"><div><strong>${escapeHtml(r.title)}</strong><div class="meta">SAR ${r.price_sar||'-'}</div></div></div>` : ''}).join('')}
+        </div>
       </div>
-      <aside class="modal-right">
-        <div class="meta">Origin: ${esc(p.origin||'')}</div>
-        <div class="meta">Condition: ${esc(p.condition||'')}</div>
-        <div class="meta">${p.piece_count ? p.piece_count + ' pcs' : ''} ${p.figures_count? ' • ' + p.figures_count + ' figs' : ''}</div>
-        <div class="price">SAR ${p.price_sar}</div>
-        <div style="margin-top:12px"><button id="modalAdd" class="btn">Add to cart</button> <button id="modalBuy" class="btn small">Buy now</button></div>
-        <div class="price-compare"></div>
-        <div class="recommended"><h4>Recommended</h4><div id="recList"></div></div>
+
+      <aside>
+        <div class="cart-mini">
+          <h4>Quick cart</h4>
+          <div id="quickCartList" class="cart-list"></div>
+          <div class="order-summary" id="quickSummary"></div>
+          <div style="margin-top:8px"><button class="btn" id="gotoCheckout">Go to checkout</button></div>
+        </div>
       </aside>
     </div>
   `;
-  $('#modalBackdrop').classList.add('show'); setTimeout(()=> $('#modal').classList.add('show'), 10);
-  $('#closeModal').onclick = ()=> closeModal();
-  $('#modalAdd').onclick = ()=> { addToCart(p.id); updateQuickCart(); };
-  $('#modalBuy').onclick = ()=> { addToCart(p.id); openCheckout(); };
-
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
+  $('#closeModal').onclick = closeModal;
+  $('#modalAdd').onclick = ()=>{ addToCart(p.id); updateQuickCart(); }
+  $('#modalBuy').onclick = ()=>{ addToCart(p.id); openCheckout(); }
+  $('#gotoCheckout').onclick = openCheckout;
   $$('.gthumb').forEach(t=> t.onclick = ()=> { $('#galleryMain').src = t.dataset.src; $$('.gthumb').forEach(x=>x.classList.remove('active')); t.classList.add('active'); });
-
-  // recommended
-  const rec = (p.recommended||[]).map(id=> products.find(r=>r.id===id)).filter(Boolean);
-  $('#recList').innerHTML = rec.map(r=>`<div class="rec-item"><img src="${esc(Array.isArray(r.image)?r.image[0]:r.image)}" onerror="this.src='images/placeholder.jpg'"><div><strong>${esc(r.title)}</strong><div class="meta">SAR ${r.price_sar}</div></div></div>`).join('');
+  updateQuickCart();
 }
-
-/* ---------- modal close ---------- */
-function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=> $('#modalBackdrop').classList.remove('show'), 250); }
+function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=>$('#modalBackdrop').classList.remove('show'),200); }
 
 /* ---------- cart ---------- */
 function addToCart(id){
   const p = products.find(x=>x.id===id); if(!p) return;
-  const it = cart.find(c=>c.id===id);
-  if(it) it.qty++; else cart.push({id:p.id,title:p.title,price:p.price_sar,qty:1,image:Array.isArray(p.image)?p.image[0]:p.image});
+  const item = cart.find(c=>c.id===id);
+  if(item) item.qty++; else cart.push({id:p.id,title:p.title,price:p.price_sar||0,qty:1,image: Array.isArray(p.image)?p.image[0]:p.image});
   localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); updateQuickCart();
 }
-function renderCartCount(){ $('#cartCount').innerText = cart.reduce((s,i)=>s+i.qty,0); }
+function renderCartCount(){ $('#cartCount').innerText = cart.reduce((s,i)=>s+i.qty,0) }
 function updateQuickCart(){
-  const el = document.getElementById('quickCartList'); if(!el) return;
-  el.innerHTML = cart.map(it=>`<div class="mini-row"><img src="${esc(it.image)}" onerror="this.src='images/placeholder.jpg'"><div><strong>${esc(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart empty</div>';
+  const el = $('#quickCartList'); const sumEl = $('#quickSummary');
+  if(!el) return;
+  el.innerHTML = cart.map(it=>`<div class="cart-row"><img src="${it.image}"><div><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
 
 /* ---------- checkout ---------- */
-function openCheckout(){ 
-  $('#modal').innerHTML = checkoutHtml(); $('#modalBackdrop').classList.add('show'); setTimeout(()=> $('#modal').classList.add('show'), 10);
-  $('#closeModal2').onclick = ()=> closeModal();
+function openCheckout(){
+  $('#modal').innerHTML = checkoutHtml();
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
+  renderCheckoutCart();
+  $('#closeModal2').onclick = closeModal;
   $('#cashPay').onclick = handleCashPay;
   $('#giftPay').onclick = handleGiftPay;
-  renderCheckoutCart();
 }
 function checkoutHtml(){
-  return `<div class="modal-header"><h2>Checkout</h2><button id="closeModal2" class="btn small">Close</button></div>
-  <div class="checkout-grid">
-    <div><h4>Cart</h4><div id="checkoutCart"></div><div class="order-summary" id="checkoutSummary"></div></div>
-    <aside>
-      <h4>Reserve (Cash)</h4>
-      <input id="custName" class="input" placeholder="Full name">
-      <input id="custEmail" class="input" placeholder="Email (optional)">
-      <input id="custDate" class="input" type="date">
-      <textarea id="custMsg" class="textarea" placeholder="Pickup notes"></textarea>
-      <button id="cashPay" class="btn">Reserve with cash</button>
+  return `<div style="display:flex;justify-content:space-between;align-items:center"><h2>Checkout</h2><div><button id="closeModal2" class="btn small">Close</button></div></div>
+    <div class="checkout-grid">
+      <div>
+        <h4>Cart</h4><div id="checkoutCart"></div><div class="order-summary" id="checkoutSummary"></div>
+      </div>
+      <div class="pay-panel">
+        <h4>Reserve with cash</h4>
+        <input id="custName" class="input" placeholder="Full name">
+        <input id="custEmail" class="input" placeholder="Email (optional)">
+        <input id="custDate" class="input" type="date">
+        <textarea id="custMsg" class="textarea" placeholder="Message or pickup instructions"></textarea>
+        <button class="btn" id="cashPay">Reserve (cash)</button>
 
-      <h4 style="margin-top:12px">Giftcard</h4>
-      <input id="giftCode" class="input" placeholder="Giftcard code">
-      <input id="giftAmount" class="input" placeholder="Amount to use (SAR)" type="number" min="0" step="0.01">
-      <button id="giftPay" class="btn">Pay with giftcard</button>
-      <div class="hint">If you overpay and provide an email, extra becomes in-store credit.</div>
-    </aside>
-  </div>`;
+        <h4 style="margin-top:12px">Pay with Giftcard</h4>
+        <input id="giftCode" class="input" placeholder="Giftcard code">
+        <input id="giftAmount" class="input" placeholder="Amount (SAR)" type="number" min="0" step="0.01">
+        <button class="btn" id="giftPay">Redeem Giftcard</button>
+        <div class="hint">If you overpay, remainder becomes in-store credit (if email provided).</div>
+      </div>
+    </div>`;
 }
 function renderCheckoutCart(){
-  $('#checkoutCart').innerHTML = cart.map(it=>`<div class="mini-row"><img src="${esc(it.image)}"><div><strong>${esc(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart empty</div>';
+  const el = $('#checkoutCart'); const sumEl = $('#checkoutSummary');
+  el.innerHTML = cart.map(it=>`<div class="cart-row"><img src="${it.image}"><div><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  $('#checkoutSummary').innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
+  sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
 function handleCashPay(){
   const name = $('#custName').value.trim(); if(!name){ alert('Enter name'); return; }
   const date = $('#custDate').value; const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const order = {id:'order-'+Date.now(),name,date,email:$('#custEmail').value,cart,total,method:'cash',msg:$('#custMsg').value,created:Date.now()};
-  // fallback local storage persistence
-  const list = JSON.parse(localStorage.getItem('orders')||'[]'); list.push(order); localStorage.setItem('orders', JSON.stringify(list));
-  alert('Reserved — Order ID: '+order.id);
-  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryView();
+  const order = { id:'order-'+Date.now(), name, date, email:$('#custEmail').value, cart, total, method:'cash', msg:$('#custMsg').value, created:Date.now() };
+  let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+  alert('Cash reservation saved. ID: ' + order.id);
+  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryViewAfterOrder();
 }
-function handleGiftPay(){
-  const code = $('#giftCode').value.trim() || ('GC-'+Math.floor(Math.random()*99999));
-  const amount = Number($('#giftAmount').value) || 0;
+async function handleGiftPay(){
+  // Flow: attempt server redeem (if /api/giftcards exists) else local fallback (no validation)
+  const code = $('#giftCode').value.trim(); const amount = Number($('#giftAmount').value) || 0;
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  if(amount < total){
-    const remaining = (total - amount).toFixed(2);
-    const o = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, remaining, created:Date.now()};
-    const list = JSON.parse(localStorage.getItem('orders')||'[]'); list.push(o); localStorage.setItem('orders', JSON.stringify(list));
-    alert('Partial paid. Remaining: SAR '+remaining);
-  } else {
-    const credit = +(amount - total);
-    credits = +(credits + credit).toFixed(2); localStorage.setItem('storeCredit', credits);
-    const o = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, creditGained:credit, created:Date.now()};
-    const list = JSON.parse(localStorage.getItem('orders')||'[]'); list.push(o); localStorage.setItem('orders', JSON.stringify(list));
-    alert('Payment complete. In-store credit added: SAR '+credit.toFixed(2));
+  if(!code){ alert('Enter giftcard code'); return; }
+  try {
+    const res = await fetch('/api/giftcards', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'redeem', code, amount, total, email: $('#custEmail') ? $('#custEmail').value : '' }) });
+    const body = await res.json();
+    if(!res.ok) throw new Error(body.error || 'Redeem failed');
+    alert(`Redeemed SAR ${body.deducted}. Remaining card balance: SAR ${body.remainingBalance}. Store credit given: SAR ${body.creditGiven || 0}`);
+    // save order
+    const order = { id:'order-'+Date.now(), cart, total, paid: body.deducted, method:'giftcard', code, created:Date.now() };
+    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+    cart=[]; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryViewAfterOrder();
+  } catch(e){
+    // fallback: accept as partial without validation (warn user)
+    if(!confirm('Giftcard server not available or redeem failed. Proceed with local fallback (no validation)?')) return;
+    const order = { id:'order-'+Date.now(), cart, total, paid: Math.min(amount,total), method:'giftcard-fallback', code, created:Date.now() };
+    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+    alert('Order saved locally (no server validation).');
+    cart=[]; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryViewAfterOrder();
   }
-  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryView();
 }
 
-/* ---------- search ---------- */
-function attachSearch(){
-  const s = $('#search'); if(!s) return;
-  s.addEventListener('input', ()=>{
-    const header = document.querySelector('.category-header');
-    if(header){
-      const cat = header.querySelector('h2').textContent;
-      renderCategoryProducts(cat, $('#subFilter') ? $('#subFilter').value : '');
-    } else {
-      renderCategoriesView();
-      const q = s.value.trim();
-      if(!q) return;
-      const results = products.filter(p=> (p.title + p.origin + (p.subtheme||'')).toLowerCase().includes(q.toLowerCase()));
-      const wrap = document.createElement('div'); wrap.className='grid grid-large';
-      results.forEach(p=>{
-        const img = Array.isArray(p.image)? p.image[0] : p.image;
-        const el = document.createElement('div'); el.className='product-card entry';
-        el.innerHTML = `<div class="img-wrap"><img src="${esc(img)}" onerror="this.src='images/placeholder.jpg'"></div><div><h3>${esc(p.title)}</h3><div class="meta">${esc(p.category)}</div><div class="price">SAR ${p.price_sar}</div><div><button class="btn view" data-id="${p.id}">View</button></div></div>`;
-        wrap.appendChild(el);
-      });
-      $('#mainArea').appendChild(wrap);
-      attachCardEvents();
-    }
-  });
+/* ---------- keep view ---------- */
+function renderCategoryViewAfterOrder(){
+  const catHeader = document.querySelector('.category-header');
+  if(catHeader){ const cat = catHeader.querySelector('h2').textContent; const sub = $('#subFilter')?$('#subFilter').value:''; renderCategoryProducts(cat, sub); } else renderCategoriesView();
 }
 
-/* ---------- subscribe popup (simple) ---------- */
-function openSubscribe(){
-  const percent = 100 - Math.round((15 / 32) * 100);
-  $('#modal').innerHTML = `<div class="modal-header"><h2>Subscription</h2><button id="closeModal" class="btn small">Close</button></div>
-  <div style="padding:12px">
-    <p>Get a subscription for <strong>SAR 15</strong> (was SAR 32 — save ${percent}%!). Includes one random Ninjago set pick and early leak folder (official links only). Monthly auto-renew when you enable server payments.</p>
-    <div><button id="subBuy" class="btn">Subscribe — SAR 15</button></div>
-  </div>`;
-  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
-  $('#closeModal').onclick = closeModal;
-  $('#subBuy').onclick = ()=> { alert('Subscription registered locally (demo).'); closeModal(); };
-}
+/* ---------- cart button ---------- */
+$('#cartBtn').onclick = ()=> openCheckout();
 
 /* ---------- floating request chat ---------- */
-function initFloatingRequest(){
-  // placeholder loader if missing
-  const wrap = document.getElementById('floatingRequestContainer');
-  wrap.innerHTML = `<div class="chat-floating"><div class="chat-head">Request product 💬</div><div class="chat-body"><div id="miniChat" class="chat"></div><div style="display:flex;gap:8px;margin-top:6px"><input id="miniReq" class="input" placeholder="Request a set or figure"><button id="miniSend" class="btn small">Send</button></div></div></div>`;
+function loadChatFloating(){
+  if(document.querySelector('.chat-floating')) return;
+  const wrap = document.createElement('div'); wrap.className='chat-floating';
+  wrap.innerHTML = `<div class="chat-head">Request product 💬</div><div class="chat-body"><div id="miniChat" class="chat"></div><div style="display:flex;gap:8px;margin-top:6px"><input id="miniReq" class="input" placeholder="Request a set or figure"><button id="miniSend" class="btn small">Send</button></div></div>`;
+  document.body.appendChild(wrap);
   $('#miniSend').onclick = ()=> {
     const text = $('#miniReq').value.trim(); if(!text) return;
-    const arr = JSON.parse(localStorage.getItem('requests')||'[]'); arr.push({from:'user',text,time:Date.now()}); localStorage.setItem('requests', JSON.stringify(arr));
-    $('#miniReq').value=''; loadMiniChat();
-    setTimeout(()=>{ const arr2 = JSON.parse(localStorage.getItem('requests')||'[]'); arr2.push({from:'owner',text:'Noted — adding to list.' ,time:Date.now()}); localStorage.setItem('requests', JSON.stringify(arr2)); loadMiniChat(); },700);
+    const m = { from:'user', text, time:Date.now() };
+    const existing = JSON.parse(localStorage.getItem('requests')||'[]'); existing.push(m); localStorage.setItem('requests', JSON.stringify(existing));
+    $('#miniReq').value='';
+    setTimeout(()=>{ const reply = { from:'owner', text:'Thanks — noted: ' + text }; const e2 = JSON.parse(localStorage.getItem('requests')||'[]'); e2.push(reply); localStorage.setItem('requests', JSON.stringify(e2)); renderMiniChat(); }, 600);
+    renderMiniChat();
+  }
+  renderMiniChat();
+}
+function renderMiniChat(){ const mini = $('#miniChat'); if(!mini) return; const all = JSON.parse(localStorage.getItem('requests')||'[]'); mini.innerHTML = all.map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${escapeHtml(m.text)}</div>`).join('') || '<div class="meta">No requests yet.</div>'; }
+
+/* ---------- admin (client-side) ---------- */
+$('#adminOpen').onclick = (e)=> { e.preventDefault(); openAdminDialog(); };
+$('#adminClose').onclick = ()=> { $('#adminDialog').style.display='none'; };
+
+async function openAdminDialog(){
+  $('#adminDialog').style.display='flex';
+  // check if server api is available
+  let serverAvailable = false;
+  try { const r = await fetch('/api/health'); serverAvailable = r.ok; } catch(e){ serverAvailable = false; }
+  const adminBody = $('#adminBody'); adminBody.innerHTML = `
+    <div><strong>Admin panel</strong></div>
+    <div id="adminAuth"></div>
+    <div id="adminContent" style="display:none"></div>
+  `;
+  // require password (local fallback) or ADMIN_SECRET (server)
+  const auth = $('#adminAuth');
+  auth.innerHTML = `<p>Enter admin password to continue (local fallback). If server admin is configured, you'll be asked for server secret later.</p>
+    <input id="adminPass" class="input" placeholder="Admin password"><div style="display:flex;gap:8px;margin-top:8px"><button id="adminEnter" class="btn">Enter</button><button id="adminSet" class="small">Set / Reset local password</button></div>`;
+  $('#adminEnter').onclick = async ()=> {
+    const pass = $('#adminPass').value || '';
+    if(!pass) return alert('Enter password');
+    const hash = await sha256(pass);
+    const stored = localStorage.getItem(ADMIN_FLAG_KEY);
+    if(stored && stored === hash){
+      showAdminContent(true);
+    } else {
+      // if server available, allow user to enter server secret
+      if(serverAvailable){
+        const secret = prompt('Server admin available. Enter server ADMIN_SECRET to proceed (will not be stored):');
+        if(secret){
+          // try server ping
+          try {
+            const r = await fetch('/api/admin/ping', { method:'POST', headers: {'Content-Type':'application/json','x-admin-secret': secret }, body: '{}' });
+            if(r.ok) { showAdminContent(false, secret); return; }
+            alert('Server secret rejected.');
+          } catch(e){ alert('Server not reachable.'); }
+        }
+      }
+      alert('Local password mismatch. Use "Set / Reset local password" to set a local admin password on this browser.');
+    }
   };
-  loadMiniChat();
+  $('#adminSet').onclick = async ()=> {
+    const pass = prompt('Choose a local admin password (this stores a hash in your browser only):');
+    if(!pass) return;
+    const hash = await sha256(pass);
+    localStorage.setItem(ADMIN_FLAG_KEY, hash);
+    alert('Local admin password saved locally in this browser.');
+  };
 }
-function loadMiniChat(){
-  const mini = $('#miniChat'); if(!mini) return;
-  const arr = JSON.parse(localStorage.getItem('requests')||'[]');
-  mini.innerHTML = arr.slice(-8).map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${esc(m.text)}</div>`).join('') || '<div class="meta">No requests</div>';
+
+async function showAdminContent(localAuth=true, serverSecret=''){
+  $('#adminAuth').style.display='none';
+  const content = $('#adminContent'); content.style.display='block';
+  content.innerHTML = `
+    <h4>Orders (local)</h4><div id="adminOrders"></div>
+    <h4>Requests</h4><div id="adminRequests"></div>
+    <h4>Giftcards (server only)</h4><div id="adminGiftcards"></div>
+  `;
+  const orders = JSON.parse(localStorage.getItem('orders')||'[]');
+  $('#adminOrders').innerHTML = orders.length ? orders.map(o=>`<div class="order"><strong>${o.id}</strong> • ${o.method || ''} • SAR ${o.total||o.paid||0}</div>`).join('') : '<div class="meta">No local orders</div>';
+  const reqs = JSON.parse(localStorage.getItem('requests')||'[]');
+  $('#adminRequests').innerHTML = reqs.length ? reqs.map(r=>`<div class="req">${r.from}: ${escapeHtml(r.text)}</div>`).join('') : '<div class="meta">No requests</div>';
+  if(serverSecret){
+    try {
+      const r = await fetch('/api/giftcards', { headers: {'x-admin-secret': serverSecret }});
+      if(r.ok){ const j = await r.json(); $('#adminGiftcards').innerHTML = j.length ? j.map(gc=>`<div>${escapeHtml(gc.code)} • SAR ${gc.balance}</div>`).join('') : '<div class="meta">No giftcards</div>'; }
+    } catch(e){ $('#adminGiftcards').innerHTML = '<div class="meta">Server error fetching giftcards</div>'; }
+  } else {
+    $('#adminGiftcards').innerHTML = '<div class="meta">Server admin not connected</div>';
+  }
 }
 
-/* ---------- helper: render categories view ---------- */
-function renderCategoryView(){ renderCategoriesView(); buildCategoryNav(); }
+/* ---------- utils: sha256 ---------- */
+async function sha256(str){
+  const buf = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 
-/* ---------- init ---------- */
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
-load();
-
-/* ---------- export for debugging ---------- */
-window.__nm = { products, addToCart, openCheckout };
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ $('#modalBackdrop').classList.remove('show'); $('#modal').classList.remove('show'); } });
 
 </script>
 </body>
