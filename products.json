@@ -5,12 +5,11 @@
     "subtheme": "City",
     "title": "71799 — City Markets",
     "price_sar": 1899,
-    "retail_price_sar": null,
     "piece_count": 6163,
     "figures_count": 20,
     "origin": "LEGO NINJAGO Set 71799 (Dragons Rising)",
     "condition": "New in box",
-    "image": "images/71799-city-markets.jpg",
+    "image": ["images/71799-city-markets.jpg"],
     "notes": "",
     "recommended": ["sets-zane-small","fig-deepstone-kai"],
     "price_comparisons": [
@@ -24,13 +23,11 @@
     "subtheme": "Mechs",
     "title": "Zane — Big Mech (Jan 2025)",
     "price_sar": 350,
-    "retail_price_sar": null,
     "piece_count": 420,
     "figures_count": 1,
     "origin": "2025 Zane mech (user-provided)",
     "condition": "New",
-    "image": "images/zane-big-mech.jpg",
-    "notes": "",
+    "image": ["images/zane-big-mech.jpg"],
     "recommended": ["sets-zane-small","blind-ninja-allies"],
     "price_comparisons":[]
   },
@@ -40,13 +37,11 @@
     "subtheme": "Mechs",
     "title": "Small Zane",
     "price_sar": 35,
-    "retail_price_sar": null,
     "piece_count": 12,
     "figures_count": 1,
     "origin": "Minifigure / small set",
     "condition": "New",
     "image": "images/zane-small.jpg",
-    "notes": "",
     "recommended": ["fig-santa-garmadon"],
     "price_comparisons":[]
   },
@@ -56,33 +51,29 @@
     "subtheme": "Dragons",
     "title": "Thundefang (Dragon of Chaos) — 71832",
     "price_sar": 230,
-    "retail_price_sar": null,
     "piece_count": 668,
     "figures_count": 6,
     "origin": "LEGO NINJAGO Set 71832",
     "condition": "New box — heavily damaged",
-    "image": "images/thundefang-dragon-of-chaos-71832.jpg",
+    "image": ["images/thundefang-dragon-of-chaos-71832.jpg"],
     "notes": "Box heavily damaged",
     "recommended": ["sets-71799"],
     "price_comparisons":[
       {"site":"noon.com (example)", "url":"https://noon.com", "price":"SAR 388.50", "overpriced":false}
     ]
   },
+
   {
     "id": "fig-santa-garmadon",
     "category": "Figures",
     "subtheme": "Characters",
     "title": "Santa Garmadon",
     "price_sar": 75,
-    "retail_price_sar": null,
     "piece_count": 1,
-    "figures_count": 1,
     "origin": "Seasonal minifigure",
     "condition": "Loose — very good",
     "image": "images/santa-garmadon.jpg",
-    "notes": "",
-    "recommended": [],
-    "price_comparisons":[]
+    "recommended": []
   },
   {
     "id": "fig-deepstone-kai",
@@ -90,15 +81,11 @@
     "subtheme": "Characters",
     "title": "Deepstone Suit Kai",
     "price_sar": 80,
-    "retail_price_sar": null,
     "piece_count": 1,
-    "figures_count": 1,
     "origin": "Deepstone set / sealed",
     "condition": "Sealed",
     "image": "images/deepstone-kai.jpg",
-    "notes": "",
-    "recommended": ["fig-young-wu-foil"],
-    "price_comparisons":[]
+    "recommended": ["fig-young-wu-foil"]
   },
   {
     "id": "fig-young-wu-foil",
@@ -106,31 +93,22 @@
     "subtheme": "Promos",
     "title": "Sealed Young Wu — Foil Pack",
     "price_sar": 55,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
     "origin": "Promo / foil pack",
     "condition": "Sealed",
     "image": "images/young-wu-foil.jpg",
-    "notes": "",
-    "recommended": [],
-    "price_comparisons":[]
+    "recommended": []
   },
+
   {
     "id": "blind-booster-island",
     "category": "Blind Bags",
     "subtheme": "Blind",
     "title": "Booster Pack — Island",
     "price_sar": 15,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
     "origin": "Blind bag booster",
     "condition": "Sealed",
     "image": "images/blind-1.webp",
-    "notes": "",
-    "recommended": ["blind-ninja-army"],
-    "price_comparisons":[]
+    "recommended": ["blind-ninja-army"]
   },
   {
     "id": "blind-ninja-army",
@@ -138,15 +116,10 @@
     "subtheme": "Blind",
     "title": "Ninja Army — Villain Figures (blind bag)",
     "price_sar": 15,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
     "origin": "Blind bag",
     "condition": "Sealed",
     "image": "images/blind-2.webp",
-    "notes": "",
-    "recommended": [],
-    "price_comparisons":[]
+    "recommended": []
   },
   {
     "id": "blind-ninja-allies",
@@ -154,31 +127,22 @@
     "subtheme": "Blind",
     "title": "Ninja & Allies (blind bag)",
     "price_sar": 25,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
     "origin": "Blind bag",
     "condition": "Sealed",
     "image": "images/ninja-allies.jpg",
-    "notes": "",
-    "recommended": ["blind-booster-island"],
-    "price_comparisons":[]
+    "recommended": ["blind-booster-island"]
   },
+
   {
     "id": "book-dark-island-1",
     "category": "Books",
     "subtheme": "Dark Island",
     "title": "Dark Island Trilogy — Part One (hardcover)",
     "price_sar": 200,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
     "origin": "Book — hardcover",
     "condition": "Like new — hardcover",
     "image": "images/dark-island-1.jpg",
-    "notes": "",
-    "recommended": ["book-quest-of-lost-power"],
-    "price_comparisons":[]
+    "recommended": ["book-quest-of-lost-power"]
   },
   {
     "id": "book-quest-of-lost-power",
@@ -186,15 +150,10 @@
     "subtheme": "Dark Island",
     "title": "Quest of Lost Power",
     "price_sar": 60,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
     "origin": "Book — paperback",
     "condition": "Paperback — good",
     "image": "images/quest-of-lost-power.jpg",
-    "notes": "",
-    "recommended": [],
-    "price_comparisons":[]
+    "recommended": []
   },
   {
     "id": "book-spinjitzu-1",
@@ -202,15 +161,10 @@
     "subtheme": "Spinjitzu",
     "title": "Spinjitzu Brother — Part 1 (Hardcover)",
     "price_sar": 65,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
     "origin": "Book — hardcover",
     "condition": "Hardcover — good",
     "image": "images/spinjitzu-1.jpg",
-    "notes": "",
-    "recommended": ["book-spinjitzu-2"],
-    "price_comparisons":[]
+    "recommended": ["book-spinjitzu-2"]
   },
   {
     "id": "book-spinjitzu-2",
@@ -218,78 +172,22 @@
     "subtheme": "Spinjitzu",
     "title": "Spinjitzu Brother — Part 2 (Hardcover)",
     "price_sar": 55,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
     "origin": "Book — hardcover",
     "condition": "Hardcover — good",
     "image": "images/spinjitzu-2.jpg",
-    "notes": "",
-    "recommended": [],
-    "price_comparisons":[]
+    "recommended": []
   },
+
   {
     "id": "book-dark-island-rent",
     "category": "Books (Rent)",
     "subtheme": "Dark Island",
     "title": "Dark Island Trilogy — Rent 1 week",
     "price_sar": 70,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
     "origin": "Rental",
     "condition": "Hardcover, like new",
     "image": "images/dark-island-1.jpg",
     "notes": "1 week rental",
-    "recommended":[],
-    "price_comparisons":[]
-  },
-  {
-    "id": "book-quest-rent",
-    "category": "Books (Rent)",
-    "subtheme": "Dark Island",
-    "title": "Quest of Lost Power — Rent 1 week",
-    "price_sar": 45,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
-    "origin": "Rental",
-    "condition": "Paperback — good",
-    "image": "images/quest-of-lost-power.jpg",
-    "notes": "1 week rental",
-    "recommended":[],
-    "price_comparisons":[]
-  },
-  {
-    "id": "book-spinjitzu-1-rent",
-    "category": "Books (Rent)",
-    "subtheme": "Spinjitzu",
-    "title": "Spinjitzu Brother 1 — Rent 1 week",
-    "price_sar": 45,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
-    "origin": "Rental",
-    "condition": "Hardcover — good condition",
-    "image": "images/spinjitzu-1.jpg",
-    "notes": "1 week rental",
-    "recommended":[],
-    "price_comparisons":[]
-  },
-  {
-    "id": "book-spinjitzu-2-rent",
-    "category": "Books (Rent)",
-    "subtheme": "Spinjitzu",
-    "title": "Spinjitzu Brother 2 — Rent 1 week",
-    "price_sar": 37,
-    "retail_price_sar": null,
-    "piece_count": null,
-    "figures_count": null,
-    "origin": "Rental",
-    "condition": "Hardcover — good condition",
-    "image": "images/spinjitzu-2.jpg",
-    "notes": "1 week rental",
-    "recommended":[],
-    "price_comparisons":[]
+    "recommended":[]
   }
 ]
