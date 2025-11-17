@@ -3,28 +3,27 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Ninjago Marketplace</title>
+<title>Ninjago Marketplace — Final</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="site-header">
     <div>
       <div class="logo">Ninjago Marketplace</div>
-      <div class="subtitle">Official images only • Request • Reserve</div>
+      <div class="subtitle">Browse • Request • Reserve • Giftcard</div>
     </div>
     <div class="controls">
       <input id="search" class="search" placeholder="Search sets, figures, books...">
-      <button id="themeToggle" class="btn small">🌓</button>
-      <div id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></div>
-      <a class="btn small" id="adminBtn" href="#" target="_blank" rel="noopener noreferrer">Admin</a>
+      <button id="themeToggle" class="btn small">🌙</button>
+      <button id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></button>
+      <a id="adminLink" class="btn small" href="admin.html" target="_blank" rel="noopener noreferrer">Admin</a>
     </div>
   </header>
 
   <main class="container">
     <div class="top-row">
-      <div class="hint">Click a category to open subtheme tiles. Products use official LEGO pages where available.</div>
+      <div class="hint">Tip: click a category (e.g., Sets). Inside you'll find subtheme filters, product details, and related items.</div>
     </div>
-
     <div id="mainArea" class="main-area"></div>
   </main>
 
@@ -33,70 +32,78 @@
   </div>
 
 <script>
-/* helper + state */
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* ---------- Helpers & State ---------- */
 const $ = q => document.querySelector(q);
 const $$ = q => Array.from(document.querySelectorAll(q));
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')||'[]');
 let credits = Number(localStorage.getItem('storeCredit')||0);
+let currentView = { type: 'categories', category: null, subfilter: '' };
 const mainArea = $('#mainArea');
 
-/* theme */
-function loadTheme(){
-  const t = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', t);
-  $('#themeToggle').innerText = t === 'dark' ? '🌞' : '🌙';
-}
-$('#themeToggle').onclick = ()=> {
-  const current = document.documentElement.getAttribute('data-theme') || 'light';
-  const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
-  $('#themeToggle').innerText = next === 'dark' ? '🌞' : '🌙';
-};
-
-/* load products.json */
-async function load(){
+/* ---------- Load products.json ---------- */
+async function loadProducts(){
   try{
-    const res = await fetch('products.json');
+    const res = await fetch('products.json', { cache: 'no-store' });
     products = await res.json();
   } catch(e){
-    mainArea.innerHTML = '<p style="color:salmon">Failed to load products.json — check file.</p>'; console.error(e); return;
+    mainArea.innerHTML = '<p class="hint" style="color:salmon">Failed to load products.json — check file.</p>';
+    console.error('Failed to load products.json', e);
+    return;
   }
-  loadTheme();
+  initTheme();
   renderCategoriesView();
   renderCartCount();
   attachSearch();
-}
-function getCategories(){ return Array.from(new Set(products.map(p=>p.category))); }
-function categoryIconName(cat){
-  const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Polybags':'🧾','Miscs':'🔧','Books':'📚','Books (Rent)':'📖'};
-  return map[cat]||'📦';
+  initFloatingRequest();
 }
 
-/* categories */
+/* ---------- THEME ---------- */
+function initTheme(){
+  const t = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  $('#themeToggle').textContent = t==='dark' ? '🌙' : '☀️';
+  $('#themeToggle').onclick = ()=>{
+    const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = cur==='dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    $('#themeToggle').textContent = next==='dark' ? '🌙' : '☀️';
+  };
+}
+
+/* ---------- Categories & Grid ---------- */
+function getCategories(){ return Array.from(new Set(products.map(p=>p.category))); }
+function categoryIcon(cat){
+  const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Books':'📚','Polybags':'🧾','Miscs':'🛍️','Books (Rent)':'📖'};
+  return map[cat] || '📦';
+}
+
 function renderCategoriesView(){
+  currentView = { type: 'categories' };
   mainArea.innerHTML = '';
   const cats = getCategories();
   const wrap = document.createElement('div'); wrap.className='categories-grid';
   cats.forEach((cat,i)=>{
-    const el = document.createElement('button');
-    el.className='category-tile';
-    el.innerHTML = `<div class="cat-emoji">${categoryIconName(cat)}</div><div class="cat-title">${escapeHtml(cat)}</div><div class="cat-count">${products.filter(p=>p.category===cat).length} items</div>`;
-    wrap.appendChild(el);
-    setTimeout(()=> el.classList.add('show'), 80*i);
-    el.onclick = ()=> renderCategoryPage(cat);
+    const count = products.filter(p=>p.category===cat).length;
+    const btn = document.createElement('button'); btn.className='category-tile';
+    btn.innerHTML = `<div class="cat-emoji">${categoryIcon(cat)}</div><div class="cat-title">${esc(cat)}</div><div class="cat-count">${count} items</div>`;
+    wrap.appendChild(btn);
+    setTimeout(()=>btn.classList.add('show'), 40*i);
+    btn.onclick = ()=> renderCategoryPage(cat);
   });
   mainArea.appendChild(wrap);
 }
 
-/* category page + products grid (bigger cards for sets) */
+/* ---------- Category page ---------- */
 function renderCategoryPage(category){
+  currentView = { type: 'category', category, subfilter: '' };
   mainArea.innerHTML = `
     <div class="category-header">
       <button id="catBack" class="btn small">← Back</button>
-      <h2>${escapeHtml(category)}</h2>
+      <h2>${esc(category)}</h2>
       <div class="controls-inline">
         <select id="subFilter" class="small"></select>
         <button id="clearFilter" class="small">Clear</button>
@@ -108,67 +115,57 @@ function renderCategoryPage(category){
   const items = products.filter(p=>p.category===category);
   const subs = Array.from(new Set(items.map(i=>i.subtheme||'Misc')));
   const sel = $('#subFilter');
-  sel.innerHTML = `<option value="">All subthemes</option>` + subs.map(s=>`<option>${escapeHtml(s)}</option>`).join('');
-  $('#clearFilter').onclick = ()=> { sel.value=''; renderCategoryProducts(category); };
-  sel.onchange = ()=> renderCategoryProducts(category, sel.value);
+  sel.innerHTML = `<option value="">All subthemes</option>` + subs.map(s=>`<option>${esc(s)}</option>`).join('');
+  sel.onchange = ()=>{ currentView.subfilter = sel.value; renderCategoryProducts(category, sel.value); };
+  $('#clearFilter').onclick = ()=> { sel.value=''; currentView.subfilter=''; renderCategoryProducts(category); };
   renderCategoryProducts(category);
 }
-function renderCategoryProducts(category, subfilter){
-  const cont = $('#categoryProducts');
+function renderCategoryProducts(category, subfilter=''){
+  const cont = $('#categoryProducts'); cont.innerHTML='';
   const search = ($('#search')?$('#search').value.trim().toLowerCase():'');
   let items = products.filter(p=>p.category===category);
   if(subfilter) items = items.filter(p=> (p.subtheme||'')===subfilter);
-  if(search) items = items.filter(p => (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(search));
+  if(search) items = items.filter(p=> (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(search));
   if(items.length===0){ cont.innerHTML = '<p class="hint">No items found.</p>'; return; }
-
   const grid = document.createElement('div'); grid.className='grid';
   items.forEach((p,i)=>{
-    const thumb = Array.isArray(p.image) ? p.image[0] : p.image;
-    // if image is a lego product page, we show a badge and use placeholder until you fetch CDN images
-    const isOfficialPage = typeof thumb === 'string' && (thumb.includes('lego.com/') || thumb.includes('lego.com'));
-    const imgSrc = isOfficialPage ? 'images/lego-official-placeholder.jpg' : thumb;
-    const extraClass = (category === 'Sets') ? 'card-large' : 'card';
-    const hardBadge = p.hard_to_find ? `<div class="badge">Hard to find</div>`: '';
-    grid.insertAdjacentHTML('beforeend', `
-      <div class="${extraClass} card-anim">
-        <div class="imgwrap">
-          <img src="${imgSrc}" data-official="${isOfficialPage?escapeHtml(thumb):''}" alt="${escapeHtml(p.title)}">
-          ${hardBadge}
-        </div>
-        <h3>${escapeHtml(p.title)}</h3>
-        <div class="meta">${escapeHtml(p.origin||'')}</div>
-        <div class="meta small">${escapeHtml(p.condition||'')}</div>
-        <div class="price">SAR ${p.price_sar}</div>
-        <div class="contact">
-          <button class="btn view" data-id="${p.id}">View</button>
-          <button class="small add" data-id="${p.id}">➕</button>
-        </div>
-      </div>
-    `);
-    setTimeout(()=> { grid.lastChild.classList.add('show') }, 60*i);
+    const card = document.createElement('div'); card.className='card';
+    const thumb = Array.isArray(p.image) ? p.image[0] : p.image || 'images/placeholder.jpg';
+    const hard = p.hard_to_find ? `<div class="badge">Hard to find</div>` : '';
+    card.innerHTML = `
+      <div class="thumb-wrap"><img src="${esc(thumb)}" alt="${esc(p.title)}"></div>
+      <h3>${esc(p.title)}</h3>
+      <div class="meta">${esc(p.origin||'')}</div>
+      <div class="meta">${esc(p.condition||'')}</div>
+      <div class="price">SAR ${Number(p.price_sar||0)}</div>
+      ${hard}
+      <div class="contact">
+        <button class="btn view" data-id="${p.id}">View</button>
+        <button class="small add" data-id="${p.id}">Add</button>
+      </div>`;
+    grid.appendChild(card);
+    setTimeout(()=>card.classList.add('show'), 60*i);
   });
-  cont.innerHTML = ''; cont.appendChild(grid);
+  cont.appendChild(grid);
   attachCardEvents();
 }
 
-/* search */
+/* ---------- Search ---------- */
 function attachSearch(){
-  const s = $('#search'); if(!s) return;
-  s.addEventListener('input', ()=> {
-    const catHeader = document.querySelector('.category-header');
-    if(catHeader){
-      const cat = catHeader.querySelector('h2').textContent;
-      const sub = $('#subFilter') ? $('#subFilter').value : '';
-      renderCategoryProducts(cat, sub);
+  const s = $('#search');
+  if(!s) return;
+  s.addEventListener('input', ()=>{
+    if(currentView.type === 'category'){
+      renderCategoryProducts(currentView.category, currentView.subfilter);
     } else {
       renderCategoriesView();
-      const q = s.value.trim();
+      const q = s.value.trim().toLowerCase();
       if(!q) return;
-      const results = products.filter(p=> (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(q.toLowerCase()));
-      if(results.length){
+      const hits = products.filter(p=> (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(q));
+      if(hits.length){
         const resWrap = document.createElement('div'); resWrap.className='search-results';
         resWrap.innerHTML = `<h3 class="section-title">Quick results</h3><div class="grid"></div>`;
-        results.forEach(p=> resWrap.querySelector('.grid').insertAdjacentHTML('beforeend', `<div class="card card-anim show"><img src="${(Array.isArray(p.image)?p.image[0]:p.image)}"><h3>${escapeHtml(p.title)}</h3><div class="meta">${escapeHtml(p.category)}</div><div class="price">SAR ${p.price_sar}</div><div class="contact"><button class="btn view" data-id="${p.id}">View</button></div></div>`));
+        hits.forEach(p=> resWrap.querySelector('.grid').insertAdjacentHTML('beforeend', `<div class="card show"><img src="${Array.isArray(p.image)?p.image[0]:p.image}"><h3>${esc(p.title)}</h3><div class="meta">${esc(p.category)}</div><div class="price">SAR ${p.price_sar}</div><div class="contact"><button class="btn view" data-id="${p.id}">View</button></div></div>`));
         mainArea.appendChild(resWrap);
         attachCardEvents();
       }
@@ -176,36 +173,48 @@ function attachSearch(){
   });
 }
 
-/* card events */
+/* ---------- Card actions ---------- */
 function attachCardEvents(){
-  $$('.view').forEach(btn=> btn.onclick = ()=> openDetail(btn.dataset.id));
-  $$('.add').forEach(btn=> btn.onclick = ()=> addToCart(btn.dataset.id));
+  $$('.view').forEach(b=> b.onclick = ()=> openDetail(b.dataset.id));
+  $$('.add').forEach(b=> b.onclick = ()=> addToCart(b.dataset.id));
 }
 
-/* modal detail */
+/* ---------- Product Detail Modal (robust images + gallery) ---------- */
 function openDetail(id){
-  const p = products.find(x=>x.id===id);
-  const imgs = Array.isArray(p.image)? p.image : [p.image];
+  const p = products.find(x=>x.id === id);
+  if(!p) return alert('Product not found');
+  const imgs = Array.isArray(p.image) ? p.image : (p.image ? [p.image] : ['images/placeholder.jpg']);
   $('#modal').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h2>${escapeHtml(p.title)}</h2>
+    <div class="modal-header">
+      <h2>${esc(p.title)}</h2>
       <div><button id="closeModal" class="btn small">Close</button></div>
     </div>
     <div class="modal-grid">
       <div>
         <div class="gallery">
-          <div class="gallery-main"><img id="galleryMain" src="${resolveImage(imgs[0])}" alt=""></div>
-          <div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gthumb ${i===0?'active':''}" data-src="${resolveImage(u)}" src="${resolveImage(u)}">`).join('')}</div>
+          <div class="gallery-main"><img id="galleryMain" src="${esc(imgs[0])}" alt="${esc(p.title)}" onerror="this.src='images/placeholder.jpg'"></div>
+          <div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gthumb ${i===0?'active':''}" data-src="${esc(u)}" src="${esc(u)}" onerror="this.src='images/placeholder.jpg'">`).join('')}</div>
         </div>
-        <div class="meta">Origin: ${escapeHtml(p.origin||'')}</div>
-        <div class="meta">Condition: ${escapeHtml(p.condition||'')}</div>
-        <div class="meta">${p.piece_count ? p.piece_count + ' pcs' : ''} ${p.figures_count? '• ' + p.figures_count + ' figs' : ''}</div>
-        <div class="price">SAR ${p.price_sar}</div>
+
+        <div class="meta">Origin: ${esc(p.origin||'')}</div>
+        <div class="meta">Condition: ${esc(p.condition||'')}</div>
+        <div class="meta">${p.piece_count? p.piece_count + ' pcs' : ''} ${p.figures_count? '• ' + p.figures_count + ' figs' : ''}</div>
+        <div class="price">SAR ${Number(p.price_sar||0)}</div>
+
         <div style="margin-top:8px">
           <button class="btn" id="modalAdd">Add to cart</button>
           <button class="small" id="modalBuy">Buy now</button>
         </div>
+
+        <div class="recommended">
+          <h4>Recommended</h4>
+          ${(p.recommended||[]).map(id=>{
+            const r = products.find(x=>x.id===id);
+            return r ? `<div class="rec"><img src="${Array.isArray(r.image)?r.image[0]:r.image}" alt=""><div><strong>${esc(r.title)}</strong><div class="meta">SAR ${r.price_sar}</div></div></div>` : '';
+          }).join('')}
+        </div>
       </div>
+
       <aside>
         <div class="cart-mini">
           <h4>Quick cart</h4>
@@ -216,63 +225,154 @@ function openDetail(id){
       </aside>
     </div>
   `;
-  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),20);
   $('#closeModal').onclick = closeModal;
   $('#modalAdd').onclick = ()=>{ addToCart(p.id); updateQuickCart(); }
   $('#modalBuy').onclick = ()=>{ addToCart(p.id); openCheckout(); }
   $('#gotoCheckout').onclick = openCheckout;
-
   $$('.gthumb').forEach(t=> t.onclick = ()=> { $('#galleryMain').src = t.dataset.src; $$('.gthumb').forEach(x=>x.classList.remove('active')); t.classList.add('active'); });
   updateQuickCart();
 }
-function resolveImage(u){
-  if(!u) return 'images/placeholder.jpg';
-  // if it's a lego product page, return placeholder and set data-official for later replacement
-  if(typeof u === 'string' && (u.includes('lego.com') || u.includes('lego'))){
-    return 'images/lego-official-placeholder.jpg';
-  }
-  return u;
-}
-function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=>$('#modalBackdrop').classList.remove('show'),200); }
+function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=>$('#modalBackdrop').classList.remove('show'),250); }
 
-/* cart */
+/* ---------- Cart ---------- */
 function addToCart(id){
-  const p = products.find(x=>x.id===id); if(!p) return;
+  const p = products.find(x=>x.id===id);
+  if(!p) return;
   const item = cart.find(c=>c.id===id);
   if(item) item.qty++; else cart.push({id:p.id,title:p.title,price:p.price_sar,qty:1,image:Array.isArray(p.image)?p.image[0]:p.image});
-  localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); updateQuickCart();
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCartCount(); updateQuickCart();
 }
 function renderCartCount(){ $('#cartCount').innerText = cart.reduce((s,i)=>s+i.qty,0) }
 function updateQuickCart(){
-  const el = $('#quickCartList'); const sumEl = $('#quickSummary'); if(!el) return;
-  el.innerHTML = cart.map(it=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><img src="${it.image}" style="width:48px;height:40px;object-fit:cover;border-radius:6px"><div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0); sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
+  const el = $('#quickCartList'); const sumEl = $('#quickSummary');
+  if(!el) return;
+  el.innerHTML = cart.map(it=>`<div class="cart-row"><img src="${esc(it.image)}"><div><strong>${esc(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
 
-/* checkout (kept simple, same as demo) */
-function openCheckout(){ /* identical to previous checkout code — omitted for brevity in chat */ alert('Checkout modal (same as demo).'); }
+/* ---------- Checkout ---------- */
+function openCheckout(){
+  $('#modal').innerHTML = checkoutHtml();
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),20);
+  renderCheckoutCart();
+  $('#closeModal2').onclick = closeModal;
+  $('#cashPay').onclick = handleCashPay;
+  $('#giftPay').onclick = handleGiftPay;
+}
+function checkoutHtml(){
+  return `<div class="modal-header"><h2>Checkout</h2><div><button id="closeModal2" class="btn small">Close</button></div></div>
+    <div class="checkout-grid">
+      <div class="checkout-left"><h4>Cart</h4><div id="checkoutCart"></div><div class="order-summary" id="checkoutSummary"></div></div>
+      <div class="checkout-right">
+        <h4>Pay with Cash (Reserve)</h4>
+        <div class="checkout-forms">
+          <input id="custName" class="input" placeholder="Full name">
+          <input id="custEmail" class="input" placeholder="Email (optional)">
+          <input id="custDate" class="input" type="date">
+          <textarea id="custMsg" class="textarea" placeholder="Pickup notes"></textarea>
+          <button class="btn" id="cashPay">Reserve with cash</button>
+        </div>
+        <h4 style="margin-top:12px">Pay with Giftcard</h4>
+        <div class="checkout-forms">
+          <input id="giftCode" class="input" placeholder="Giftcard code">
+          <input id="giftAmount" class="input" placeholder="Amount (SAR)" type="number" min="0" step="0.01">
+          <button class="btn" id="giftPay">Pay with giftcard</button>
+        </div>
+        <div class="hint">If you overpay, the remainder becomes in-store credit (will show in profile if email provided).</div>
+      </div>
+    </div>`;
+}
+function renderCheckoutCart(){
+  const el = $('#checkoutCart'); const sumEl = $('#checkoutSummary');
+  el.innerHTML = cart.map(it=>`<div class="cart-row"><img src="${esc(it.image)}"><div><strong>${esc(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart empty</div>';
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
+}
+function handleCashPay(){
+  const name = $('#custName').value.trim(); if(!name){ alert('Enter name'); return; }
+  const date = $('#custDate').value; const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const order = {id:'order-'+Date.now(),name,date,email:$('#custEmail').value,cart,total,method:'cash',msg:$('#custMsg').value,done:false,created:Date.now()};
+  let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+  alert('Cash reservation saved — Order ID: '+order.id);
+  cart=[]; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); restoreViewAfterOrder();
+}
+function handleGiftPay(){
+  const code = $('#giftCode').value.trim() || ('GC-'+Math.floor(Math.random()*99999));
+  const amount = Number($('#giftAmount').value) || 0;
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  if(amount < total){
+    const remaining = total - amount;
+    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, remaining, done:false, created:Date.now()};
+    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+    alert(`Partial paid SAR ${amount}. Remaining: SAR ${remaining.toFixed(2)}`);
+  } else {
+    const credit = +(amount - total);
+    credits = +(credits + credit).toFixed(2); localStorage.setItem('storeCredit', credits);
+    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, storeCreditGained:credit, done:true, created:Date.now()};
+    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+    alert(`Payment successful. You gained SAR ${credit.toFixed(2)} in-store credit. Current credit: SAR ${credits.toFixed(2)}`);
+  }
+  cart=[]; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); restoreViewAfterOrder();
+}
+function restoreViewAfterOrder(){
+  if(currentView.type === 'category') renderCategoryProducts(currentView.category, currentView.subfilter);
+  else renderCategoriesView();
+}
+
+/* ---------- Floating Request Chat ---------- */
+function initFloatingRequest(){
+  if(document.querySelector('.chat-floating')) return;
+  const wrap = document.createElement('div'); wrap.className='chat-floating';
+  wrap.innerHTML = `<div class="chat-head">Request product 💬</div>
+    <div class="chat-body">
+      <div id="miniChat" class="chat"></div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <input id="miniName" class="input" placeholder="Your name (optional)">
+        <select id="miniType" class="small"><option value="Set">Set</option><option value="Figure">Figure</option><option value="Box/Instructions">Box/Instructions</option><option value="Other">Other</option></select>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <input id="miniReq" class="input" placeholder="What would you like to request?">
+        <button id="miniSend" class="btn small">Send</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+  $('#miniSend').onclick = ()=>{
+    const text = $('#miniReq').value.trim(); if(!text) return;
+    const req = {id:'req-'+Date.now(), name: $('#miniName').value.trim(), type:$('#miniType').value, text, from:'user', time:Date.now()};
+    const existing = JSON.parse(localStorage.getItem('requests')||'[]'); existing.push(req); localStorage.setItem('requests', JSON.stringify(existing));
+    $('#miniReq').value=''; loadMiniChat();
+    setTimeout(()=>{ const reply = {from:'owner', text:'Thanks — noted: '+text}; const e = JSON.parse(localStorage.getItem('requests')||'[]'); e.push(reply); localStorage.setItem('requests', JSON.stringify(e)); loadMiniChat(); }, 700);
+  };
+  loadMiniChat();
+}
+function loadMiniChat(){
+  const mini = $('#miniChat');
+  const list = JSON.parse(localStorage.getItem('requests')||'[]');
+  if(mini) mini.innerHTML = list.slice(-12).map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${esc((m.name?m.name+': ':'')+m.text)}</div>`).join('') || '<div class="meta">No requests yet.</div>';
+}
+
+/* ---------- Admin link security (client-side UX) ---------- */
+function ensureAdminLinkHidden(){
+  // If admin password entered in this session, keep. Otherwise hide admin link to casual visitors.
+  const adminSecret = sessionStorage.getItem('adminSecret');
+  if(!adminSecret) {
+    // still show, but we change link to admin-login.html to force login; or we can show a login modal
+    // We'll use admin.html which requests password on load
+    $('#adminLink').href = 'admin.html';
+  } else {
+    $('#adminLink').href = 'admin.html';
+  }
+}
+
+/* ---------- Init & Keyboard ---------- */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
 $('#cartBtn').onclick = ()=> openCheckout();
 
-/* admin gating: basic client-side password prompt to access admin.html */
-$('#adminBtn').onclick = (e)=> {
-  e.preventDefault();
-  const pw = prompt('Enter admin password:');
-  if(!pw) return;
-  const ok = pw === (localStorage.getItem('adminPwd') || 'letmein'); // default password 'letmein' for local admin (change in admin)
-  if(ok){
-    // open admin.html in new tab
-    window.open('admin.html','_blank','noopener');
-  } else {
-    alert('Wrong password');
-  }
-};
-
-/* search + init */
-attachSearch();
-load();
-
-/* keyboard: escape */
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ document.getElementById('modalBackdrop').classList.remove('show'); document.getElementById('modal').classList.remove('show'); }});
+ensureAdminLinkHidden();
+loadProducts();
 </script>
 </body>
 </html>
