@@ -16,25 +16,25 @@
     "hard_to_find": false
   },
   {
-    "id":"sets-lloyd-small-dragon",
+    "id":"sets-71829",
     "category":"Sets",
     "subtheme":"Dragons",
-    "title":"Lloyd — Green Forest Dragon (small)",
+    "title":"71829 — Lloyd’s Green Forest Dragon",
     "origin":"LEGO NINJAGO (Dragons Rising)",
     "condition":"New",
-    "piece_count":120,
+    "piece_count":128,
     "figures_count":2,
     "price_sar":95,
     "image":["https://www.lego.com/cdn/cs/set/assets/blt7eb9a0fd185b75d0/71829_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
-    "notes":"",
+    "notes":"Small dragon set",
     "hard_to_find": false
   },
   {
-    "id":"sets-zane-bike",
+    "id":"sets-71816",
     "category":"Sets",
     "subtheme":"Vehicles",
-    "title":"Zane — Bike (Dragon Rising)",
-    "origin":"Small vehicle",
+    "title":"71816 — Zane's Bike (Dragon Rising)",
+    "origin":"LEGO NINJAGO",
     "condition":"New",
     "piece_count":48,
     "figures_count":1,
@@ -58,11 +58,11 @@
     "hard_to_find": false
   },
   {
-    "id":"sets-71834-zane-mech",
+    "id":"sets-71834",
     "category":"Sets",
     "subtheme":"Mechs",
-    "title":"Zane — Ultra Combiner Mech (71834)",
-    "origin":"LEGO NINJAGO 4-in-1 (mech/jet/car/dragon)",
+    "title":"71834 — Zane Ultra Combiner Mech (4-in-1)",
+    "origin":"LEGO NINJAGO",
     "condition":"New",
     "piece_count":420,
     "figures_count":6,
@@ -75,7 +75,7 @@
     "id":"sets-71818",
     "category":"Sets",
     "subtheme":"Arena",
-    "title":"Tournament / Battle Arena (71818)",
+    "title":"71818 — Tournament Battle Arena",
     "origin":"LEGO NINJAGO",
     "condition":"New",
     "piece_count":659,
@@ -90,19 +90,19 @@
     "id":"polyb-30700",
     "category":"Polybags",
     "subtheme":"Polybags",
-    "title":"30700 — Arin vs Dragonian (polybags)",
+    "title":"30700 — Arin vs Dragonian (Polybags)",
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":35,
     "image":["https://www.lego.com/cdn/cs/set/assets/blt71d18d4fb84a78b2/30700_Box1_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
-    "notes":"Polybags/paperbag release — official name may vary",
+    "notes":"Polybags / paperbag release — Hard to find",
     "hard_to_find": true
   },
   {
     "id":"polyb-30674",
     "category":"Polybags",
     "subtheme":"Polybags",
-    "title":"30674 — Zane 4-in-1 Car (polybags, red)",
+    "title":"30674 — Zane 4-in-1 car (Polybags, red)",
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":30,
@@ -112,10 +112,10 @@
   },
 
   {
-    "id":"blind-booster-island",
+    "id":"blind-island",
     "category":"Blind Bags",
     "subtheme":"Booster",
-    "title":"Booster Pack — Island",
+    "title":"Island booster pack",
     "origin":"Blind bag booster",
     "condition":"Sealed",
     "price_sar":15,
@@ -124,14 +124,14 @@
     "hard_to_find": false
   },
   {
-    "id":"blind-ninja-pack",
+    "id":"blind-figs-ebay",
     "category":"Blind Bags",
     "subtheme":"Packs",
-    "title":"Ninja Minifig Blind Pack (examples)",
+    "title":"Blind bag packs (figures)",
     "condition":"Sealed",
     "price_sar":15,
     "image":["https://i.ebayimg.com/images/g/O1UAAOSwN8NniKGo/s-l1600.webp"],
-    "notes":"Most single figures are inside blind bags — request specific figures to check availability",
+    "notes":"",
     "hard_to_find": false
   },
 
@@ -144,71 +144,63 @@
     "condition":"Loose — very good",
     "price_sar":75,
     "image":["https://www.brickeconomy.com/resources/images/minifigs/njo733_large.jpg"],
-    "notes":"Most other single figures may be inside blind bags — request specifically to check availability",
-    "hard_to_find": false
+    "notes":"Most other single figures are inside blind bags — request specifically to check availability"
   },
   {
     "id":"fig-deepstone-kai",
     "category":"Figures",
     "subtheme":"Characters",
-    "title":"Deepstone Suit Kai",
+    "title":"Deepstone Suit Kai (with hair)",
     "origin":"Promo / set",
     "condition":"Sealed",
     "price_sar":80,
     "image":["https://img.bricklink.com/ItemImage/ML/njo0261.png"],
-    "notes":"Most other figures are in blind bags; request them specifically if you want them.",
-    "hard_to_find": false
+    "notes":"Most other figures are in blind bags; request them specifically"
   },
   {
     "id":"fig-young-wu-foil",
     "category":"Figures",
     "subtheme":"Promos",
     "title":"Sealed Young Wu — Foil Pack",
-    "origin":"Promo",
     "condition":"Sealed",
     "price_sar":55,
     "image":["https://m.media-amazon.com/images/I/61f6CoxHH3L.jpg"],
-    "notes":"",
-    "hard_to_find": false
+    "notes":"Promo foil pack"
   },
 
   {
     "id":"misc-subscription",
     "category":"Miscs",
     "subtheme":"Subscription",
-    "title":"Monthly subscription (1 curated Ninjago set)",
+    "title":"Monthly subscription (includes one Ninjago set pick)",
     "origin":"Subscription service",
     "condition":"Service",
     "price_sar":32,
     "price_discounted":15,
     "discount_percent":53,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt71d18d4fb84a78b2/30700_Box1_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
-    "notes":"Includes one curated Ninjago set (picked monthly). Discount applied.",
-    "hard_to_find": false
+    "price_discounted_text":"50% off (special)",
+    "image":["https://via.placeholder.com/800x800.png?text=Subscription+image+coming"],
+    "notes":"Includes one curated Ninjago set (picked monthly)."
   },
   {
     "id":"pickbrick-small",
     "category":"Miscs",
     "subtheme":"Pick-a-brick",
     "title":"Pick-a-brick cup — small",
-    "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":89,
-    "image":["https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"],
-    "notes":"Small pick-a-brick cup",
-    "hard_to_find": false
+    "image":["https://via.placeholder.com/800x800.png?text=Pick-a-brick"],
+    "notes":"Small pick-a-brick cup"
   },
   {
     "id":"pickbrick-big",
     "category":"Miscs",
     "subtheme":"Pick-a-brick",
     "title":"Pick-a-brick cup — big",
-    "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":129,
-    "image":["https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"],
-    "notes":"Big pick-a-brick cup",
-    "hard_to_find": false
+    "image":["https://via.placeholder.com/800x800.png?text=Pick-a-brick-big"],
+    "notes":"Big pick-a-brick cup"
   },
 
   {
@@ -219,8 +211,7 @@
     "price_sar":200,
     "image":["https://m.media-amazon.com/images/I/511+6Xj1piL._UF894,1000_QL80_.jpg"],
     "condition":"Like new",
-    "notes":"Comic / hardcover",
-    "hard_to_find": false
+    "notes":"Comic/hardcover"
   },
   {
     "id":"book-quest-of-lost-power",
@@ -230,8 +221,7 @@
     "price_sar":60,
     "image":["https://m.media-amazon.com/images/I/91vW3FIKmeL._AC_UF1000,1000_QL80_.jpg"],
     "condition":"Paperback — kinda damaged",
-    "notes":"Kinda damaged",
-    "hard_to_find": false
+    "notes":"Kinda damaged"
   },
   {
     "id":"book-spinjitzu-1",
@@ -241,8 +231,7 @@
     "price_sar":65,
     "image":["https://m.media-amazon.com/images/I/81-9ae3Cq8L._AC_UF894,1000_QL80_.jpg"],
     "condition":"Hardcover — good",
-    "notes":"Hardcover",
-    "hard_to_find": false
+    "notes":"Hardcover"
   },
   {
     "id":"book-spinjitzu-2",
@@ -252,8 +241,7 @@
     "price_sar":55,
     "image":["https://m.media-amazon.com/images/I/81jtZFSRVQL._UF894,1000_QL80_.jpg"],
     "condition":"Hardcover — good",
-    "notes":"Hardcover",
-    "hard_to_find": false
+    "notes":"Hardcover"
   },
 
   {
@@ -264,8 +252,7 @@
     "price_sar":70,
     "image":["https://m.media-amazon.com/images/I/511+6Xj1piL._UF894,1000_QL80_.jpg"],
     "condition":"Hardcover, like new",
-    "notes":"1 week rental",
-    "hard_to_find": false
+    "notes":"1 week rental"
   },
   {
     "id":"book-quest-rent",
@@ -275,21 +262,6 @@
     "price_sar":45,
     "image":["https://m.media-amazon.com/images/I/91vW3FIKmeL._AC_UF1000,1000_QL80_.jpg"],
     "condition":"Paperback — good",
-    "notes":"1 week rental",
-    "hard_to_find": false
-  },
-
-  {
-    "id":"meta-leaks",
-    "category":"Miscs",
-    "subtheme":"Leaks",
-    "title":"Leaks & episodes (placeholder)",
-    "price_sar":0,
-    "image":["https://picsum.photos/id/999/1000/700"],
-    "notes":"We will NOT host or link to leaked copyrighted episodes. If you have legal rights to content (official streaming links or files you own), add them to this entry's `leaks_allowed` array. Unauthorized leaked content will not be hosted.",
-    "leaks_note":"no illegal/pirated content",
-    "hard_to_find": false
+    "notes":"1 week rental"
   }
-
 ]
-
