@@ -3,150 +3,155 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Ninjago Market — Marketplace</title>
+<title>Ninjago Marketplace</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="site-header">
-  <div class="brand">
-    <div class="logo">Ninjago Market</div>
-    <div class="subtitle">Collect • Request • Reserve</div>
-  </div>
-  <div class="controls">
-    <input id="search" class="search" placeholder="Search sets, figures, books...">
-    <button id="themeToggle" class="btn small">🌙</button>
-    <button id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></button>
-    <a class="btn small" href="admin.html" target="_blank" rel="noopener noreferrer">Admin</a>
-  </div>
-</header>
-
-<main class="container">
-  <div class="top-row">
-    <div class="hint">Tip: click a category (e.g., Sets). Inside you can filter subthemes and view product details.</div>
-    <div class="view-controls">
-      <label class="small">View:</label>
-      <select id="viewMode" class="small">
-        <option value="grid">Grid</option>
-        <option value="list">List</option>
-      </select>
+  <header class="site-header">
+    <div class="brand">
+      <div class="logo">Ninjago Marketplace</div>
+      <div class="subtitle">Browse • Request • Reserve • Giftcard</div>
     </div>
+
+    <div class="controls">
+      <input id="search" class="search" placeholder="Search sets, figures, books...">
+      <button id="themeToggle" class="btn small">🌙</button>
+      <button id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></button>
+      <a class="btn small" href="admin.html" target="_blank" rel="noopener noreferrer">Admin</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="top-row">
+      <div class="hint">Tip: Click a product box/image to view details — tap the cart to reserve or pay with giftcard.</div>
+      <div class="actions">
+        <button id="showFeedback" class="btn small">Feedback</button>
+      </div>
+    </div>
+
+    <div id="mainArea" class="main-area"></div>
+  </main>
+
+  <!-- modal -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div id="modal" class="modal" role="dialog" aria-modal="true"></div>
   </div>
 
-  <div id="mainArea" class="main-area"></div>
-</main>
-
-<!-- modal -->
-<div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
-  <div id="modal" class="modal" role="dialog" aria-modal="true"></div>
-</div>
-
-<!-- floating request widget (minimizable) -->
-<div id="requestWidget" class="request-widget minimized" aria-hidden="true">
-  <div class="req-head">
-    <div>Request product 💬</div>
-    <div class="req-controls">
+  <!-- floating request (minimizable) -->
+  <div id="requestBox" class="chat-floating">
+    <div class="chat-head">
+      <span>Request product 💬</span>
       <button id="reqMin" class="small">—</button>
-      <button id="reqClose" class="small">✕</button>
     </div>
-  </div>
-  <div id="reqBody" class="req-body">
-    <div id="reqChat" class="chat"></div>
-    <div class="req-form">
-      <input id="reqName" class="input" placeholder="Your name (optional)">
-      <select id="reqType" class="small"><option>Set</option><option>Figure</option><option>Box/Instructions</option><option>Other</option></select>
-      <input id="reqText" class="input" placeholder="Which product or request?">
-      <div style="display:flex;gap:8px">
-        <button id="reqSend" class="btn">Send</button>
-        <button id="reqMin2" class="small">Minimize</button>
+    <div class="chat-body" id="chatBody">
+      <div id="miniChat" class="chat"></div>
+      <div class="chat-form">
+        <input id="miniName" class="input" placeholder="Your name (optional)">
+        <select id="miniType" class="small">
+          <option>Set</option><option>Figure</option><option>Box/Instructions</option><option>Other</option>
+        </select>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <input id="miniReq" class="input" placeholder="What would you like to request?">
+          <button id="miniSend" class="btn small">Send</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<button id="reqOpenBtn" class="req-open-btn" title="Requests">💬</button>
 
-<!-- floating feedback -->
-<div id="feedbackWidget" class="feedback-widget">
-  <button id="feedbackOpen" class="req-open-btn small">Feedback</button>
-  <div id="feedbackPanel" class="feedback-panel hidden">
-    <h4>Feedback</h4>
-    <textarea id="feedbackText" class="textarea" placeholder="Tell us what to improve"></textarea>
-    <input id="feedbackEmail" class="input" placeholder="Email (optional)">
-    <div style="display:flex;gap:8px"><button id="feedbackSend" class="btn">Send</button><button id="feedbackClose" class="small">Close</button></div>
+  <!-- feedback modal -->
+  <div id="feedbackModal" class="modal-backdrop" style="display:none">
+    <div class="modal" role="dialog">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Send Feedback</h3>
+        <button id="closeFeedback" class="btn small">Close</button>
+      </div>
+      <div style="margin-top:10px">
+        <input id="fbName" class="input" placeholder="Your name (optional)">
+        <input id="fbEmail" class="input" placeholder="Email (optional)">
+        <textarea id="fbText" class="textarea" placeholder="Tell us what to improve"></textarea>
+        <div style="display:flex;gap:8px">
+          <button id="fbSend" class="btn">Send Feedback</button>
+          <button id="fbClear" class="small">Clear</button>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
 <script>
-/* ---------- helpers ---------- */
+/* ---------- Helpers ---------- */
 const $ = q => document.querySelector(q);
 const $$ = q => Array.from(document.querySelectorAll(q));
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function uid(len=10){ const a='abcdefghijklmnopqrstuvwxyz0123456789'; let s=''; for(let i=0;i<len;i++) s+=a[Math.floor(Math.random()*a.length)]; return s; }
 
-let products = [];
-let cart = JSON.parse(localStorage.getItem('cart')||'[]');
-let credits = Number(localStorage.getItem('storeCredit')||0);
-const mainArea = $('#mainArea');
+/* ---------- Client id + cart isolation ---------- */
+let clientId = localStorage.getItem('nm_clientId');
+if(!clientId){ clientId = uid(12); localStorage.setItem('nm_clientId', clientId); }
+const cartKey = `nm_cart_${clientId}`;
+let cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+let credits = Number(localStorage.getItem('nm_storeCredit_'+clientId) || 0);
 
-/* ---------- load products ---------- */
-async function loadProducts(){
-  try{
-    const r = await fetch('products.json');
-    if(!r.ok) throw new Error('products.json fetch failed');
-    products = await r.json();
-  } catch(e){
-    mainArea.innerHTML = '<p class="hint err">Failed to load products.json — check file.</p>';
-    console.error(e);
-    return;
-  }
-  initTheme();
-  renderCategoriesView();
-  renderCartCount();
-  attachSearch();
-  initRequestWidget();
-  initFeedbackWidget();
-}
-
-/* ---------- theme ----------- */
+/* ---------- Theme ---------- */
 function initTheme(){
-  const t = localStorage.getItem('theme') || 'dark';
+  const t = localStorage.getItem('nm_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', t);
   $('#themeToggle').textContent = t==='dark' ? '🌙' : '☀️';
   $('#themeToggle').onclick = ()=>{
     const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-    const next = cur==='dark' ? 'light':'dark';
+    const next = cur==='dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
+    localStorage.setItem('nm_theme', next);
     $('#themeToggle').textContent = next==='dark' ? '🌙' : '☀️';
   };
 }
 
-/* ---------- categories ---------- */
+/* ---------- Load products.json ---------- */
+let products = [];
+const mainArea = $('#mainArea');
+
+async function loadProducts(){
+  try {
+    const res = await fetch('products.json');
+    if(!res.ok) throw new Error('products.json not found');
+    products = await res.json();
+  } catch(e){
+    mainArea.innerHTML = `<p class="hint" style="color:salmon">Failed to load products.json — check file.</p>`;
+    console.error(e);
+    return;
+  }
+  initTheme();
+  renderCategories();
+  renderCartCount();
+  attachSearch();
+  loadChat();
+}
+
+/* ---------- UI renderers ---------- */
 function getCategories(){ return Array.from(new Set(products.map(p=>p.category))); }
-function catIcon(cat){
-  const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Polybags':'🧾','Books':'📚','Miscs':'🧰','Books (Rent)':'📖'};
+function categoryIcon(cat){
+  const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Polybags':'📦','Books':'📚','Miscs':'🧾','Books (Rent)':'📖'};
   return map[cat] || '📦';
 }
 
-function renderCategoriesView(){
+function renderCategories(){
   mainArea.innerHTML = '';
   const cats = getCategories();
   const wrap = document.createElement('div'); wrap.className='categories-grid';
   cats.forEach((cat,i)=>{
-    const btn = document.createElement('button'); btn.className='category-tile';
-    const count = products.filter(p=>p.category===cat).length;
-    btn.innerHTML = `<div class="cat-emoji">${catIcon(cat)}</div><div class="cat-title">${escapeHtml(cat)}</div><div class="cat-count">${count} items</div>`;
-    wrap.appendChild(btn);
-    setTimeout(()=>btn.classList.add('show'), 50*i);
-    btn.onclick = ()=> renderCategoryPage(cat);
+    const tile = document.createElement('button'); tile.className='category-tile';
+    tile.innerHTML = `<div class="cat-emoji">${categoryIcon(cat)}</div><div class="cat-title">${escapeHtml(cat)}</div><div class="cat-count">${products.filter(p=>p.category===cat).length} items</div>`;
+    tile.onclick = ()=> openCategory(cat);
+    wrap.appendChild(tile);
+    setTimeout(()=> tile.classList.add('show'), 60*i);
   });
   mainArea.appendChild(wrap);
 }
 
-/* ---------- category page ---------- */
-function renderCategoryPage(category){
+function openCategory(cat){
   mainArea.innerHTML = `
     <div class="category-header">
       <button id="catBack" class="btn small">← Back</button>
-      <h2>${escapeHtml(category)}</h2>
+      <h2>${escapeHtml(cat)}</h2>
       <div class="controls-inline">
         <select id="subFilter" class="small"></select>
         <button id="clearFilter" class="small">Clear</button>
@@ -154,92 +159,84 @@ function renderCategoryPage(category){
     </div>
     <div id="categoryProducts"></div>
   `;
-  $('#catBack').onclick = ()=> renderCategoriesView();
-  const items = products.filter(p=>p.category===category);
+  $('#catBack').onclick = renderCategories;
+  const items = products.filter(p=>p.category===cat);
   const subs = Array.from(new Set(items.map(i=>i.subtheme||'Misc')));
-  const sel = $('#subFilter');
-  sel.innerHTML = `<option value="">All subthemes</option>` + subs.map(s=>`<option>${escapeHtml(s)}</option>`).join('');
-  sel.onchange = ()=> renderCategoryProducts(category, sel.value);
-  $('#clearFilter').onclick = ()=> { sel.value=''; renderCategoryProducts(category); };
-  renderCategoryProducts(category);
+  $('#subFilter').innerHTML = `<option value="">All subthemes</option>` + subs.map(s=>`<option>${escapeHtml(s)}</option>`).join('');
+  $('#subFilter').onchange = ()=> renderCategoryProducts(cat, $('#subFilter').value);
+  $('#clearFilter').onclick = ()=> { $('#subFilter').value=''; renderCategoryProducts(cat); };
+  renderCategoryProducts(cat);
 }
 
 function renderCategoryProducts(category, subfilter){
   const cont = $('#categoryProducts');
-  const search = ($('#search')?$('#search').value.trim().toLowerCase():'');
+  const s = ($('#search')?$('#search').value.trim().toLowerCase():'');
   let items = products.filter(p=>p.category===category);
-  if(subfilter) items = items.filter(p=> (p.subtheme||'')===subfilter);
-  if(search) items = items.filter(p => (p.title + p.origin + (p.subtheme||'')).toLowerCase().includes(search));
+  if(subfilter) items = items.filter(p=> (p.subtheme||'') === subfilter);
+  if(s) items = items.filter(p => (p.title + p.origin + (p.subtheme||'')).toLowerCase().includes(s));
   if(items.length===0){ cont.innerHTML = '<p class="hint">No items found.</p>'; return; }
 
-  const view = $('#viewMode').value || 'grid';
-  const grid = document.createElement('div'); grid.className = view==='grid' ? 'grid' : 'list';
+  const grid = document.createElement('div'); grid.className='grid';
   items.forEach((p,i)=>{
-    const thumb = Array.isArray(p.image) ? p.image[0] : p.image || 'images/placeholder.jpg';
-    const hardTag = p.hard_to_find ? '<div class="hard">Hard to find</div>' : '';
-    const discount = p.price_discounted ? `<div class="discount">SAR ${p.price_discounted} <span class="small-muted">(was ${p.price_sar})</span></div>` : `<div class="price">SAR ${p.price_sar}</div>`;
+    const thumb = Array.isArray(p.image) ? p.image[0] : p.image;
+    const hardTag = p.hard_to_find ? `<div class="hard">Hard to find</div>` : '';
     const card = document.createElement('div'); card.className='card';
     card.innerHTML = `
-      <div class="card-media"><img loading="lazy" src="${thumb}" alt="${escapeHtml(p.title)}" onerror="this.src='images/placeholder.jpg'"></div>
-      <div class="card-body">
-        <h3>${escapeHtml(p.title)}</h3>
-        <div class="meta small-muted">${escapeHtml(p.origin||p.subtheme||'')}</div>
-        ${discount}
+      <div class="card-img" data-id="${p.id}">
+        <img src="${thumb}" alt="${escapeHtml(p.title)}" loading="lazy">
         ${hardTag}
-        <div class="contact">
-          <button class="btn view" data-id="${p.id}">View</button>
-          <button class="small add" data-id="${p.id}">➕</button>
-        </div>
+      </div>
+      <h3>${escapeHtml(p.title)}</h3>
+      <div class="meta">${escapeHtml(p.origin||'')}</div>
+      <div class="meta">${escapeHtml(p.condition||'')}</div>
+      <div class="price">SAR ${p.price_sar}${p.price_discounted?'<span class="old"> SAR '+p.price_sar+'</span>':''}</div>
+      <div class="card-actions">
+        <button class="btn add" data-id="${p.id}">Add</button>
       </div>
     `;
     grid.appendChild(card);
-    setTimeout(()=>card.classList.add('show'), 40*i);
+    setTimeout(()=> card.classList.add('show'), 40*i);
+
+    // click image/box to open details
+    card.querySelector('.card-img').onclick = ()=> openDetail(p.id);
   });
   cont.innerHTML = ''; cont.appendChild(grid);
-  attachCardEvents();
 }
 
 /* ---------- search ---------- */
 function attachSearch(){
-  const s = $('#search');
-  if(!s) return;
-  s.addEventListener('input', ()=>{
+  const el = $('#search');
+  if(!el) return;
+  el.addEventListener('input', ()=>{
     const catHeader = document.querySelector('.category-header');
     if(catHeader){
       const cat = catHeader.querySelector('h2').textContent;
       const sub = $('#subFilter') ? $('#subFilter').value : '';
       renderCategoryProducts(cat, sub);
     } else {
-      renderCategoriesView();
-      const q = s.value.trim();
-      if(!q) return;
-      const results = products.filter(p=> (p.title+p.origin+(p.subtheme||'')).toLowerCase().includes(q.toLowerCase()));
+      renderCategories();
+      const s = el.value.trim();
+      if(!s) return;
+      const results = products.filter(p=> (p.title+p.origin+(p.subtheme||'')).toLowerCase().includes(s.toLowerCase()));
       if(results.length){
-        const resWrap = document.createElement('div'); resWrap.className='search-results';
-        resWrap.innerHTML = `<h3 class="section-title">Quick results</h3><div class="grid"></div>`;
-        results.forEach(p=> resWrap.querySelector('.grid').insertAdjacentHTML('beforeend', `<div class="card show"><img src="${Array.isArray(p.image)?p.image[0]:p.image}" alt=""><h3>${escapeHtml(p.title)}</h3><div class="meta small-muted">${escapeHtml(p.category)}</div><div class="price">SAR ${p.price_sar || ''}</div><div class="contact"><button class="btn view" data-id="${p.id}">View</button></div></div>`));
-        mainArea.appendChild(resWrap);
-        attachCardEvents();
+        const wrap = document.createElement('div'); wrap.className='search-results';
+        wrap.innerHTML = `<h3 class="section-title">Results</h3><div class="grid"></div>`;
+        results.forEach(p=> wrap.querySelector('.grid').insertAdjacentHTML('beforeend', `<div class="card show"><div class="card-img"><img src="${Array.isArray(p.image)?p.image[0]:p.image}"></div><h3>${escapeHtml(p.title)}</h3><div class="meta">${escapeHtml(p.category)}</div><div class="price">SAR ${p.price_sar}</div></div>`));
+        mainArea.appendChild(wrap);
       }
     }
   });
 }
 
-/* ---------- card events ---------- */
-function attachCardEvents(){
-  $$('.view').forEach(b=> b.onclick = ()=> openDetail(b.dataset.id));
-  $$('.add').forEach(b=> b.onclick = ()=> addToCart(b.dataset.id));
-}
-
-/* ---------- modal / product detail + gallery ---------- */
+/* ---------- Product detail modal ---------- */
 function openDetail(id){
   const p = products.find(x=>x.id===id);
   if(!p) return;
-  const imgs = Array.isArray(p.image) ? p.image : [p.image || 'images/placeholder.jpg'];
+  const imgs = Array.isArray(p.image)? p.image : [p.image];
   $('#modal').innerHTML = `
-    <div class="modal-header">
+    <div style="display:flex;justify-content:space-between;align-items:center">
       <h2>${escapeHtml(p.title)}</h2>
-      <button id="closeModal" class="small">Close</button>
+      <div><button id="closeModal" class="btn small">Close</button></div>
     </div>
     <div class="modal-grid">
       <div>
@@ -249,78 +246,76 @@ function openDetail(id){
         </div>
         <div class="meta">Origin: ${escapeHtml(p.origin||'')}</div>
         <div class="meta">Condition: ${escapeHtml(p.condition||'')}</div>
-        <div class="meta">${p.piece_count ? p.piece_count + ' pcs' : ''} ${p.figures_count ? '• ' + p.figures_count + ' figs' : ''}</div>
-        <div>${p.notes ? `<div class="note">${escapeHtml(p.notes)}</div>` : ''}</div>
-        <div class="price-row">
-          ${p.price_discounted ? `<div class="discount">SAR ${p.price_discounted} <span class="small-muted">(was SAR ${p.price_sar})</span></div>` : `<div class="price">SAR ${p.price_sar}</div>`}
-          <div style="margin-left:auto"><button class="btn" id="modalAdd">Add to cart</button> <button class="small" id="modalBuy">Buy now</button></div>
+        <div class="meta">${p.piece_count? p.piece_count + ' pcs' : ''} ${p.figures_count? '• ' + p.figures_count + ' figs' : ''}</div>
+        <div class="price">SAR ${p.price_sar}${p.price_discounted? `<span class="discount"> SAR ${p.price_discounted}</span>` : ''}</div>
+        <div style="margin-top:8px">
+          <button class="btn" id="modalAdd">Add to cart</button>
+          <button class="small" id="modalBuy">Buy now</button>
         </div>
-
-        <div class="price-compare">
-          <h4>Price comparisons</h4>
-          ${(p.price_comparisons||[]).map(c=>`<div class="item ${c.overpriced? 'over':''}"><a href="${c.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(c.site)}</a><div>${escapeHtml(c.price)}</div></div>`).join('')}
+        <div class="recommended">
+          <h4>Recommended</h4>
+          ${(p.recommended||[]).map(id=>{
+            const r = products.find(x=>x.id===id);
+            return r ? `<div class="rec"><img src="${Array.isArray(r.image)?r.image[0]:r.image}"><div><strong>${escapeHtml(r.title)}</strong><div class="meta">SAR ${r.price_sar}</div></div></div>` : '';
+          }).join('')}
         </div>
       </div>
-
       <aside>
         <div class="cart-mini">
           <h4>Quick cart</h4>
           <div id="quickCartList" class="cart-list"></div>
           <div class="order-summary" id="quickSummary"></div>
-          <div style="margin-top:8px"><button class="btn" id="gotoCheckout">Go to checkout</button></div>
+          <div style="margin-top:8px"><button class="btn" id="gotoCheckout">Checkout</button></div>
         </div>
       </aside>
     </div>
   `;
-  document.getElementById('modalBackdrop').classList.add('show');
-  setTimeout(()=> document.getElementById('modal').classList.add('show'), 10);
-
+  $('#modalBackdrop').classList.add('show');
+  setTimeout(()=> $('#modal').classList.add('show'), 10);
   $('#closeModal').onclick = closeModal;
-  $('#modalAdd').onclick = ()=>{ addToCart(p.id); updateQuickCart(); }
-  $('#modalBuy').onclick = ()=>{ addToCart(p.id); openCheckout(); }
+  $('#modalAdd').onclick = ()=> { addToCart(p.id); updateQuickCart(); };
+  $('#modalBuy').onclick = ()=> { addToCart(p.id); openCheckout(); };
   $('#gotoCheckout').onclick = openCheckout;
-
-  $$('.gthumb').forEach(t=>{
-    t.onclick = ()=> { $('#galleryMain').src = t.dataset.src; $$('.gthumb').forEach(x=>x.classList.remove('active')); t.classList.add('active'); };
-  });
-
+  $$('.gthumb').forEach(t=> t.onclick = ()=> { $('#galleryMain').src = t.dataset.src; $$('.gthumb').forEach(x=>x.classList.remove('active')); t.classList.add('active'); });
   updateQuickCart();
 }
-function closeModal(){ document.getElementById('modal').classList.remove('show'); setTimeout(()=>document.getElementById('modalBackdrop').classList.remove('show'),250); }
 
-/* ---------- cart ---------- */
+function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=> $('#modalBackdrop').classList.remove('show'), 220); }
+
+/* ---------- Cart (per client) ---------- */
 function addToCart(id){
-  const p = products.find(x=>x.id===id);
-  if(!p) return;
+  const p = products.find(x=>x.id===id); if(!p) return;
   const item = cart.find(c=>c.id===id);
-  if(item) item.qty++; else cart.push({ id:p.id, title:p.title, price:p.price_discounted || p.price_sar || 0, qty:1, image: Array.isArray(p.image)?p.image[0]:p.image });
-  localStorage.setItem('cart', JSON.stringify(cart));
+  if(item) item.qty++; else cart.push({id:p.id,title:p.title,price:p.price_sar,qty:1,image: Array.isArray(p.image)?p.image[0]:p.image});
+  localStorage.setItem(cartKey, JSON.stringify(cart));
   renderCartCount(); updateQuickCart();
 }
+
 function renderCartCount(){ $('#cartCount').innerText = cart.reduce((s,i)=>s+i.qty,0); }
+
 function updateQuickCart(){
   const el = $('#quickCartList'); const sumEl = $('#quickSummary');
   if(!el) return;
-  el.innerHTML = cart.map(it=>`<div class="cart-row"><img src="${it.image}" alt=""><div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
+  el.innerHTML = cart.map(it=>`<div class="cart-item"><img src="${it.image}"><div><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
 
-/* ---------- checkout ---------- */
+/* ---------- Checkout (local only) ---------- */
 function openCheckout(){
   $('#modal').innerHTML = checkoutHtml();
-  document.getElementById('modalBackdrop').classList.add('show');
-  setTimeout(()=> document.getElementById('modal').classList.add('show'), 10);
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
   renderCheckoutCart();
   $('#closeModal2').onclick = closeModal;
   $('#cashPay').onclick = handleCashPay;
   $('#giftPay').onclick = handleGiftPay;
 }
+
 function checkoutHtml(){
-  return `<div class="modal-header"><h2>Checkout</h2><button id="closeModal2" class="small">Close</button></div>
-    <div class="checkout-grid">
-      <div><h4>Cart</h4><div id="checkoutCart"></div><div class="order-summary" id="checkoutSummary"></div></div>
-      <div>
+  return `<div style="display:flex;justify-content:space-between;align-items:center"><h2>Checkout</h2><div><button id="closeModal2" class="btn small">Close</button></div></div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:320px"><h4>Cart</h4><div id="checkoutCart"></div><div class="order-summary" id="checkoutSummary"></div></div>
+      <div style="width:340px">
         <h4>Pay with Cash (Reserve)</h4>
         <div class="checkout-forms">
           <input id="custName" class="input" placeholder="Full name">
@@ -331,118 +326,95 @@ function checkoutHtml(){
         </div>
         <h4 style="margin-top:12px">Pay with Giftcard</h4>
         <div class="checkout-forms">
-          <input id="giftCode" class="input" placeholder="Giftcard code">
-          <input id="giftAmount" class="input" placeholder="Amount (SAR)" type="number" min="0" step="0.01">
-          <button class="btn" id="giftPay">Pay with giftcard</button>
-        </div>
-        <div class="hint">Overpay becomes in-store credit (recorded if email supplied).</div>
+          <input id="giftCode" class="input" placeholder="Giftcard code (demo)"><input id="giftAmount" class="input" placeholder="Amount (SAR)" type="number" min="0" step="0.01"><button class="btn" id="giftPay">Pay with giftcard</button>
+        </div><div class="hint">If you overpay, remainder becomes in-store credit (local demo).</div>
       </div>
     </div>`;
 }
+
 function renderCheckoutCart(){
   const el = $('#checkoutCart'); const sumEl = $('#checkoutSummary');
-  el.innerHTML = cart.map(it=>`<div class="cart-row"><img src="${it.image}" alt=""><div style="flex:1"><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
+  el.innerHTML = cart.map(it=>`<div class="checkout-item"><img src="${it.image}"><div><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart empty</div>';
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
+
 function handleCashPay(){
   const name = $('#custName').value.trim(); if(!name){ alert('Enter name'); return; }
   const date = $('#custDate').value; const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const order = {id:'order-'+Date.now(), name, date, email:$('#custEmail').value, cart, total, method:'cash', msg:$('#custMsg').value, done:false, created:Date.now()};
-  let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+  const order = {id:'order-'+Date.now(),name,date,email:$('#custEmail').value,cart,total,method:'cash',msg:$('#custMsg').value,created:Date.now()};
+  let orders = JSON.parse(localStorage.getItem('nm_orders')||'[]'); orders.push(order); localStorage.setItem('nm_orders', JSON.stringify(orders));
   alert('Cash reservation saved — Order ID: '+order.id);
-  cart = []; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryViewAfterOrder();
+  cart=[]; localStorage.setItem(cartKey, JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategories();
 }
+
 function handleGiftPay(){
   const code = $('#giftCode').value.trim() || ('GC-'+Math.floor(Math.random()*99999));
-  const amount = Number($('#giftAmount').value) || 0; const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const amount = Number($('#giftAmount').value) || 0;
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  let orders = JSON.parse(localStorage.getItem('nm_orders')||'[]');
   if(amount < total){
     const remaining = total - amount;
-    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, remaining, done:false, created:Date.now()};
-    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
+    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, remaining, created:Date.now()};
+    orders.push(order); localStorage.setItem('nm_orders', JSON.stringify(orders));
     alert(`Partial paid SAR ${amount}. Remaining: SAR ${remaining.toFixed(2)}`);
   } else {
     const credit = +(amount - total);
-    credits = +(credits + credit).toFixed(2); localStorage.setItem('storeCredit', credits);
-    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, storeCreditGained:credit, done:true, created:Date.now()};
-    let orders = JSON.parse(localStorage.getItem('orders')||'[]'); orders.push(order); localStorage.setItem('orders', JSON.stringify(orders));
-    alert(`Payment saved. Gained SAR ${credit.toFixed(2)} in-store credit. Current credit: SAR ${credits.toFixed(2)}`);
+    credits = +(credits + credit).toFixed(2); localStorage.setItem('nm_storeCredit_'+clientId, credits);
+    const order = {id:'order-'+Date.now(), total, paid:amount, method:'giftcard', code, storeCreditGained:credit, created:Date.now()};
+    orders.push(order); localStorage.setItem('nm_orders', JSON.stringify(orders));
+    alert(`Payment successful. You gained SAR ${credit.toFixed(2)} in-store credit. Current credit: SAR ${credits.toFixed(2)}`);
   }
-  cart=[]; localStorage.setItem('cart', JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategoryViewAfterOrder();
-}
-function renderCategoryViewAfterOrder(){
-  const catHeader = document.querySelector('.category-header');
-  if(catHeader){ const cat = catHeader.querySelector('h2').textContent; renderCategoryProducts(cat); } else renderCategoriesView();
+  cart=[]; localStorage.setItem(cartKey, JSON.stringify(cart)); renderCartCount(); closeModal(); renderCategories();
 }
 
-/* ---------- Request widget (minimizable) ---------- */
-function initRequestWidget(){
-  const widget = document.getElementById('requestWidget');
-  const openBtn = document.getElementById('reqOpenBtn');
-  const reqMin = document.getElementById('reqMin');
-  const reqMin2 = document.getElementById('reqMin2');
-  const reqClose = document.getElementById('reqClose');
-  const reqSend = document.getElementById('reqSend');
-
-  function refreshChat(){
-    const mini = document.getElementById('reqChat');
-    const data = JSON.parse(localStorage.getItem('requests')||'[]');
-    mini.innerHTML = data.slice(-30).map(m=>`<div class="msg ${m.from==='owner'?'owner':'user'}"><strong>${m.name?m.name+': ':''}</strong>${escapeHtml(m.text)}</div>`).join('') || '<div class="meta">No requests yet.</div>';
-    mini.scrollTop = mini.scrollHeight;
-  }
-
-  openBtn.onclick = ()=> {
-    widget.classList.remove('minimized');
-    openBtn.style.display = 'none';
+/* ---------- Request mini-chat (minimizable) ---------- */
+function loadChat(){
+  const miniChat = $('#miniChat');
+  $('#reqMin').onclick = ()=> {
+    const body = $('#chatBody');
+    if(body.style.display === 'none'){ body.style.display='block'; $('#reqMin').textContent='—'; }
+    else { body.style.display='none'; $('#reqMin').textContent='+'; }
   };
-  reqMin.onclick = ()=> { widget.classList.add('minimized'); openBtn.style.display='block'; };
-  reqMin2.onclick = ()=> { widget.classList.add('minimized'); openBtn.style.display='block'; };
-  reqClose.onclick = ()=> { widget.classList.add('minimized'); openBtn.style.display='block'; };
-
-  reqSend.onclick = ()=>{
-    const name = $('#reqName').value.trim();
-    const type = $('#reqType').value;
-    const text = $('#reqText').value.trim();
-    if(!text) return;
-    const msg = {id:'r-'+Date.now(), name, type, text, from:'user', time:Date.now()};
-    const arr = JSON.parse(localStorage.getItem('requests')||'[]'); arr.push(msg); localStorage.setItem('requests', JSON.stringify(arr));
-    $('#reqText').value=''; refreshChat();
-    setTimeout(()=>{ const reply = {id:'r-'+(Date.now()+1), name:'owner', type:'reply', text:'Thanks — noted: '+text, from:'owner', time:Date.now()}; const a=JSON.parse(localStorage.getItem('requests')||'[]'); a.push(reply); localStorage.setItem('requests', JSON.stringify(a)); refreshChat(); }, 800);
+  $('#miniSend').onclick = ()=>{
+    const text = $('#miniReq').value.trim(); if(!text) return;
+    const msg = {id:'r-'+Date.now(), name:$('#miniName').value.trim(), type:$('#miniType').value, text, from:'user', time:Date.now()};
+    const arr = JSON.parse(localStorage.getItem('nm_requests')||'[]'); arr.push(msg); localStorage.setItem('nm_requests', JSON.stringify(arr));
+    $('#miniReq').value=''; renderMiniChat();
+    setTimeout(()=>{ const bot = {id:'r-'+(Date.now()+1), from:'owner', text:'Thanks — we noted: '+text, time:Date.now()}; const a = JSON.parse(localStorage.getItem('nm_requests')||'[]'); a.push(bot); localStorage.setItem('nm_requests', JSON.stringify(a)); renderMiniChat(); },700);
   };
-
-  refreshChat();
+  renderMiniChat();
+}
+function renderMiniChat(){
+  const mini = $('#miniChat'); const all = JSON.parse(localStorage.getItem('nm_requests')||'[]');
+  mini.innerHTML = all.slice(-10).map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${m.name?('<strong>'+escapeHtml(m.name)+'</strong> — '):''}${escapeHtml(m.text)}</div>`).join('') || '<div class="meta">No requests yet</div>';
 }
 
-/* ---------- feedback widget ---------- */
-function initFeedbackWidget(){
-  $('#feedbackOpen').onclick = ()=> $('#feedbackPanel').classList.toggle('hidden');
-  $('#feedbackClose').onclick = ()=> $('#feedbackPanel').classList.add('hidden');
-  $('#feedbackSend').onclick = async ()=>{
-    const text = $('#feedbackText').value.trim(); if(!text) return alert('Enter feedback');
-    const email = $('#feedbackEmail').value.trim();
-    // local save
-    const arr = JSON.parse(localStorage.getItem('feedback')||'[]'); arr.push({id:'f-'+Date.now(), text, email, time:Date.now()}); localStorage.setItem('feedback', JSON.stringify(arr));
-    // optional: post to /api/feedback if implemented
-    try {
-      await fetch('/api/feedback', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({text,email})}).catch(()=>null);
-    } catch(e){}
-    alert('Thanks for feedback');
-    $('#feedbackText').value=''; $('#feedbackEmail').value='';
-    $('#feedbackPanel').classList.add('hidden');
-  };
+/* ---------- Feedback modal ---------- */
+$('#showFeedback').onclick = ()=> { $('#feedbackModal').style.display='flex'; };
+$('#closeFeedback').onclick = ()=> { $('#feedbackModal').style.display='none'; };
+$('#fbSend').onclick = ()=> {
+  const fb = {id:'fb-'+Date.now(), name:$('#fbName').value.trim(), email:$('#fbEmail').value.trim(), text:$('#fbText').value.trim(), time:Date.now()};
+  const arr = JSON.parse(localStorage.getItem('nm_feedback')||'[]'); arr.push(fb); localStorage.setItem('nm_feedback', JSON.stringify(arr));
+  alert('Thanks — feedback saved locally.');
+  $('#fbText').value=''; $('#feedbackModal').style.display='none';
+};
+$('#fbClear').onclick = ()=> { $('#fbName').value=''; $('#fbEmail').value=''; $('#fbText').value=''; };
+
+/* ---------- Sign-in popup on first visit ---------- */
+if(!localStorage.getItem('nm_seen_welcome')){
+  const d = document.createElement('div'); d.id='welcomePopup'; d.className='modal-backdrop'; d.innerHTML = `<div class="modal"><div style="display:flex;justify-content:space-between"><h3>Welcome</h3><button id="closeWelcome" class="btn small">X</button></div><p style="margin-top:8px">Sign in for faster checkout (optional). You can close this and continue browsing.</p><div style="display:flex;gap:8px;margin-top:10px"><input id="wjEmail" class="input" placeholder="Your email (optional)"><button id="wjSign" class="btn">Sign in</button></div></div>`; document.body.appendChild(d);
+  $('#closeWelcome').onclick = ()=> { document.getElementById('welcomePopup').remove(); localStorage.setItem('nm_seen_welcome','1'); };
+  $('#wjSign').onclick = ()=> { localStorage.setItem('nm_user_email', $('#wjEmail').value.trim()); alert('Signed in locally'); document.getElementById('welcomePopup').remove(); localStorage.setItem('nm_seen_welcome','1'); };
 }
 
-/* ---------- admin button (opens admin separate) ---------- */
-/* admin page will check password M.O.D8643 client-side */
-
-/* ---------- attach events ---------- */
-document.getElementById('cartBtn').onclick = ()=> openCheckout();
-
-/* ---------- keyboard ---------- */
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
-
-/* ---------- boot ---------- */
+/* ---------- Init ---------- */
+$('#cartBtn').onclick = ()=> openCheckout();
 loadProducts();
+
+/* ---------- keyboard close ---------- */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); } });
+
 </script>
 </body>
 </html>

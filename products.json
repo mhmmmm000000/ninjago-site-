@@ -19,14 +19,14 @@
     "id":"sets-71829",
     "category":"Sets",
     "subtheme":"Dragons",
-    "title":"71829 — Lloyd’s Green Forest Dragon",
+    "title":"71829 — Lloyd's Green Forest Dragon",
     "origin":"LEGO NINJAGO (Dragons Rising)",
     "condition":"New",
     "piece_count":128,
     "figures_count":2,
     "price_sar":95,
     "image":["https://www.lego.com/cdn/cs/set/assets/blt7eb9a0fd185b75d0/71829_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
-    "notes":"Small dragon set",
+    "notes":"",
     "hard_to_find": false
   },
   {
@@ -44,28 +44,14 @@
     "hard_to_find": false
   },
   {
-    "id":"set-thundefang",
-    "category":"Sets",
-    "subtheme":"Dragons",
-    "title":"Thundefang — Dragon of Chaos (71832)",
-    "origin":"LEGO NINJAGO",
-    "condition":"New box — heavily damaged",
-    "piece_count":668,
-    "figures_count":6,
-    "price_sar":230,
-    "image":["https://www.lego.com/cdn/cs/set/assets/bltd015a90af8bfefe6/71832_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
-    "notes":"Box heavily damaged",
-    "hard_to_find": false
-  },
-  {
     "id":"sets-71834",
     "category":"Sets",
     "subtheme":"Mechs",
-    "title":"71834 — Zane Ultra Combiner Mech (4-in-1)",
-    "origin":"LEGO NINJAGO",
+    "title":"71834 — Zane — Ultra Combiner Mech",
+    "origin":"LEGO NINJAGO (4-in-1)",
     "condition":"New",
     "piece_count":420,
-    "figures_count":6,
+    "figures_count":1,
     "price_sar":350,
     "image":["https://www.lego.com/cdn/cs/set/assets/blt4b96caebc6ddc0e0/71834_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"",
@@ -85,6 +71,20 @@
     "notes":"",
     "hard_to_find": false
   },
+  {
+    "id":"sets-71832",
+    "category":"Sets",
+    "subtheme":"Dragons",
+    "title":"71832 — Thundefang (Dragon of Chaos)",
+    "origin":"LEGO NINJAGO",
+    "condition":"New box — heavily damaged",
+    "piece_count":668,
+    "figures_count":6,
+    "price_sar":230,
+    "image":["https://www.lego.com/cdn/cs/set/assets/bltd015a90af8bfefe6/71832_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
+    "notes":"Box heavily damaged",
+    "hard_to_find": false
+  },
 
   {
     "id":"polyb-30700",
@@ -102,7 +102,7 @@
     "id":"polyb-30674",
     "category":"Polybags",
     "subtheme":"Polybags",
-    "title":"30674 — Zane 4-in-1 car (Polybags, red)",
+    "title":"30674 — Zane 4-in-1 Car (Polybags, red)",
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":30,
@@ -112,10 +112,10 @@
   },
 
   {
-    "id":"blind-island",
+    "id":"blind-island-booster",
     "category":"Blind Bags",
     "subtheme":"Booster",
-    "title":"Island booster pack",
+    "title":"Island Booster Pack",
     "origin":"Blind bag booster",
     "condition":"Sealed",
     "price_sar":15,
@@ -124,14 +124,15 @@
     "hard_to_find": false
   },
   {
-    "id":"blind-figs-ebay",
+    "id":"blind-pack-ebay",
     "category":"Blind Bags",
-    "subtheme":"Packs",
-    "title":"Blind bag packs (figures)",
+    "subtheme":"Blind Packs",
+    "title":"Blind figure pack (example image)",
+    "origin":"Blind bag / pack",
     "condition":"Sealed",
     "price_sar":15,
     "image":["https://i.ebayimg.com/images/g/O1UAAOSwN8NniKGo/s-l1600.webp"],
-    "notes":"",
+    "notes":"Figures may be in blind bags — request specific figure",
     "hard_to_find": false
   },
 
@@ -144,28 +145,32 @@
     "condition":"Loose — very good",
     "price_sar":75,
     "image":["https://www.brickeconomy.com/resources/images/minifigs/njo733_large.jpg"],
-    "notes":"Most other single figures are inside blind bags — request specifically to check availability"
+    "notes":"Most other single figures may be inside blind bags — request specifically to check availability",
+    "hard_to_find": false
   },
   {
     "id":"fig-deepstone-kai",
     "category":"Figures",
     "subtheme":"Characters",
     "title":"Deepstone Suit Kai (with hair)",
-    "origin":"Promo / set",
+    "origin":"Promo minifigure",
     "condition":"Sealed",
     "price_sar":80,
     "image":["https://img.bricklink.com/ItemImage/ML/njo0261.png"],
-    "notes":"Most other figures are in blind bags; request them specifically"
+    "notes":"Most other figures are in blind bags; request specifically if you want them.",
+    "hard_to_find": false
   },
   {
     "id":"fig-young-wu-foil",
     "category":"Figures",
     "subtheme":"Promos",
     "title":"Sealed Young Wu — Foil Pack",
+    "origin":"Promo / foil pack",
     "condition":"Sealed",
     "price_sar":55,
     "image":["https://m.media-amazon.com/images/I/61f6CoxHH3L.jpg"],
-    "notes":"Promo foil pack"
+    "notes":"",
+    "hard_to_find": false
   },
 
   {
@@ -178,18 +183,18 @@
     "price_sar":32,
     "price_discounted":15,
     "discount_percent":53,
-    "price_discounted_text":"50% off (special)",
-    "image":["https://via.placeholder.com/800x800.png?text=Subscription+image+coming"],
-    "notes":"Includes one curated Ninjago set (picked monthly)."
+    "image":["https://picsum.photos/id/1065/1000/700"],
+    "notes":"Includes one curated Ninjago set and curated content links."
   },
   {
     "id":"pickbrick-small",
     "category":"Miscs",
     "subtheme":"Pick-a-brick",
     "title":"Pick-a-brick cup — small",
+    "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":89,
-    "image":["https://via.placeholder.com/800x800.png?text=Pick-a-brick"],
+    "image":["https://picsum.photos/id/1080/1000/700"],
     "notes":"Small pick-a-brick cup"
   },
   {
@@ -197,9 +202,10 @@
     "category":"Miscs",
     "subtheme":"Pick-a-brick",
     "title":"Pick-a-brick cup — big",
+    "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":129,
-    "image":["https://via.placeholder.com/800x800.png?text=Pick-a-brick-big"],
+    "image":["https://picsum.photos/id/1081/1000/700"],
     "notes":"Big pick-a-brick cup"
   },
 
