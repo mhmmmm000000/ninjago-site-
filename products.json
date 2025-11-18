@@ -194,7 +194,7 @@
     "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":89,
-    "image":["https://picsum.photos/id/1080/1000/700"],
+    "image":["https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"],
     "notes":"Small pick-a-brick cup",
     "hard_to_find": false
   },
@@ -206,7 +206,7 @@
     "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":129,
-    "image":["https://picsum.photos/id/1081/1000/700"],
+    "image":["https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"],
     "notes":"Big pick-a-brick cup",
     "hard_to_find": false
   },
