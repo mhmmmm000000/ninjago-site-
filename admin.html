@@ -1,110 +1,175 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin — Ninjago</title><link rel="stylesheet" href="styles.css"></head>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin Panel — Ninjago Marketplace</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{
+  --bg:#071428; --card:#0b1520; --muted:#9aa4b2; --accent:#f1c40f;
+  --text:#e7eef7; --danger:#ef4444; --good:#22c55e;
+}
+body{
+  margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+  background:var(--bg); color:var(--text); padding:20px;
+}
+h2{margin-top:0}
+.card{
+  background:var(--card); padding:16px; border-radius:12px;
+  margin-bottom:16px; border:1px solid rgba(255,255,255,0.05);
+}
+button{
+  padding:8px 12px; border-radius:8px; border:0; cursor:pointer;
+  font-weight:700; margin-right:6px;
+}
+.btn-danger{ background:var(--danger); color:white; }
+.btn{ background:#123; color:#dff3ff; }
+input[type=password]{
+  width:260px; padding:8px 12px; border-radius:8px; border:1px solid #333;
+  background:#0e1a24; color:var(--text); font-size:16px;
+}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+td,th{padding:10px;border-bottom:1px solid rgba(255,255,255,0.08)}
+th{text-align:left;background:#0f1c26}
+.meta{color:var(--muted);font-size:13px}
+.center{display:flex;flex-direction:column;align-items:center;margin-top:120px}
+.success{color:var(--good);margin-top:10px}
+</style>
+</head>
 <body>
-  <main style="max-width:980px;margin:24px auto;padding:16px">
-    <h1>Admin — Ninjago</h1>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
-      <input id="adminPass" class="input" placeholder="Enter admin password">
-      <button id="loginBtn" class="btn small">Login</button>
-      <button id="logoutBtn" class="small">Logout</button>
-      <div id="loginStatus" class="meta"></div>
-    </div>
 
-    <div id="adminArea" style="display:none">
-      <h2>Orders</h2>
-      <div id="ordersList"></div>
-      <h2>Requests</h2>
-      <div id="requestsList"></div>
-      <h2>Giftcards (create)</h2>
-      <div style="display:flex;gap:8px">
-        <input id="gcCode" class="input" placeholder="Code (e.g. GC-100)">
-        <input id="gcBal" class="input" placeholder="Balance" type="number">
-        <button id="createGC" class="btn small">Create</button>
-      </div>
-    </div>
-  </main>
+<div id="authScreen" class="center">
+  <h2>Admin Login</h2>
+  <input id="adminPass" type="password" placeholder="Enter admin password">
+  <button id="loginBtn" class="btn">Login</button>
+  <div id="loginMsg" class="meta"></div>
+</div>
+
+<div id="adminPanel" style="display:none">
+  <h2>📦 Orders</h2>
+  <div id="ordersArea"></div>
+
+  <h2>💬 Requests</h2>
+  <div id="reqArea"></div>
+</div>
 
 <script>
-const $ = q => document.querySelector(q);
-function showStatus(s){ $('#loginStatus').innerText = s; }
-function requireAuth(){
-  const s = sessionStorage.getItem('adminSecret');
-  return !!s;
-}
+// password gate
+const PASSWORD = "M.O.D8643";
 
-$('#loginBtn').onclick = ()=> {
-  const v = $('#adminPass').value.trim();
-  if(!v){ showStatus('enter password'); return; }
-  sessionStorage.setItem('adminSecret', v);
-  showStatus('logged in for this session');
-  initAdmin();
+const authScreen = document.getElementById('authScreen');
+const adminPanel = document.getElementById('adminPanel');
+const loginMsg = document.getElementById('loginMsg');
+
+document.getElementById('loginBtn').onclick = () => {
+  const pass = document.getElementById('adminPass').value.trim();
+  if(pass === PASSWORD){
+    authScreen.style.display = "none";
+    adminPanel.style.display = "block";
+    loadOrders();
+    loadRequests();
+  } else {
+    loginMsg.textContent = "Incorrect password";
+  }
 };
-$('#logoutBtn').onclick = ()=> {
-  sessionStorage.removeItem('adminSecret'); showStatus('logged out'); $('#adminArea').style.display='none';
-};
 
-async function api(path, opts={}){
-  const secret = sessionStorage.getItem('adminSecret');
-  opts.headers = opts.headers || {};
-  if(secret) opts.headers['x-admin-secret'] = secret;
-  const res = await fetch(path, opts);
-  if(res.status === 401){ alert('Admin secret invalid for server. Check ADMIN_SECRET in Vercel.'); return null; }
-  return res;
+// load orders
+function loadOrders(){
+  const orders = JSON.parse(localStorage.getItem('orders')||'[]');
+  const area = document.getElementById('ordersArea');
+  if(!orders.length){
+    area.innerHTML = `<p class="meta">No orders yet.</p>`;
+    return;
+  }
+  area.innerHTML = `
+    <button onclick="clearOrders()" class="btn-danger">Clear all orders</button>
+    <table>
+      <tr><th>ID</th><th>Name</th><th>Total</th><th>Method</th><th>Actions</th></tr>
+      ${orders.map(o=>`
+        <tr>
+          <td>${o.id}</td>
+          <td>${o.name || "(no name)"}</td>
+          <td>SAR ${o.total}</td>
+          <td>${o.method}</td>
+          <td>
+            <button class="btn" onclick="viewOrder('${o.id}')">View</button>
+            <button class="btn-danger" onclick="deleteOrder('${o.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
 }
 
-async function initAdmin(){
-  if(!requireAuth()) return;
-  $('#adminArea').style.display='block';
-  // try to load server data; if fails, fallback to localStorage
-  try {
-    const ores = await api('/api/orders');
-    if(ores && ores.ok){
-      const orders = await ores.json();
-      renderOrders(orders);
-    } else {
-      const orders = JSON.parse(localStorage.getItem('orders')||'[]');
-      renderOrders(orders);
-    }
-    const rres = await api('/api/requests');
-    if(rres && rres.ok){
-      const requests = await rres.json();
-      renderRequests(requests);
-    } else {
-      renderRequests(JSON.parse(localStorage.getItem('requests')||'[]'));
-    }
-  } catch(e){ console.warn(e); renderOrders(JSON.parse(localStorage.getItem('orders')||'[]')); renderRequests(JSON.parse(localStorage.getItem('requests')||'[]')); }
+function deleteOrder(id){
+  let orders = JSON.parse(localStorage.getItem('orders')||'[]');
+  orders = orders.filter(o=>o.id !== id);
+  localStorage.setItem('orders', JSON.stringify(orders));
+  loadOrders();
 }
 
-function renderOrders(orders){
-  const el = $('#ordersList'); el.innerHTML = '';
-  if(!orders.length) { el.innerHTML = '<div class="meta">No orders</div>'; return; }
-  orders.slice().reverse().forEach(o=>{
-    const d = document.createElement('div'); d.className='card show'; d.style.marginBottom='8px';
-    d.innerHTML = `<div style="display:flex;justify-content:space-between"><strong>Order ${o.id}</strong><div><button class="small mark">Toggle done</button> <button class="small del">Delete</button></div></div><div class="meta">Method: ${o.method||'-'} • Total: SAR ${o.total||0}</div><div class="meta">Name: ${o.name||'-'} • Date: ${o.date||'-'}</div><div style="margin-top:8px">${(o.cart||[]).map(it=>`<div>${it.title} × ${it.qty} — SAR ${it.price}</div>`).join('')}</div><div class="meta">Notes: ${o.msg||''}</div>`;
-    el.appendChild(d);
-    d.querySelector('.del').onclick = async ()=> { if(!confirm('Delete order?')) return; const res = await api('/api/orders', { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:o.id}) }); if(res && res.ok) initAdmin(); else { let arr = JSON.parse(localStorage.getItem('orders')||'[]'); arr = arr.filter(x=>x.id!==o.id); localStorage.setItem('orders', JSON.stringify(arr)); initAdmin(); } };
-    d.querySelector('.mark').onclick = async ()=> { o.done = !o.done; const res = await api('/api/orders', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(o) }); if(res && res.ok) initAdmin(); else { let arr = JSON.parse(localStorage.getItem('orders')||'[]'); arr = arr.map(x=> x.id===o.id?o:x); localStorage.setItem('orders', JSON.stringify(arr)); initAdmin(); } };
+function clearOrders(){
+  if(confirm("Clear ALL orders?")) {
+    localStorage.removeItem('orders');
+    loadOrders();
+  }
+}
+
+function viewOrder(id){
+  const orders = JSON.parse(localStorage.getItem('orders')||'[]');
+  const o = orders.find(x=>x.id===id);
+  if(!o) return;
+
+  let msg = `ORDER ID: ${o.id}\nTotal: SAR ${o.total}\nMethod: ${o.method}\n`;
+
+  if(o.name) msg += `Customer: ${o.name}\n`;
+  if(o.email) msg += `Email: ${o.email}\n`;
+  if(o.date) msg += `Pickup: ${o.date}\n`;
+  if(o.msg) msg += `Notes: ${o.msg}\n`;
+
+  msg += "\nItems:\n";
+  o.cart.forEach(i=>{
+    msg += `- ${i.title} x${i.qty} (SAR ${i.price})\n`;
   });
+
+  alert(msg);
 }
 
-function renderRequests(requests){
-  const el = $('#requestsList'); el.innerHTML = '';
-  if(!requests.length) { el.innerHTML = '<div class="meta">No requests</div>'; return; }
-  requests.slice().reverse().forEach(r=>{
-    const d = document.createElement('div'); d.className='card show'; d.style.marginBottom='8px';
-    d.innerHTML = `<div style="display:flex;justify-content:space-between"><div>${new Date(r.time||Date.now()).toLocaleString()}</div><div><button class="small rdel">Delete</button></div></div><div class="msg user" style="padding:8px;margin-top:8px">${r.name?('<strong>'+r.name+'</strong> — '):''}${r.type?('['+r.type+'] '):''}${r.text}</div>`;
-    el.appendChild(d);
-    d.querySelector('.rdel').onclick = async ()=> { if(!confirm('Delete request?')) return; const res = await api('/api/requests', { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id:r.id}) }); if(res && res.ok) initAdmin(); else { let arr = JSON.parse(localStorage.getItem('requests')||'[]'); arr = arr.filter(x=> x.id !== r.id); localStorage.setItem('requests', JSON.stringify(arr)); initAdmin(); } };
-  });
+// requests
+function loadRequests(){
+  const reqs = JSON.parse(localStorage.getItem('requests')||'[]');
+  const area = document.getElementById('reqArea');
+  if(!reqs.length){
+    area.innerHTML = `<p class="meta">No requests yet.</p>`;
+    return;
+  }
+  area.innerHTML = `
+    <button onclick="clearReqs()" class="btn-danger">Clear all</button>
+    <table>
+      <tr><th>From</th><th>Message</th><th>Actions</th></tr>
+      ${reqs.map((r,i)=>`
+        <tr>
+          <td>${r.from}</td>
+          <td>${r.text}</td>
+          <td><button class="btn-danger" onclick="delReq(${i})">Delete</button></td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
 }
-
-$('#createGC').onclick = async ()=>{
-  const code = $('#gcCode').value.trim(); const bal = Number($('#gcBal').value);
-  if(!code || !bal){ alert('enter code and numeric balance'); return; }
-  const res = await api('/api/giftcards', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ code, balance: bal }) });
-  if(res && res.ok){ alert('giftcard created'); $('#gcCode').value=''; $('#gcBal').value=''; }
-};
-
-window.addEventListener('load', ()=>{ if(requireAuth()) initAdmin(); });
+function clearReqs(){
+  if(confirm("Delete ALL requests?")) {
+    localStorage.removeItem('requests');
+    loadRequests();
+  }
+}
+function delReq(i){
+  let arr = JSON.parse(localStorage.getItem('requests')||'[]');
+  arr.splice(i,1);
+  localStorage.setItem('requests', JSON.stringify(arr));
+  loadRequests();
+}
 </script>
-</body></html>
+
+</body>
+</html>
