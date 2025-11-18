@@ -4,7 +4,7 @@
     "category":"Sets",
     "subtheme":"City",
     "title":"71799 — City Markets",
-    "origin":"LEGO NINJAGO (Dragons Rising)",
+    "origin":"LEGO NINJAGO",
     "condition":"New in box",
     "piece_count":6163,
     "figures_count":21,
@@ -16,13 +16,13 @@
     "hard_to_find": false
   },
   {
-    "id":"sets-71829",
+    "id":"sets-lloyd-small-dragon",
     "category":"Sets",
     "subtheme":"Dragons",
-    "title":"71829 — Lloyd's Green Forest Dragon",
-    "origin":"LEGO NINJAGO (Dragons Rising)",
+    "title":"Lloyd — Green Forest Dragon (small) (71829)",
+    "origin":"LEGO NINJAGO Dragons Rising",
     "condition":"New",
-    "piece_count":128,
+    "piece_count":120,
     "figures_count":2,
     "price_sar":95,
     "image":["https://www.lego.com/cdn/cs/set/assets/blt7eb9a0fd185b75d0/71829_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
@@ -30,10 +30,10 @@
     "hard_to_find": false
   },
   {
-    "id":"sets-71816",
+    "id":"sets-zane-bike",
     "category":"Sets",
     "subtheme":"Vehicles",
-    "title":"71816 — Zane's Bike (Dragon Rising)",
+    "title":"Zane — Bike (Dragon Rising) (71816)",
     "origin":"LEGO NINJAGO",
     "condition":"New",
     "piece_count":48,
@@ -44,38 +44,10 @@
     "hard_to_find": false
   },
   {
-    "id":"sets-71834",
-    "category":"Sets",
-    "subtheme":"Mechs",
-    "title":"71834 — Zane — Ultra Combiner Mech",
-    "origin":"LEGO NINJAGO (4-in-1)",
-    "condition":"New",
-    "piece_count":420,
-    "figures_count":1,
-    "price_sar":350,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt4b96caebc6ddc0e0/71834_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
-    "notes":"",
-    "hard_to_find": false
-  },
-  {
-    "id":"sets-71818",
-    "category":"Sets",
-    "subtheme":"Arena",
-    "title":"71818 — Tournament Battle Arena",
-    "origin":"LEGO NINJAGO",
-    "condition":"New",
-    "piece_count":659,
-    "figures_count":6,
-    "price_sar":219,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt9a9a5a7bdb9b5445/71818_boxprod_v39_sha.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
-    "notes":"",
-    "hard_to_find": false
-  },
-  {
-    "id":"sets-71832",
+    "id":"set-thundefang",
     "category":"Sets",
     "subtheme":"Dragons",
-    "title":"71832 — Thundefang (Dragon of Chaos)",
+    "title":"Thundefang — Dragon of Chaos (71832)",
     "origin":"LEGO NINJAGO",
     "condition":"New box — heavily damaged",
     "piece_count":668,
@@ -85,12 +57,25 @@
     "notes":"Box heavily damaged",
     "hard_to_find": false
   },
-
+  {
+    "id":"sets-71834-zane-mech",
+    "category":"Sets",
+    "subtheme":"Mechs",
+    "title":"Zane — Ultra Combiner Mech (71834)",
+    "origin":"LEGO NINJAGO 4-in-1 (mech/jet/car/dragon)",
+    "condition":"New",
+    "piece_count":420,
+    "figures_count":6,
+    "price_sar":350,
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt4b96caebc6ddc0e0/71834_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
+    "notes":"",
+    "hard_to_find": false
+  },
   {
     "id":"polyb-30700",
     "category":"Polybags",
     "subtheme":"Polybags",
-    "title":"30700 — Arin vs Dragonian (Polybags)",
+    "title":"30700 — Arin vs Dragonian (polybags)",
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":35,
@@ -99,10 +84,10 @@
     "hard_to_find": true
   },
   {
-    "id":"polyb-30674",
+    "id":"polyb-zane-car",
     "category":"Polybags",
     "subtheme":"Polybags",
-    "title":"30674 — Zane 4-in-1 Car (Polybags, red)",
+    "title":"Zane — 4-in-1 Car (polybags, red) (30674)",
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":30,
@@ -110,12 +95,11 @@
     "notes":"Hard to find",
     "hard_to_find": true
   },
-
   {
-    "id":"blind-island-booster",
+    "id":"blind-booster-island",
     "category":"Blind Bags",
     "subtheme":"Booster",
-    "title":"Island Booster Pack",
+    "title":"Booster Pack — Island",
     "origin":"Blind bag booster",
     "condition":"Sealed",
     "price_sar":15,
@@ -124,18 +108,16 @@
     "hard_to_find": false
   },
   {
-    "id":"blind-pack-ebay",
+    "id":"blind-pack-figs",
     "category":"Blind Bags",
-    "subtheme":"Blind Packs",
-    "title":"Blind figure pack (example image)",
-    "origin":"Blind bag / pack",
+    "subtheme":"Packs",
+    "title":"Blind Pack — Figures (villain & allies examples)",
     "condition":"Sealed",
     "price_sar":15,
     "image":["https://i.ebayimg.com/images/g/O1UAAOSwN8NniKGo/s-l1600.webp"],
-    "notes":"Figures may be in blind bags — request specific figure",
+    "notes":"",
     "hard_to_find": false
   },
-
   {
     "id":"fig-santa-garmadon",
     "category":"Figures",
@@ -152,12 +134,12 @@
     "id":"fig-deepstone-kai",
     "category":"Figures",
     "subtheme":"Characters",
-    "title":"Deepstone Suit Kai (with hair)",
-    "origin":"Promo minifigure",
+    "title":"Deepstone Suit Kai (sealed)",
+    "origin":"Promo set",
     "condition":"Sealed",
     "price_sar":80,
     "image":["https://img.bricklink.com/ItemImage/ML/njo0261.png"],
-    "notes":"Most other figures are in blind bags; request specifically if you want them.",
+    "notes":"Most other figures are in blind bags; request them specifically if you want them.",
     "hard_to_find": false
   },
   {
@@ -165,14 +147,11 @@
     "category":"Figures",
     "subtheme":"Promos",
     "title":"Sealed Young Wu — Foil Pack",
-    "origin":"Promo / foil pack",
-    "condition":"Sealed",
     "price_sar":55,
     "image":["https://m.media-amazon.com/images/I/61f6CoxHH3L.jpg"],
     "notes":"",
     "hard_to_find": false
   },
-
   {
     "id":"misc-subscription",
     "category":"Miscs",
@@ -183,8 +162,10 @@
     "price_sar":32,
     "price_discounted":15,
     "discount_percent":53,
-    "image":["https://picsum.photos/id/1065/1000/700"],
-    "notes":"Includes one curated Ninjago set and curated content links."
+    "price_discounted_text":"~50% off (special)",
+    "image":["https://via.placeholder.com/800x800?text=Subscription"],
+    "notes":"Includes one curated Ninjago set (picked monthly) and curated content links (legal sources only).",
+    "hard_to_find": false
   },
   {
     "id":"pickbrick-small",
@@ -194,8 +175,9 @@
     "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":89,
-    "image":["https://picsum.photos/id/1080/1000/700"],
-    "notes":"Small pick-a-brick cup"
+    "image":["https://via.placeholder.com/800x800?text=Pick-a-brick+small"],
+    "notes":"Small pick-a-brick cup",
+    "hard_to_find": false
   },
   {
     "id":"pickbrick-big",
@@ -205,10 +187,10 @@
     "origin":"Loose pieces service",
     "condition":"Service",
     "price_sar":129,
-    "image":["https://picsum.photos/id/1081/1000/700"],
-    "notes":"Big pick-a-brick cup"
+    "image":["https://via.placeholder.com/800x800?text=Pick-a-brick+big"],
+    "notes":"Big pick-a-brick cup",
+    "hard_to_find": false
   },
-
   {
     "id":"book-dark-island-1",
     "category":"Books",
@@ -217,7 +199,8 @@
     "price_sar":200,
     "image":["https://m.media-amazon.com/images/I/511+6Xj1piL._UF894,1000_QL80_.jpg"],
     "condition":"Like new",
-    "notes":"Comic/hardcover"
+    "notes":"Comic/hardcover",
+    "hard_to_find": false
   },
   {
     "id":"book-quest-of-lost-power",
@@ -227,7 +210,8 @@
     "price_sar":60,
     "image":["https://m.media-amazon.com/images/I/91vW3FIKmeL._AC_UF1000,1000_QL80_.jpg"],
     "condition":"Paperback — kinda damaged",
-    "notes":"Kinda damaged"
+    "notes":"Kinda damaged",
+    "hard_to_find": false
   },
   {
     "id":"book-spinjitzu-1",
@@ -237,7 +221,8 @@
     "price_sar":65,
     "image":["https://m.media-amazon.com/images/I/81-9ae3Cq8L._AC_UF894,1000_QL80_.jpg"],
     "condition":"Hardcover — good",
-    "notes":"Hardcover"
+    "notes":"Hardcover",
+    "hard_to_find": false
   },
   {
     "id":"book-spinjitzu-2",
@@ -247,9 +232,9 @@
     "price_sar":55,
     "image":["https://m.media-amazon.com/images/I/81jtZFSRVQL._UF894,1000_QL80_.jpg"],
     "condition":"Hardcover — good",
-    "notes":"Hardcover"
+    "notes":"Hardcover",
+    "hard_to_find": false
   },
-
   {
     "id":"book-dark-island-rent",
     "category":"Books (Rent)",
@@ -258,7 +243,8 @@
     "price_sar":70,
     "image":["https://m.media-amazon.com/images/I/511+6Xj1piL._UF894,1000_QL80_.jpg"],
     "condition":"Hardcover, like new",
-    "notes":"1 week rental"
+    "notes":"1 week rental",
+    "hard_to_find": false
   },
   {
     "id":"book-quest-rent",
@@ -268,6 +254,7 @@
     "price_sar":45,
     "image":["https://m.media-amazon.com/images/I/91vW3FIKmeL._AC_UF1000,1000_QL80_.jpg"],
     "condition":"Paperback — good",
-    "notes":"1 week rental"
+    "notes":"1 week rental",
+    "hard_to_find": false
   }
 ]
