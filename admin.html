@@ -1,68 +1,58 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Admin — Ninjago</title>
-<link rel="stylesheet" href="styles.css">
-</head>
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin — Ninjago</title><link rel="stylesheet" href="styles.css"></head>
 <body>
-  <main style="max-width:1000px;margin:28px auto;padding:16px">
-    <h1>Admin</h1>
-    <div id="loginArea">
-      <p>Enter admin password:</p>
+  <main style="max-width:1000px;margin:24px auto;padding:16px">
+    <h1>Admin — Ninjago (local)</h1>
+    <div style="display:flex;gap:8px;align-items:center;">
       <input id="adminPass" class="input" placeholder="Password">
-      <div style="margin-top:8px"><button id="doLogin" class="btn">Login</button></div>
-      <p class="hint">Admin password is stored client-side for this demo.</p>
+      <button id="adminLogin" class="btn">Login</button>
     </div>
 
-    <div id="adminPanel" style="display:none">
-      <h2>Orders</h2>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><button id="refresh" class="small">Refresh</button> <button id="exportData" class="small">Export local data</button></div>
-      <div id="ordersList"></div>
-      <h2>Requests</h2>
-      <div id="requestsList"></div>
+    <div id="adminArea" style="margin-top:16px;display:none">
+      <h2>Orders</h2><div id="ordersList"></div>
+      <h2>Requests</h2><div id="requestsList"></div>
+      <div style="margin-top:12px">
+        <button id="exportBtn" class="small">Export local data</button>
+      </div>
     </div>
   </main>
 
 <script>
-const ADMIN_PW = 'M.O.D8643'; // client-side password (insecure but requested)
-document.getElementById('doLogin').onclick = () => {
-  const v = document.getElementById('adminPass').value.trim();
-  if(v === ADMIN_PW){
-    document.getElementById('loginArea').style.display = 'none';
-    document.getElementById('adminPanel').style.display = '';
-    loadAdmin();
-  } else alert('Wrong password');
+const ADMIN_PASSWORD = 'M.O.D8643'; // client-side password (for speed). Change if needed.
+document.getElementById('adminLogin').onclick = ()=>{
+  const v = document.getElementById('adminPass').value;
+  if(v === ADMIN_PASSWORD){
+    document.getElementById('adminArea').style.display = 'block';
+    loadAdminData();
+  } else { alert('Wrong password'); }
 };
 
-function loadAdmin(){
+function loadAdminData(){
   const orders = JSON.parse(localStorage.getItem('nm_orders')||'[]');
-  const reqs = JSON.parse(localStorage.getItem('nm_requests')||'[]');
-  const ol = document.getElementById('ordersList'); ol.innerHTML = '';
-  if(!orders.length) ol.innerHTML = '<div class="meta">No orders</div>';
-  orders.slice().reverse().forEach(o => {
+  const list = document.getElementById('ordersList'); list.innerHTML = '';
+  if(!orders.length) list.innerHTML = '<div class="meta">No orders</div>';
+  orders.slice().reverse().forEach(o=>{
     const d = document.createElement('div'); d.className='card show'; d.style.marginBottom='8px';
-    d.innerHTML = `<strong>Order ${o.id}</strong><div class="meta">Email: ${o.email||'-'} • Method: ${o.method}</div><div style="margin-top:8px">${(o.cart||[]).map(i=>`${i.title} × ${i.qty}`).join('<br>')}</div>`;
-    ol.appendChild(d);
+    d.innerHTML = `<div style="display:flex;justify-content:space-between"><strong>${o.id}</strong><div>${o.method} • SAR ${o.total}</div></div><div class="meta">By: ${o.email}</div><div style="margin-top:6px">${(o.cart||[]).map(i=>`${i.title} × ${i.qty}`).join('<br>')}</div>`;
+    list.appendChild(d);
   });
-  const rl = document.getElementById('requestsList'); rl.innerHTML = '';
-  if(!reqs.length) rl.innerHTML = '<div class="meta">No requests</div>';
-  reqs.slice().reverse().forEach(r => {
+
+  const reqs = JSON.parse(localStorage.getItem('nm_requests')||'[]');
+  const rlist = document.getElementById('requestsList'); rlist.innerHTML = '';
+  if(!reqs.length) rlist.innerHTML = '<div class="meta">No requests</div>';
+  reqs.slice().reverse().forEach(r=>{
     const d = document.createElement('div'); d.className='card show'; d.style.marginBottom='8px';
-    d.innerHTML = `<div class="msg user">${r.text}</div><div class="meta">${new Date(r.time).toLocaleString()} • From: ${r.from}</div>`;
-    rl.appendChild(d);
+    d.innerHTML = `<div class="meta">${new Date(r.time).toLocaleString()}</div><div style="margin-top:6px">${r.from}: ${r.text}</div>`;
+    rlist.appendChild(d);
   });
 }
 
-document.getElementById('exportData').onclick = () => {
-  const data = {orders: JSON.parse(localStorage.getItem('nm_orders')||'[]'), requests: JSON.parse(localStorage.getItem('nm_requests')||'[]')};
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ninjago-local-data.json'; a.click();
-  URL.revokeObjectURL(a.href);
+document.getElementById('exportBtn').onclick = ()=>{
+  const data = { orders: JSON.parse(localStorage.getItem('nm_orders')||'[]'), requests: JSON.parse(localStorage.getItem('nm_requests')||'[]') };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ninjago-local-data.json'; a.click(); URL.revokeObjectURL(a.href);
 };
-
-document.getElementById('refresh').onclick = loadAdmin;
 </script>
 </body>
 </html>
