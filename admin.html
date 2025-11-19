@@ -1,57 +1,61 @@
 <!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin — Ninjago</title><link rel="stylesheet" href="styles.css"></head>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin — Ninjago</title><link rel="stylesheet" href="styles.css"></head>
 <body>
   <main style="max-width:1000px;margin:24px auto;padding:16px">
-    <h1>Admin — Ninjago (local)</h1>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <input id="adminPass" class="input" placeholder="Password">
-      <button id="adminLogin" class="btn">Login</button>
+    <h1>Admin — Orders & Requests</h1>
+    <p class="muted">This admin page is client-side protected by a password. For real security use server-side auth.</p>
+    <div style="margin:12px 0">
+      <button id="enterAdmin" class="btn">Enter admin (password required)</button>
+      <button id="exportData" class="small">Export local data</button>
     </div>
 
-    <div id="adminArea" style="margin-top:16px;display:none">
-      <h2>Orders</h2><div id="ordersList"></div>
-      <h2>Requests</h2><div id="requestsList"></div>
-      <div style="margin-top:12px">
-        <button id="exportBtn" class="small">Export local data</button>
-      </div>
-    </div>
+    <h2>Orders</h2>
+    <div id="ordersList"></div>
+
+    <h2>Requests</h2>
+    <div id="requestsList"></div>
   </main>
 
 <script>
-const ADMIN_PASSWORD = 'M.O.D8643'; // client-side password (for speed). Change if needed.
-document.getElementById('adminLogin').onclick = ()=>{
-  const v = document.getElementById('adminPass').value;
-  if(v === ADMIN_PASSWORD){
-    document.getElementById('adminArea').style.display = 'block';
-    loadAdminData();
-  } else { alert('Wrong password'); }
+const ADMIN_PASSWORD = 'M.O.D8643';
+function adminProtect(){
+  const pwd = prompt('Enter admin password:');
+  if(pwd !== ADMIN_PASSWORD) return alert('Wrong password');
+  return true;
+}
+document.getElementById('enterAdmin').onclick = ()=> {
+  if(!adminProtect()) return;
+  renderAdmin();
 };
-
-function loadAdminData(){
+function renderAdmin(){
   const orders = JSON.parse(localStorage.getItem('nm_orders')||'[]');
-  const list = document.getElementById('ordersList'); list.innerHTML = '';
-  if(!orders.length) list.innerHTML = '<div class="meta">No orders</div>';
+  const reqs = JSON.parse(localStorage.getItem('nm_requests')||'[]');
+  const ol = document.getElementById('ordersList'); ol.innerHTML = '';
+  if(!orders.length) ol.innerHTML = '<div class="muted">No orders</div>';
   orders.slice().reverse().forEach(o=>{
     const d = document.createElement('div'); d.className='card show'; d.style.marginBottom='8px';
-    d.innerHTML = `<div style="display:flex;justify-content:space-between"><strong>${o.id}</strong><div>${o.method} • SAR ${o.total}</div></div><div class="meta">By: ${o.email}</div><div style="margin-top:6px">${(o.cart||[]).map(i=>`${i.title} × ${i.qty}`).join('<br>')}</div>`;
-    list.appendChild(d);
+    d.innerHTML = `<div style="display:flex;justify-content:space-between"><strong>Order ${o.id}</strong><div><button class="small mark">Toggle done</button> <button class="small del">Delete</button></div></div>
+      <div class="meta">User: ${o.user} • Method: ${o.method} • Total: SAR ${o.total||o.paid||0}</div>
+      <div style="margin-top:8px">${(o.cart||[]).map(it=>`<div>${it.title} × ${it.qty} — SAR ${it.price}</div>`).join('')}</div>
+      <div class="meta">Created: ${new Date(o.created).toLocaleString()}</div>`;
+    ol.appendChild(d);
+    d.querySelector('.del').onclick = ()=> { if(!confirm('Delete order?')) return; let arr = JSON.parse(localStorage.getItem('nm_orders')||'[]'); arr = arr.filter(x=> x.id !== o.id); localStorage.setItem('nm_orders', JSON.stringify(arr)); renderAdmin(); };
+    d.querySelector('.mark').onclick = ()=> { o.done = !o.done; let arr = JSON.parse(localStorage.getItem('nm_orders')||'[]'); arr = arr.map(x=> x.id===o.id ? o : x); localStorage.setItem('nm_orders', JSON.stringify(arr)); renderAdmin(); };
   });
 
-  const reqs = JSON.parse(localStorage.getItem('nm_requests')||'[]');
-  const rlist = document.getElementById('requestsList'); rlist.innerHTML = '';
-  if(!reqs.length) rlist.innerHTML = '<div class="meta">No requests</div>';
+  const rl = document.getElementById('requestsList'); rl.innerHTML = '';
+  if(!reqs.length) rl.innerHTML = '<div class="muted">No requests</div>';
   reqs.slice().reverse().forEach(r=>{
     const d = document.createElement('div'); d.className='card show'; d.style.marginBottom='8px';
-    d.innerHTML = `<div class="meta">${new Date(r.time).toLocaleString()}</div><div style="margin-top:6px">${r.from}: ${r.text}</div>`;
-    rlist.appendChild(d);
+    d.innerHTML = `<div style="display:flex;justify-content:space-between"><div>${new Date(r.time).toLocaleString()}</div><div><button class="small rdel">Delete</button></div></div><div class="msg user" style="padding:8px;margin-top:8px">${r.user?('<strong>'+r.user+'</strong> — '):''}${r.type?('['+r.type+'] '):''}${r.text}</div>`;
+    rl.appendChild(d);
+    d.querySelector('.rdel').onclick = ()=>{ if(!confirm('Delete request?')) return; let arr = JSON.parse(localStorage.getItem('nm_requests')||'[]'); arr = arr.filter(x=> x.id !== r.id); localStorage.setItem('nm_requests', JSON.stringify(arr)); renderAdmin(); };
   });
 }
 
-document.getElementById('exportBtn').onclick = ()=>{
-  const data = { orders: JSON.parse(localStorage.getItem('nm_orders')||'[]'), requests: JSON.parse(localStorage.getItem('nm_requests')||'[]') };
-  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ninjago-local-data.json'; a.click(); URL.revokeObjectURL(a.href);
+document.getElementById('exportData').onclick = ()=> {
+  const data = { orders: JSON.parse(localStorage.getItem('nm_orders')||'[]'), requests: JSON.parse(localStorage.getItem('nm_requests')||'[]'), feedback: JSON.parse(localStorage.getItem('nm_feedback')||'[]')};
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ninjago-local-data.json'; a.click(); URL.revokeObjectURL(a.href);
 };
 </script>
 </body>

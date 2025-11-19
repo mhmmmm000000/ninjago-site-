@@ -9,101 +9,107 @@
     "piece_count":6163,
     "figures_count":21,
     "price_sar":1899,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt17452f7f0b4a4d08/71799.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt17452f7f0b4a4d08/71799.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"",
     "recommended":["sets-zane-bike"],
     "price_comparisons":[],
-    "hard_to_find": false
+    "hard_to_find": false,
+    "description": "A massive LEGO City Markets set from Dragons Rising."
   },
-
   {
-    "id":"sets-lloyd-small-dragon",
+    "id":"sets-71829",
     "category":"Sets",
     "subtheme":"Dragons",
-    "title":"Lloyd — Green Forest Dragon (small)",
-    "origin":"LEGO NINJAGO Dragons Rising",
+    "title":"71829 — Lloyd's Green Forest Dragon",
+    "origin":"LEGO NINJAGO",
     "condition":"New",
-    "piece_count":120,
+    "piece_count":128,
     "figures_count":2,
     "price_sar":95,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt7eb9a0fd185b75d0/71829_boxprod_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt7eb9a0fd185b75d0/71829_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"",
-    "hard_to_find": false
+    "recommended":[],
+    "hard_to_find": false,
+    "description":"Lloyd's small dragon from Dragons Rising."
   },
-
   {
-    "id":"sets-zane-bike",
+    "id":"sets-71816",
     "category":"Sets",
     "subtheme":"Vehicles",
-    "title":"Zane — Bike (Dragon Rising)",
-    "origin":"Small vehicle",
+    "title":"71816 — Zane's Bike",
+    "origin":"LEGO NINJAGO",
     "condition":"New",
     "piece_count":48,
     "figures_count":1,
     "price_sar":45,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blted5b035bd93fd620/71816.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/blted5b035bd93fd620/71816.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"",
-    "hard_to_find": false
+    "recommended":[],
+    "hard_to_find": false,
+    "description":"Zane's bike from the Dragon Rising wave."
   },
-
   {
     "id":"set-thundefang",
     "category":"Sets",
     "subtheme":"Dragons",
-    "title":"Thundefang — Dragon of Chaos (71832)",
+    "title":"71832 — Thundefang (Dragon of Chaos)",
     "origin":"LEGO NINJAGO",
     "condition":"New box — heavily damaged",
     "piece_count":668,
     "figures_count":6,
     "price_sar":230,
-    "image":["https://www.lego.com/cdn/cs/set/assets/bltd015a90af8bfefe6/71832_boxprod_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/bltd015a90af8bfefe6/71832_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"Box heavily damaged",
-    "hard_to_find": false
+    "recommended":["sets-71799"],
+    "hard_to_find": false,
+    "description":"Thundefang, the Dragon of Chaos."
   },
-
   {
-    "id":"sets-71834-zane-mech",
+    "id":"sets-71834",
     "category":"Sets",
     "subtheme":"Mechs",
-    "title":"Zane — Ultra Combiner Mech (71834)",
-    "origin":"LEGO NINJAGO 4-in-1",
+    "title":"71834 — Zane — Ultra Combiner Mech",
+    "origin":"LEGO NINJAGO",
     "condition":"New",
     "piece_count":420,
     "figures_count":6,
     "price_sar":350,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt4b96caebc6ddc0e0/71834_boxprod_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt4b96caebc6ddc0e0/71834_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"",
-    "hard_to_find": false
+    "recommended":[],
+    "hard_to_find": false,
+    "description":"Zane's 4-in-1 Ultra Combiner Mech."
   },
 
   {
     "id":"polyb-30700",
     "category":"Polybags",
     "subtheme":"Polybags",
-    "title":"30700 — Arin vs Dragonian (polybags)",
+    "title":"30700 — Arin & Dragonian (Polybags)",
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":35,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt71d18d4fb84a78b2/30700_Box1_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
-    "notes":"Polybags release — Hard to find",
-    "hard_to_find": true
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt71d18d4fb84a78b2/30700_Box1_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
+    "notes":"Polybags - Hard to find",
+    "hard_to_find": true,
+    "description":"Arin & Dragonian small polybag."
   },
-
   {
-    "id":"polyb-zane-car",
+    "id":"polyb-30674",
     "category":"Polybags",
     "subtheme":"Polybags",
-    "title":"Zane — 4-in-1 Car (polybags, red)",
+    "title":"30674 — Zane 4-in-1 Car (Polybags, red)",
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":30,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt9bfd6b7bdc3863f3/30674_Box1_v39.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt9bfd6b7bdc3863f3/30674_Box1_v39.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"Hard to find",
-    "hard_to_find": true
+    "hard_to_find": true,
+    "description":"Zane 4-in-1 car polybag (red)."
   },
 
   {
-    "id":"blind-booster-island",
+    "id":"blind-island",
     "category":"Blind Bags",
     "subtheme":"Booster",
     "title":"Booster Pack — Island",
@@ -112,31 +118,21 @@
     "price_sar":15,
     "image":["https://m.media-amazon.com/images/I/71-D3gQO6gL._AC_SL1000_.jpg"],
     "notes":"",
-    "hard_to_find": false
+    "hard_to_find": false,
+    "description":"Booster pack for island series."
   },
-
   {
-    "id":"blind-ninja-army",
+    "id":"blind-figs-ebay",
     "category":"Blind Bags",
-    "subtheme":"Villains",
-    "title":"Ninja Army — Villain figures (blind bag)",
+    "subtheme":"Packs",
+    "title":"Blind pack — Figures assortment",
+    "origin":"Blind bag",
     "condition":"Sealed",
     "price_sar":15,
     "image":["https://i.ebayimg.com/images/g/O1UAAOSwN8NniKGo/s-l1600.webp"],
     "notes":"",
-    "hard_to_find": false
-  },
-
-  {
-    "id":"blind-ninja-allies",
-    "category":"Blind Bags",
-    "subtheme":"Allies",
-    "title":"Ninja & Allies (blind bag)",
-    "condition":"Sealed",
-    "price_sar":25,
-    "image":["https://i.ebayimg.com/images/g/O1UAAOSwN8NniKGo/s-l1600.webp"],
-    "notes":"",
-    "hard_to_find": false
+    "hard_to_find": false,
+    "description":"Assorted blind figures."
   },
 
   {
@@ -148,44 +144,48 @@
     "condition":"Loose — very good",
     "price_sar":75,
     "image":["https://www.brickeconomy.com/resources/images/minifigs/njo733_large.jpg"],
-    "notes":"Most other single figures may be inside blind bags — request specifically to check availability"
+    "notes":"Most other single figures may be inside blind bags — request specifically to check availability",
+    "description":"Santa Garmadon promotional minifigure."
   },
-
   {
     "id":"fig-deepstone-kai",
     "category":"Figures",
     "subtheme":"Characters",
-    "title":"Deepstone Suit Kai (sealed)",
-    "origin":"Promo set",
+    "title":"Deepstone Suit Kai (with hair)",
+    "origin":"Promo set / minifigure",
     "condition":"Sealed",
     "price_sar":80,
     "image":["https://img.bricklink.com/ItemImage/ML/njo0261.png"],
-    "notes":"Most other figures are in blind bags; request them specifically if you want them."
+    "notes":"Most other figures are in blind bags; request them specifically if you want them.",
+    "description":"Deepstone Suit Kai (sealed)."
   },
-
   {
     "id":"fig-young-wu-foil",
     "category":"Figures",
     "subtheme":"Promos",
-    "title":"Sealed Young Wu — Foil Pack",
+    "title":"Young Wu — Foil Pack (sealed)",
+    "origin":"Promo",
+    "condition":"Sealed",
     "price_sar":55,
     "image":["https://m.media-amazon.com/images/I/61f6CoxHH3L.jpg"],
-    "notes":"Promo / foil pack"
+    "notes":"",
+    "description":"Sealed foil promo pack."
   },
 
   {
     "id":"misc-subscription",
     "category":"Miscs",
     "subtheme":"Subscription",
-    "title":"Monthly subscription (one Ninjago set pick)",
-    "origin":"Subscription service",
+    "title":"Monthly subscription (one curated Ninjago set)",
+    "origin":"Subscription",
     "condition":"Service",
     "price_sar":32,
     "price_discounted":15,
     "discount_percent":53,
-    "price_discounted_text":"~50% off (special)",
-    "image":["https://picsum.photos/seed/sub/900/700"],
-    "notes":"Includes one curated Ninjago set monthly. Digital content links listed in order details."
+    "price_discounted_text":"Special 53% off",
+    "image":["https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png"],
+    "notes":"Includes one curated Ninjago set and curated legal content links (episodes, extras).",
+    "description":"Subscription pick includes 1 curated Ninjago item monthly."
   },
 
   {
@@ -193,23 +193,24 @@
     "category":"Miscs",
     "subtheme":"Pick-a-brick",
     "title":"Pick-a-brick cup — small",
-    "origin":"Loose pieces service",
+    "origin":"Loose pieces",
     "condition":"Service",
     "price_sar":89,
-    "image":["https://picsum.photos/seed/pb1/900/700"],
-    "notes":"Small pick-a-brick cup"
+    "image":["https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png"],
+    "notes":"Small pick-a-brick cup",
+    "description":"Small pick-a-brick cup of mixed parts."
   },
-
   {
     "id":"pickbrick-big",
     "category":"Miscs",
     "subtheme":"Pick-a-brick",
     "title":"Pick-a-brick cup — big",
-    "origin":"Loose pieces service",
+    "origin":"Loose pieces",
     "condition":"Service",
     "price_sar":129,
-    "image":["https://picsum.photos/seed/pb2/900/700"],
-    "notes":"Big pick-a-brick cup"
+    "image":["https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png"],
+    "notes":"Big pick-a-brick cup",
+    "description":"Large pick-a-brick cup of mixed parts."
   },
 
   {
@@ -220,9 +221,8 @@
     "price_sar":200,
     "image":["https://m.media-amazon.com/images/I/511+6Xj1piL._UF894,1000_QL80_.jpg"],
     "condition":"Like new",
-    "notes":"Comic/hardcover"
+    "description":"Part one of Dark Island Trilogy comic/hardcover."
   },
-
   {
     "id":"book-quest-of-lost-power",
     "category":"Books",
@@ -231,9 +231,8 @@
     "price_sar":60,
     "image":["https://m.media-amazon.com/images/I/91vW3FIKmeL._AC_UF1000,1000_QL80_.jpg"],
     "condition":"Paperback — kinda damaged",
-    "notes":"Kinda damaged"
+    "description":"Quest of Lost Power — paperback (some wear)."
   },
-
   {
     "id":"book-spinjitzu-1",
     "category":"Books",
@@ -242,9 +241,8 @@
     "price_sar":65,
     "image":["https://m.media-amazon.com/images/I/81-9ae3Cq8L._AC_UF894,1000_QL80_.jpg"],
     "condition":"Hardcover — good",
-    "notes":"Hardcover"
+    "description":"Spinjitzu Brother Part 1 — hardcover."
   },
-
   {
     "id":"book-spinjitzu-2",
     "category":"Books",
@@ -253,59 +251,29 @@
     "price_sar":55,
     "image":["https://m.media-amazon.com/images/I/81jtZFSRVQL._UF894,1000_QL80_.jpg"],
     "condition":"Hardcover — good",
-    "notes":"Hardcover"
+    "description":"Spinjitzu Brother Part 2 — hardcover."
   },
 
   {
-    "id":"book-dark-island-rent",
+    "id":"book-spinjitzu-1-rent",
     "category":"Books (Rent)",
-    "subtheme":"Dark Island",
-    "title":"Dark Island Trilogy — Rent 1 week",
-    "price_sar":70,
-    "image":["https://m.media-amazon.com/images/I/511+6Xj1piL._UF894,1000_QL80_.jpg"],
-    "condition":"Hardcover, like new",
-    "notes":"1 week rental"
+    "subtheme":"Spinjitzu",
+    "title":"Spinjitzu Brother — Part 1 — Rent 1 week",
+    "price_sar":49,
+    "image":["https://m.media-amazon.com/images/I/81-9ae3Cq8L._AC_UF894,1000_QL80_.jpg"],
+    "condition":"Hardcover — good",
+    "notes":"1 week rental",
+    "description":"Rent Spinjitzu Brother Part 1 for 1 week."
   },
-
   {
-    "id":"book-quest-rent",
+    "id":"book-spinjitzu-2-rent",
     "category":"Books (Rent)",
-    "subtheme":"Dark Island",
-    "title":"Quest of Lost Power — Rent 1 week",
-    "price_sar":45,
-    "image":["https://m.media-amazon.com/images/I/91vW3FIKmeL._AC_UF1000,1000_QL80_.jpg"],
-    "condition":"Paperback — good",
-    "notes":"1 week rental"
-  },
-
-  {
-    "id":"sets-71818",
-    "category":"Sets",
-    "subtheme":"Arena",
-    "title":"71818 — Tournament Battle Arena",
-    "origin":"LEGO NINJAGO",
-    "price_sar":219,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt9a9a5a7bdb9b5445/71818_boxprod_v39_sha.png?format=webply&fit=bounds&width=800&height=800"],
-    "hard_to_find": false
-  },
-
-  {
-    "id":"sets-71816",
-    "category":"Sets",
-    "subtheme":"Vehicles",
-    "title":"71816 — Zane's Bike (example)",
-    "origin":"LEGO NINJAGO",
-    "price_sar":45,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blted5b035bd93fd620/71816.png?format=webply&fit=bounds&width=800&height=800"]
-  },
-
-  {
-    "id":"sets-71829-lloyd",
-    "category":"Sets",
-    "subtheme":"Dragons",
-    "title":"71829 — Lloyd small dragon",
-    "price_sar":95,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt7eb9a0fd185b75d0/71829_boxprod_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"]
+    "subtheme":"Spinjitzu",
+    "title":"Spinjitzu Brother — Part 2 — Rent 1 week",
+    "price_sar":37,
+    "image":["https://m.media-amazon.com/images/I/81jtZFSRVQL._UF894,1000_QL80_.jpg"],
+    "condition":"Hardcover — good",
+    "notes":"1 week rental",
+    "description":"Rent Spinjitzu Brother Part 2 for 1 week."
   }
-
 ]
