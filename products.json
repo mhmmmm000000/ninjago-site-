@@ -5,57 +5,56 @@
     "subtheme":"City",
     "title":"71799 — City Markets",
     "origin":"LEGO NINJAGO (Dragons Rising)",
+    "description":"Kids aged 14+ and LEGO® collectors can experience the unique excitement and vibrancy of the place where the ninja live and play with this NINJAGO® City Markets (71799) building set. ... (full description provided in admin).",
     "condition":"New in box",
     "piece_count":6163,
     "figures_count":21,
     "price_sar":1899,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt17452f7f0b4a4d08/71799.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt17452f7f0b4a4d08/71799.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"",
     "recommended":["sets-zane-bike"],
-    "price_comparisons":[],
-    "hard_to_find": false,
-    "description":"Kids aged 14+ and LEGO® collectors can experience the unique excitement and vibrancy..."
+    "hard_to_find": false
   },
   {
     "id":"sets-71829",
     "category":"Sets",
     "subtheme":"Dragons",
     "title":"71829 — Lloyd’s Green Forest Dragon",
-    "origin":"LEGO NINJAGO (Dragons Rising)",
+    "origin":"LEGO NINJAGO Dragons Rising",
+    "description":"Boys and girls aged 6 and up can soar into the sky to recreate aerial scenes... (shortened).",
     "condition":"New",
     "piece_count":128,
     "figures_count":2,
     "price_sar":95,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt7eb9a0fd185b75d0/71829_boxprod_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
-    "notes":"",
-    "hard_to_find": false,
-    "description":"Boys and girls aged 6 and up can soar into the sky..."
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt7eb9a0fd185b75d0/71829_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
+    "hard_to_find": false
   },
   {
     "id":"sets-71816",
     "category":"Sets",
     "subtheme":"Vehicles",
-    "title":"71816 — Zane’s Ice Motorcycle",
+    "title":"71816 — Zane’s Ice Motorcycle (Bike)",
     "origin":"LEGO NINJAGO",
+    "description":"Zane’s Ice Motorcycle toy (71816) ...",
     "condition":"New",
     "piece_count":84,
     "figures_count":1,
     "price_sar":45,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blted5b035bd93fd620/71816.png?format=webply&fit=bounds&width=800&height=800"],
-    "notes":"",
+    "image":["https://www.lego.com/cdn/cs/set/assets/blted5b035bd93fd620/71816.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "hard_to_find": false
   },
   {
-    "id":"sets-71832",
+    "id":"set-thundefang",
     "category":"Sets",
     "subtheme":"Dragons",
-    "title":"71832 — Thunderfang (Dragon of Chaos)",
+    "title":"Thundefang — Dragon of Chaos (71832)",
     "origin":"LEGO NINJAGO",
+    "description":"The LEGO® NINJAGO® Thunderfang Dragon of Chaos (71832) ninja toy ...",
     "condition":"New box — heavily damaged",
     "piece_count":668,
     "figures_count":6,
     "price_sar":230,
-    "image":["https://www.lego.com/cdn/cs/set/assets/bltd015a90af8bfefe6/71832_boxprod_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/bltd015a90af8bfefe6/71832_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"Box heavily damaged",
     "hard_to_find": false
   },
@@ -63,14 +62,14 @@
     "id":"sets-71834",
     "category":"Sets",
     "subtheme":"Mechs",
-    "title":"71834 — Zane Ultra Combiner Mech",
-    "origin":"LEGO NINJAGO",
+    "title":"71834 — Zane’s Ultra Combiner Mech",
+    "origin":"LEGO NINJAGO 4-in-1",
+    "description":"Zane’s Ultra Combiner Mech (71834) 4-in-1 building set...",
     "condition":"New",
     "piece_count":1187,
     "figures_count":6,
     "price_sar":350,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt4b96caebc6ddc0e0/71834_boxprod_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
-    "notes":"",
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt4b96caebc6ddc0e0/71834_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "hard_to_find": false
   },
   {
@@ -83,62 +82,18 @@
     "piece_count":659,
     "figures_count":6,
     "price_sar":219,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt9a9a5a7bdb9b5445/71818_boxprod_v39_sha.png?format=webply&fit=bounds&width=800&height=800"],
-    "notes":"",
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt9a9a5a7bdb9b5445/71818_boxprod_v39_sha.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "hard_to_find": false
   },
   {
-    "id":"sets-71827",
-    "category":"Sets",
-    "subtheme":"Mechs",
-    "title":"71827 — Zane’s Battle Suit Mech",
-    "origin":"LEGO NINJAGO",
-    "condition":"New",
-    "piece_count":92,
-    "figures_count":3,
-    "price_sar":95,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt42bed6f346f60425/71827_boxprod_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
-    "notes":"",
-    "hard_to_find": false
-  },
-  {
-    "id":"sets-71838",
-    "category":"Sets",
-    "subtheme":"Vehicles",
-    "title":"71838 — Kai’s Motorcycle Speed Race",
-    "origin":"LEGO NINJAGO",
-    "condition":"New",
-    "piece_count":79,
-    "figures_count":2,
-    "price_sar":59,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt01f9f8acad93e700/71838_boxprod_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
-    "notes":"",
-    "hard_to_find": false
-  },
-  {
-    "id":"sets-71843",
-    "category":"Sets",
-    "subtheme":"Mechs",
-    "title":"71843 — Rogue’s Mech Dragon Rider",
-    "origin":"LEGO NINJAGO",
-    "condition":"New",
-    "piece_count":584,
-    "figures_count":4,
-    "price_sar":349,
-    "image":["https://lego.saudiblocks.com/media/catalog/product/cache/a58d3ba7ac09cd7ef95239aa18768701/7/1/71843_P2.jpg"],
-    "notes":"",
-    "hard_to_find": false
-  },
-
-  {
-    "id":"polyb-30700",
+    "id":"sets-30700",
     "category":"Polybags",
     "subtheme":"Polybags",
     "title":"30700 — Arin vs Dragonian (Polybags)",
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":35,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt71d18d4fb84a78b2/30700_Box1_v39_en-gb.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt71d18d4fb84a78b2/30700_Box1_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"Polybags / paperbag release — Hard to find",
     "hard_to_find": true
   },
@@ -146,85 +101,81 @@
     "id":"polyb-30674",
     "category":"Polybags",
     "subtheme":"Polybags",
-    "title":"30674 — Zane 4-in-1 Car (red polybag)",
+    "title":"30674 — Zane 4-in-1 Car (Polybags, red)",
     "origin":"Polybags",
     "condition":"Sealed",
     "price_sar":30,
-    "image":["https://www.lego.com/cdn/cs/set/assets/blt9bfd6b7bdc3863f3/30674_Box1_v39.png?format=webply&fit=bounds&width=800&height=800"],
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt9bfd6b7bdc3863f3/30674_Box1_v39.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"],
     "notes":"Hard to find",
     "hard_to_find": true
   },
-
   {
-    "id":"blind-island",
+    "id":"blind-booster-island",
     "category":"Blind Bags",
     "subtheme":"Booster",
     "title":"Booster Pack — Island",
+    "origin":"Blind bag booster",
     "condition":"Sealed",
     "price_sar":15,
     "image":["https://m.media-amazon.com/images/I/71-D3gQO6gL._AC_SL1000_.jpg"],
-    "notes":"",
     "hard_to_find": false
   },
   {
-    "id":"blind-figs-ebay",
+    "id":"blind-ebay-pack",
     "category":"Blind Bags",
     "subtheme":"Packs",
-    "title":"Blind pack — assorted (army / allies)",
+    "title":"Figure blind pack (example)",
     "condition":"Sealed",
     "price_sar":15,
     "image":["https://i.ebayimg.com/images/g/O1UAAOSwN8NniKGo/s-l1600.webp"],
-    "notes":"Choose Ninja Army (15 SAR), Ninja & Allies (25 SAR), Dragon Rising (10 SAR).",
-    "hard_to_find": true
+    "notes":"Figures in blind bags — request specific figures if you need them",
+    "hard_to_find": false
   },
-
   {
     "id":"fig-santa-garmadon",
     "category":"Figures",
     "subtheme":"Seasonal",
-    "title":"Santa Garmadon",
+    "title":"Santa Garmadon (minifigure)",
     "origin":"Seasonal minifigure",
     "condition":"Loose — very good",
     "price_sar":75,
     "image":["https://www.brickeconomy.com/resources/images/minifigs/njo733_large.jpg"],
-    "notes":"Most other single figures may be inside blind bags — request specifically"
+    "notes":"Most other single figures may be inside blind bags — request specifically to check availability"
   },
   {
     "id":"fig-deepstone-kai",
     "category":"Figures",
     "subtheme":"Characters",
-    "title":"Deepstone Suit Kai (with hair)",
+    "title":"Deepstone Suit Kai",
     "origin":"Promo set",
     "condition":"Sealed",
     "price_sar":80,
     "image":["https://img.bricklink.com/ItemImage/ML/njo0261.png"],
-    "notes":"Most other figures are in blind bags; request them specifically."
+    "notes":"Most other figures are in blind bags; request specifically if you want them."
   },
   {
     "id":"fig-young-wu-foil",
     "category":"Figures",
     "subtheme":"Promos",
-    "title":"Young Wu — Foil Pack",
-    "condition":"Sealed",
+    "title":"Young Wu — Sealed foil pack",
     "price_sar":55,
-    "image":["https://m.media-amazon.com/images/I/61f6CoxHH3L.jpg"]
+    "image":["https://m.media-amazon.com/images/I/61f6CoxHH3L.jpg"],
+    "condition":"Sealed"
   },
-
   {
     "id":"misc-subscription",
     "category":"Miscs",
     "subtheme":"Subscription",
-    "title":"Monthly subscription (includes one Ninjago set pick)",
+    "title":"Monthly subscription (curated Ninjago set)",
     "origin":"Subscription service",
     "condition":"Service",
     "price_sar":32,
     "price_discounted":15,
     "discount_percent":53,
-    "price_discounted_text":"50% off (special)",
-    "image":["https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"],
-    "notes":"Includes one curated Ninjago set per month."
+    "price_discounted_text":"Discounted price",
+    "image":["https://picsum.photos/id/1065/1000/700"],
+    "notes":"Includes one curated Ninjago set and curated legal content."
   },
-
   {
     "id":"pickbrick-small",
     "category":"Miscs",
@@ -247,7 +198,6 @@
     "image":["https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"],
     "notes":"Big pick-a-brick cup"
   },
-
   {
     "id":"book-dark-island-1",
     "category":"Books",
@@ -288,12 +238,11 @@
     "condition":"Hardcover — good",
     "notes":"Hardcover"
   },
-
   {
     "id":"book-spinjitzu-1-rent",
     "category":"Books (Rent)",
     "subtheme":"Spinjitzu",
-    "title":"Spinjitzu Brother — Part 1 (Rent 1 week)",
+    "title":"Spinjitzu Brother — Part 1 — Rent (1 week)",
     "price_sar":49,
     "image":["https://m.media-amazon.com/images/I/81-9ae3Cq8L._AC_UF894,1000_QL80_.jpg"],
     "condition":"Hardcover — good",
@@ -303,10 +252,47 @@
     "id":"book-spinjitzu-2-rent",
     "category":"Books (Rent)",
     "subtheme":"Spinjitzu",
-    "title":"Spinjitzu Brother — Part 2 (Rent 1 week)",
+    "title":"Spinjitzu Brother — Part 2 — Rent (1 week)",
     "price_sar":37,
     "image":["https://m.media-amazon.com/images/I/81jtZFSRVQL._UF894,1000_QL80_.jpg"],
     "condition":"Hardcover — good",
     "notes":"1 week rental"
+  },
+  {
+    "id":"sets-71827",
+    "category":"Sets",
+    "subtheme":"Mechs",
+    "title":"71827 — Zane’s Battle Suit Mech",
+    "origin":"LEGO NINJAGO",
+    "description":"The LEGO NINJAGO Zane’s Battle Suit Mech (71827) ...",
+    "condition":"New",
+    "piece_count":92,
+    "figures_count":3,
+    "price_sar":95,
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt42bed6f346f60425/71827_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"]
+  },
+  {
+    "id":"sets-71838",
+    "category":"Sets",
+    "subtheme":"Vehicles",
+    "title":"71838 — Kai’s Motorcycle Speed Race",
+    "origin":"LEGO NINJAGO",
+    "condition":"New",
+    "piece_count":79,
+    "figures_count":2,
+    "price_sar":59,
+    "image":["https://www.lego.com/cdn/cs/set/assets/blt01f9f8acad93e700/71838_boxprod_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"]
+  },
+  {
+    "id":"sets-71843",
+    "category":"Sets",
+    "subtheme":"Mechs",
+    "title":"71843 — Rogue’s Mech Dragon Rider",
+    "origin":"LEGO NINJAGO",
+    "condition":"New",
+    "piece_count":584,
+    "figures_count":4,
+    "price_sar":349,
+    "image":["https://lego.saudiblocks.com/media/catalog/product/cache/a58d3ba7ac09cd7ef95239aa18768701/7/1/71843_P2.jpg"]
   }
 ]

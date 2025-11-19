@@ -1,54 +1,67 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin — Ninjago Market</title>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Ninjago Marketplace (Demo)</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <header class="site-header">
+    <div class="logo">Admin — Ninjago Marketplace</div>
+    <div><button id="btnLogout" class="btn small">Logout</button></div>
+  </header>
+
   <main class="container">
-    <h1>Admin</h1>
-    <div id="adminArea"></div>
+    <div id="loginArea">
+      <h2>Admin login</h2>
+      <p>Enter admin password</p>
+      <input id="adminPass" class="input" placeholder="Password">
+      <div style="margin-top:8px">
+        <button id="btnLogin" class="btn">Login</button>
+      </div>
+      <p class="hint">(This demo uses client-side password. Password: M.O.D8643)</p>
+    </div>
+
+    <div id="adminArea" style="display:none">
+      <h2>Orders</h2>
+      <div id="ordersList"></div>
+      <h2>Requests</h2>
+      <div id="requestsList"></div>
+      <h2>Points</h2>
+      <div id="pointsList"></div>
+    </div>
   </main>
 
 <script>
-const ADMIN_PASS = 'M.O.D8643'; // you requested this password be in the file
-function showLogin(){
-  document.getElementById('adminArea').innerHTML = `
-    <div style="max-width:420px"><input id="apass" class="input" placeholder="Admin password"><div style="margin-top:8px"><button id="alogin" class="btn">Unlock</button></div></div>
-  `;
-  document.getElementById('alogin').onclick = ()=> {
-    const v = document.getElementById('apass').value;
-    if(v === ADMIN_PASS){ showAdminUI(); } else { alert('Wrong password'); }
-  };
-}
-function showAdminUI(){
-  const orders = JSON.parse(localStorage.getItem('nm_orders')||'[]');
-  const data = JSON.parse(localStorage.getItem('nm_products')|| localStorage.getItem('products_json') || 'null');
-  const prods = data || 'local products.json (read-only)';
-  document.getElementById('adminArea').innerHTML = `
-    <div style="display:flex;gap:12px;flex-direction:column">
-      <div><h3>Orders (${orders.length})</h3><div>${orders.map(o=>`<div style="border:1px solid #ddd;margin-bottom:8px;padding:8px"><strong>${o.id}</strong> — ${o.user} — ${o.method} — SAR ${o.total}<div class="meta">${new Date(o.created).toLocaleString()}</div></div>`).join('') || '<div class="meta">No orders</div>'}</div></div>
-      <div><h3>Feedback</h3><div>${(JSON.parse(localStorage.getItem('nm_feedback')||'[]')).map(f=>`<div style="border:1px solid #ddd;padding:8px;margin-bottom:8px">${f.text}<div class="meta">by ${f.email||'guest'}</div></div>`).join('') || '<div class="meta">No feedback</div>'}</div></div>
-      <div><h3>Giftcards (create)</h3>
-        <input id="gcCode" class="input" placeholder="Code (e.g. GC-1)"><input id="gcBal" class="input" placeholder="Balance (SAR)" type="number">
-        <button id="gcCreate" class="btn small">Create</button>
-        <div id="gclist"></div>
-      </div>
-    </div>
-  `;
-  document.getElementById('gcCreate').onclick = ()=>{
-    const code = document.getElementById('gcCode').value.trim();
-    const bal = Number(document.getElementById('gcBal').value) || 0;
-    if(!code){ alert('Enter code'); return; }
-    const arr = JSON.parse(localStorage.getItem('nm_giftcards')||'[]');
-    arr.push({code, balance: bal});
-    localStorage.setItem('nm_giftcards', JSON.stringify(arr));
-    renderGiftList();
-  };
-  function renderGiftList(){ const arr = JSON.parse(localStorage.getItem('nm_giftcards')||'[]'); document.getElementById('gclist').innerHTML = arr.map(g=>`<div>${g.code} — SAR ${g.balance.toFixed(2)}</div>`).join('') || '<div class="meta">No cards</div>'; }
-  renderGiftList();
-}
+const ADMIN_PASSWORD = 'M.O.D8643';
+document.getElementById('btnLogin').onclick = ()=>{
+  const p = document.getElementById('adminPass').value.trim();
+  if(p === ADMIN_PASSWORD){
+    document.getElementById('loginArea').style.display = 'none';
+    document.getElementById('adminArea').style.display = '';
+    loadData();
+  } else alert('Wrong password');
+};
+document.getElementById('btnLogout').onclick = ()=> { document.getElementById('loginArea').style.display=''; document.getElementById('adminArea').style.display='none'; };
 
-showLogin();
+function loadData(){
+  const orders = JSON.parse(localStorage.getItem('orders_all') || '[]');
+  const reqs = JSON.parse(localStorage.getItem('requests') || '[]');
+  const ordersList = document.getElementById('ordersList');
+  ordersList.innerHTML = orders.length ? orders.map(o=>`<div style="border:1px solid rgba(0,0,0,0.06);padding:8px;border-radius:6px;margin-bottom:8px"><strong>${o.id}</strong> — ${o.email} — ${o.method} — SAR ${o.total}<div class="meta">Items: ${o.items ? o.items.map(i=>i.title).join(', ') : ''}</div></div>`).join('') : '<div class="meta">No orders</div>';
+  const requestsList = document.getElementById('requestsList');
+  requestsList.innerHTML = reqs.length ? reqs.map(r=>`<div class="req-item">${r.time?new Date(r.time).toLocaleString() : ''} — ${r.text}</div>`).join('') : '<div class="meta">No requests</div>';
+
+  // show points (scan localStorage keys)
+  const points = [];
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(k && k.startsWith('points_')) points.push({ email: k.replace('points_',''), points: Number(localStorage.getItem(k)) });
+  }
+  const pointsList = document.getElementById('pointsList');
+  pointsList.innerHTML = points.length ? points.map(p=>`<div>${p.email} — ${p.points} points</div>`).join('') : '<div class="meta">No points yet</div>';
+}
 </script>
 </body>
 </html>
