@@ -5,7 +5,7 @@
     "subtheme": "City",
     "title": "71799 — City Markets",
     "origin": "LEGO NINJAGO (Dragons Rising)",
-    "description": "Kids aged 14+ and LEGO® collectors can experience the unique excitement and vibrancy of the place where the ninja live and play with this NINJAGO® City Markets (71799) building set...",
+    "description": "Kids aged 14+ and LEGO® collectors can experience the unique excitement and vibrancy...",
     "condition": "New in box",
     "piece_count": 6163,
     "figures_count": 21,
@@ -24,7 +24,7 @@
     "subtheme": "Dragons",
     "title": "71829 — Lloyd’s Green Forest Dragon",
     "origin": "LEGO NINJAGO Dragons Rising",
-    "description": "Aerial dragon scenes with Lloyd from season 3.",
+    "description": "Boys and girls aged 6 and up can soar into the sky...",
     "condition": "New",
     "piece_count": 128,
     "figures_count": 2,
@@ -41,7 +41,7 @@
     "subtheme": "Vehicles",
     "title": "71816 — Zane’s Ice Motorcycle",
     "origin": "LEGO NINJAGO",
-    "description": "Zane’s Ice Motorcycle with ice blades.",
+    "description": "Zane’s Ice Motorcycle toy features moving wheels...",
     "condition": "New",
     "piece_count": 84,
     "figures_count": 1,
@@ -58,7 +58,7 @@
     "subtheme": "Dragons",
     "title": "71832 — Thunderfang, Dragon of Chaos",
     "origin": "LEGO NINJAGO",
-    "description": "Chaos dragon with 6 minifigures.",
+    "description": "The Thunderfang Dragon of Chaos features posable wings...",
     "condition": "New box — heavily damaged",
     "piece_count": 668,
     "figures_count": 6,
@@ -76,7 +76,7 @@
     "subtheme": "Mechs",
     "title": "71834 — Zane’s Ultra Combiner Mech",
     "origin": "LEGO NINJAGO 4-in-1",
-    "description": "Zane's Ultra Combiner Mech splits into 4 models.",
+    "description": "Zane's Ultra Combiner Mech separates into 4 models...",
     "condition": "New",
     "piece_count": 1187,
     "figures_count": 6,
@@ -109,7 +109,7 @@
     "subtheme": "Mechs",
     "title": "71827 — Zane’s Battle Suit Mech",
     "origin": "LEGO NINJAGO",
-    "description": "Posable mech with Zane, Wyldfyre, and Drix.",
+    "description": "Posable arms, rotating chest, includes 3 minifigures...",
     "condition": "New",
     "piece_count": 92,
     "figures_count": 3,
@@ -152,8 +152,6 @@
     "hard_to_find": false
   },
 
-  /* -------------------- BLIND BAGS -------------------- */
-
   {
     "id": "blind-dragon-rising",
     "category": "Blind Bags",
@@ -165,7 +163,7 @@
     "image": [
       "https://m.media-amazon.com/images/I/71-D3gQO6gL._AC_SL1000_.jpg"
     ],
-    "notes": "Guaranteed from NINJAGO Dragons Rising",
+    "notes": "Guaranteed Dragon Rising blind series",
     "hard_to_find": false
   },
 
@@ -199,37 +197,33 @@
     "hard_to_find": false
   },
 
-  /* -------------------- FIXED POLYBAG BLOCK -------------------- */
-
   {
     "id": "polyb-dragon-rising",
     "category": "Polybags",
     "subtheme": "Polybags",
     "title": "Dragon Rising — Polybag (Blind)",
-    "origin": "Polybags / seasonal",
+    "origin": "Polybags",
     "condition": "Sealed",
     "price_sar": 10,
     "image": [
       "https://www.lego.com/cdn/cs/set/assets/blt71d18d4fb84a78b2/30700_Box1_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"
     ],
-    "notes": "Dragon Rising polybag — blind random insert",
+    "notes": "Blind random polybag",
     "hard_to_find": false
   },
-
-  /* -------------------- FIGURES -------------------- */
 
   {
     "id": "fig-santa-garmadon",
     "category": "Figures",
     "subtheme": "Seasonal",
-    "title": "Santa Garmadon (minifigure)",
-    "origin": "Seasonal figure",
+    "title": "Santa Garmadon",
+    "origin": "Seasonal",
     "condition": "Loose — very good",
     "price_sar": 75,
     "image": [
       "https://www.brickeconomy.com/resources/images/minifigs/njo733_large.jpg"
     ],
-    "notes": "Most other single figs may be inside blind bags — request specific figures",
+    "notes": "Most other figs inside blind bags",
     "hard_to_find": true
   },
 
@@ -238,13 +232,13 @@
     "category": "Figures",
     "subtheme": "Promos",
     "title": "Deepstone Suit Kai",
-    "origin": "Promo set",
+    "origin": "Promo",
     "condition": "Sealed",
     "price_sar": 80,
     "image": [
       "https://img.bricklink.com/ItemImage/ML/njo0261.png"
     ],
-    "notes": "Request other figures in blind bags",
+    "notes": "Request other figs inside blind bags",
     "hard_to_find": true
   },
 
@@ -252,16 +246,14 @@
     "id": "fig-young-wu-foil",
     "category": "Figures",
     "subtheme": "Promos",
-    "title": "Young Wu — Foil Pack (Sealed)",
+    "title": "Young Wu — Foil Pack",
+    "condition": "Sealed",
     "price_sar": 55,
     "image": [
       "https://m.media-amazon.com/images/I/61f6CoxHH3L.jpg"
     ],
-    "condition": "Sealed",
     "hard_to_find": false
   },
-
-  /* -------------------- BOOKS -------------------- */
 
   {
     "id": "books-shatterspin",
@@ -297,8 +289,8 @@
     "id": "misc-subscription",
     "category": "Miscs",
     "subtheme": "Subscription",
-    "title": "Monthly subscription (curated Ninjago set)",
-    "origin": "Subscription service",
+    "title": "Monthly Subscription (Curated Set)",
+    "origin": "Subscription",
     "condition": "Service",
     "price_sar": 32,
     "price_discounted": 15,
@@ -306,7 +298,7 @@
     "image": [
       "https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"
     ],
-    "notes": "Includes curated Ninjago set + legal content",
+    "notes": "Includes one curated Ninjago set",
     "hard_to_find": false
   },
 
@@ -315,13 +307,13 @@
     "category": "Miscs",
     "subtheme": "Pick-a-brick",
     "title": "Pick-a-brick cup — small",
-    "origin": "Loose pieces service",
+    "origin": "Loose pieces",
     "condition": "Service",
     "price_sar": 89,
     "image": [
       "https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"
     ],
-    "notes": "Small pick-a-brick cup",
+    "notes": "Small cup",
     "hard_to_find": false
   },
 
@@ -330,13 +322,13 @@
     "category": "Miscs",
     "subtheme": "Pick-a-brick",
     "title": "Pick-a-brick cup — big",
-    "origin": "Loose pieces service",
+    "origin": "Loose pieces",
     "condition": "Service",
     "price_sar": 129,
     "image": [
       "https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"
     ],
-    "notes": "Big pick-a-brick cup",
+    "notes": "Big cup",
     "hard_to_find": false
   },
 
@@ -344,13 +336,13 @@
     "id": "book-dark-island-1",
     "category": "Books",
     "subtheme": "Dark Island",
-    "title": "Dark Island Trilogy — Part One (comic / hardcover)",
+    "title": "Dark Island Trilogy — Part One",
     "price_sar": 200,
     "image": [
       "https://m.media-amazon.com/images/I/511+6Xj1piL._UF894,1000_QL80_.jpg"
     ],
     "condition": "Like new",
-    "notes": "Comic / Hardcover",
+    "notes": "Comic / hardcover",
     "hard_to_find": false
   },
 
@@ -372,7 +364,7 @@
     "id": "book-spinjitzu-1",
     "category": "Books",
     "subtheme": "Spinjitzu",
-    "title": "Spinjitzu Brother — Part 1 (Hardcover)",
+    "title": "Spinjitzu Brother — Part 1",
     "price_sar": 65,
     "image": [
       "https://m.media-amazon.com/images/I/81-9ae3Cq8L._AC_UF894,1000_QL80_.jpg"
@@ -386,7 +378,7 @@
     "id": "book-spinjitzu-2",
     "category": "Books",
     "subtheme": "Spinjitzu",
-    "title": "Spinjitzu Brother — Part 2 (Hardcover)",
+    "title": "Spinjitzu Brother — Part 2",
     "price_sar": 55,
     "image": [
       "https://m.media-amazon.com/images/I/81jtZFSRVQL._UF894,1000_QL80_.jpg"
@@ -400,7 +392,7 @@
     "id": "book-spinjitzu-1-rent",
     "category": "Books (Rent)",
     "subtheme": "Spinjitzu",
-    "title": "Spinjitzu Brother — Part 1 — Rent (1 week)",
+    "title": "Spinjitzu Brother — Part 1 — Rent",
     "price_sar": 49,
     "image": [
       "https://m.media-amazon.com/images/I/81-9ae3Cq8L._AC_UF894,1000_QL80_.jpg"
@@ -414,7 +406,7 @@
     "id": "book-spinjitzu-2-rent",
     "category": "Books (Rent)",
     "subtheme": "Spinjitzu",
-    "title": "Spinjitzu Brother — Part 2 — Rent (1 week)",
+    "title": "Spinjitzu Brother — Part 2 — Rent",
     "price_sar": 37,
     "image": [
       "https://m.media-amazon.com/images/I/81jtZFSRVQL._UF894,1000_QL80_.jpg"
