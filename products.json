@@ -5,7 +5,7 @@
     "subtheme": "City",
     "title": "71799 — City Markets",
     "origin": "LEGO NINJAGO (Dragons Rising)",
-    "description": "Kids aged 14+ and LEGO® collectors can experience the unique excitement and vibrancy of the place where the ninja live and play with this NINJAGO® City Markets (71799) building set. ... (full description provided in admin).",
+    "description": "Kids aged 14+ and LEGO® collectors can experience the unique excitement and vibrancy of the place where the ninja live and play with this NINJAGO® City Markets (71799) building set...",
     "condition": "New in box",
     "piece_count": 6163,
     "figures_count": 21,
@@ -17,13 +17,14 @@
     "recommended": ["sets-71816"],
     "hard_to_find": false
   },
+
   {
     "id": "sets-71829",
     "category": "Sets",
     "subtheme": "Dragons",
     "title": "71829 — Lloyd’s Green Forest Dragon",
     "origin": "LEGO NINJAGO Dragons Rising",
-    "description": "Boys and girls aged 6 and up can soar into the sky to recreate aerial scenes from season 3 of the NINJAGO® Dragons Rising TV show with Lloyd’s Green Forest Dragon. It features a posable body and saddle, plus 2 minifigures.",
+    "description": "Aerial dragon scenes with Lloyd from season 3.",
     "condition": "New",
     "piece_count": 128,
     "figures_count": 2,
@@ -33,13 +34,14 @@
     ],
     "hard_to_find": false
   },
+
   {
     "id": "sets-71816",
     "category": "Sets",
     "subtheme": "Vehicles",
     "title": "71816 — Zane’s Ice Motorcycle",
     "origin": "LEGO NINJAGO",
-    "description": "Zane’s Ice Motorcycle toy (71816) has moving wheels, ice blades, and comes with a Zane minifigure in tournament armor.",
+    "description": "Zane’s Ice Motorcycle with ice blades.",
     "condition": "New",
     "piece_count": 84,
     "figures_count": 1,
@@ -49,13 +51,14 @@
     ],
     "hard_to_find": false
   },
+
   {
     "id": "sets-71832",
     "category": "Sets",
     "subtheme": "Dragons",
-    "title": "71832 — Thundefang, Dragon of Chaos",
+    "title": "71832 — Thunderfang, Dragon of Chaos",
     "origin": "LEGO NINJAGO",
-    "description": "The Thunderfang Dragon of Chaos (71832) features posable wings, jaw, a stud-shooter under each wing, and 6 minifigures.",
+    "description": "Chaos dragon with 6 minifigures.",
     "condition": "New box — heavily damaged",
     "piece_count": 668,
     "figures_count": 6,
@@ -66,13 +69,14 @@
     "notes": "Box heavily damaged",
     "hard_to_find": false
   },
+
   {
     "id": "sets-71834",
     "category": "Sets",
     "subtheme": "Mechs",
     "title": "71834 — Zane’s Ultra Combiner Mech",
     "origin": "LEGO NINJAGO 4-in-1",
-    "description": "Zane's Ultra Combiner Mech (71834) can be separated into 4 smaller models: a dragon, a jet, a car, and a figure.",
+    "description": "Zane's Ultra Combiner Mech splits into 4 models.",
     "condition": "New",
     "piece_count": 1187,
     "figures_count": 6,
@@ -82,6 +86,7 @@
     ],
     "hard_to_find": false
   },
+
   {
     "id": "sets-71818",
     "category": "Sets",
@@ -97,13 +102,14 @@
     ],
     "hard_to_find": false
   },
+
   {
     "id": "sets-71827",
     "category": "Sets",
     "subtheme": "Mechs",
     "title": "71827 — Zane’s Battle Suit Mech",
     "origin": "LEGO NINJAGO",
-    "description": "The LEGO NINJAGO Zane’s Battle Suit Mech (71827) features posable arms, rotating chest, and comes with Zane, Wyldfyre and Drix minifigures.",
+    "description": "Posable mech with Zane, Wyldfyre, and Drix.",
     "condition": "New",
     "piece_count": 92,
     "figures_count": 3,
@@ -113,6 +119,7 @@
     ],
     "hard_to_find": false
   },
+
   {
     "id": "sets-71838",
     "category": "Sets",
@@ -128,6 +135,7 @@
     ],
     "hard_to_find": false
   },
+
   {
     "id": "sets-71843",
     "category": "Sets",
@@ -143,6 +151,9 @@
     ],
     "hard_to_find": false
   },
+
+  /* -------------------- BLIND BAGS -------------------- */
+
   {
     "id": "blind-dragon-rising",
     "category": "Blind Bags",
@@ -154,9 +165,10 @@
     "image": [
       "https://m.media-amazon.com/images/I/71-D3gQO6gL._AC_SL1000_.jpg"
     ],
-    "notes": "Guaranteed from NINJAGO Dragons Rising blind series",
+    "notes": "Guaranteed from NINJAGO Dragons Rising",
     "hard_to_find": false
   },
+
   {
     "id": "blind-army",
     "category": "Blind Bags",
@@ -171,6 +183,7 @@
     "notes": "",
     "hard_to_find": false
   },
+
   {
     "id": "blind-allies",
     "category": "Blind Bags",
@@ -185,6 +198,26 @@
     "notes": "",
     "hard_to_find": false
   },
+
+  /* -------------------- FIXED POLYBAG BLOCK -------------------- */
+
+  {
+    "id": "polyb-dragon-rising",
+    "category": "Polybags",
+    "subtheme": "Polybags",
+    "title": "Dragon Rising — Polybag (Blind)",
+    "origin": "Polybags / seasonal",
+    "condition": "Sealed",
+    "price_sar": 10,
+    "image": [
+      "https://www.lego.com/cdn/cs/set/assets/blt71d18d4fb84a78b2/30700_Box1_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"
+    ],
+    "notes": "Dragon Rising polybag — blind random insert",
+    "hard_to_find": false
+  },
+
+  /* -------------------- FIGURES -------------------- */
+
   {
     "id": "fig-santa-garmadon",
     "category": "Figures",
@@ -196,9 +229,10 @@
     "image": [
       "https://www.brickeconomy.com/resources/images/minifigs/njo733_large.jpg"
     ],
-    "notes": "Most other single figs may be inside blind bags — request specific figures if needed",
-    "hard_to_find": false
+    "notes": "Most other single figs may be inside blind bags — request specific figures",
+    "hard_to_find": true
   },
+
   {
     "id": "fig-deepstone-kai",
     "category": "Figures",
@@ -210,9 +244,10 @@
     "image": [
       "https://img.bricklink.com/ItemImage/ML/njo0261.png"
     ],
-    "notes": "Request other figures inside blind bags",
-    "hard_to_find": false
+    "notes": "Request other figures in blind bags",
+    "hard_to_find": true
   },
+
   {
     "id": "fig-young-wu-foil",
     "category": "Figures",
@@ -225,6 +260,9 @@
     "condition": "Sealed",
     "hard_to_find": false
   },
+
+  /* -------------------- BOOKS -------------------- */
+
   {
     "id": "books-shatterspin",
     "category": "Books",
@@ -239,6 +277,7 @@
     "notes": "",
     "hard_to_find": false
   },
+
   {
     "id": "books-shatterspin-rent",
     "category": "Books (Rent)",
@@ -253,6 +292,7 @@
     "notes": "1 week rental",
     "hard_to_find": false
   },
+
   {
     "id": "misc-subscription",
     "category": "Miscs",
@@ -266,9 +306,10 @@
     "image": [
       "https://static.wixstatic.com/media/be9e11_f5bd4cd0589a49e9842bfcaa6e9b0002~mv2.png/v1/fit/w_500,h_500,q_90/file.png"
     ],
-    "notes": "Includes one curated Ninjago set and curated legal content.",
+    "notes": "Includes curated Ninjago set + legal content",
     "hard_to_find": false
   },
+
   {
     "id": "pickbrick-small",
     "category": "Miscs",
@@ -283,6 +324,7 @@
     "notes": "Small pick-a-brick cup",
     "hard_to_find": false
   },
+
   {
     "id": "pickbrick-big",
     "category": "Miscs",
@@ -297,6 +339,7 @@
     "notes": "Big pick-a-brick cup",
     "hard_to_find": false
   },
+
   {
     "id": "book-dark-island-1",
     "category": "Books",
@@ -307,9 +350,10 @@
       "https://m.media-amazon.com/images/I/511+6Xj1piL._UF894,1000_QL80_.jpg"
     ],
     "condition": "Like new",
-    "notes": "Comic / hardcover",
+    "notes": "Comic / Hardcover",
     "hard_to_find": false
   },
+
   {
     "id": "book-quest-of-lost-power",
     "category": "Books",
@@ -323,6 +367,7 @@
     "notes": "Kinda damaged",
     "hard_to_find": false
   },
+
   {
     "id": "book-spinjitzu-1",
     "category": "Books",
@@ -336,6 +381,7 @@
     "notes": "",
     "hard_to_find": false
   },
+
   {
     "id": "book-spinjitzu-2",
     "category": "Books",
@@ -349,6 +395,7 @@
     "notes": "",
     "hard_to_find": false
   },
+
   {
     "id": "book-spinjitzu-1-rent",
     "category": "Books (Rent)",
@@ -362,6 +409,7 @@
     "notes": "1 week rental",
     "hard_to_find": false
   },
+
   {
     "id": "book-spinjitzu-2-rent",
     "category": "Books (Rent)",
