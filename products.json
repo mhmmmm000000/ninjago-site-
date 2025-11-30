@@ -144,6 +144,20 @@
     "hard_to_find": false
   },
   {
+    "id": "Island-Booster-Pack",
+    "category": "Blind Bags",
+    "subtheme": "The Island",
+    "title": "BoosterPack — The Island",
+    "origin": "Blind bag series",
+    "condition": "Sealed",
+    "price_sar": 15,
+    "image": [
+      "https://images-eu.ssl-images-amazon.com/images/I/71F7ddXUk2L._AC_UL495_SR435,495_.jpg"
+    ],
+    "notes": "",
+    "hard_to_find": true
+  },
+  {
     "id": "blind-dragon-rising",
     "category": "Blind Bags",
     "subtheme": "Dragon Rising",
@@ -152,9 +166,9 @@
     "condition": "Sealed",
     "price_sar": 10,
     "image": [
-      "https://m.media-amazon.com/images/I/71-D3gQO6gL._AC_SL1000_.jpg"
+      "https://i.ebayimg.com/images/g/O1UAAOSwN8NniKGo/s-l1600.webp"
     ],
-    "notes": "Guaranteed from NINJAGO Dragons Rising blind series",
+    "notes": "",
     "hard_to_find": false
   },
   {
@@ -197,7 +211,7 @@
       "https://www.brickeconomy.com/resources/images/minifigs/njo733_large.jpg"
     ],
     "notes": "Most other single figs may be inside blind bags — request specific figures if needed",
-    "hard_to_find": false
+    "hard_to_find": true
   },
   {
     "id": "fig-deepstone-kai",
@@ -211,7 +225,7 @@
       "https://img.bricklink.com/ItemImage/ML/njo0261.png"
     ],
     "notes": "Request other figures inside blind bags",
-    "hard_to_find": false
+    "hard_to_find": true
   },
   {
     "id": "fig-young-wu-foil",
