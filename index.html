@@ -3,35 +3,73 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Ninjago Marketplace</title>
+<title>Ninjago Vault</title>
+
+<!-- Tailwind (browser build for quick styling) -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
 <link rel="stylesheet" href="styles.css">
+
+<style>
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.6s ease-out forwards; }
+  /* ensure your original .site-header still looks okay in tailwind layout */
+  .site-header { backdrop-filter: blur(6px); }
+</style>
 </head>
-<body>
-  <header class="site-header">
-    <div class="brand">
-      <div class="logo">Ninjago Marketplace</div>
-      <div class="subtitle">Browse • Request • Pay</div>
-    </div>
+<body class="bg-gray-900 text-gray-100">
 
-    <div class="header-right">
-      <input id="search" class="search" placeholder="Search sets, figures, books...">
-      <button id="themeToggle" class="btn small">🌓</button>
-      <button id="signupBtn" class="btn small">Sign up / Sign in</button>
-      <button id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></button>
-      <a class="btn small" href="admin.html" target="_blank" rel="noopener noreferrer">Admin</a>
-    </div>
-  </header>
+  <!-- top nav styled like the tailwind example, but maintains original elements used by your script -->
+  <nav class="backdrop-blur-md bg-white/5 dark:bg-gray-800/30 shadow-lg border-b border-gray-700 fixed top-0 w-full z-30">
+    <div class="max-w-6xl mx-auto px-6 py-3 flex justify-between items-center">
+      <div class="flex items-center gap-4">
+        <!-- use your favicon/logo here if you like -->
+        <img src="assets/favicon.png" alt="logo" class="w-10 h-10 rounded-md" onerror="this.style.display='none'">
+        <div>
+          <div class="text-xl font-extrabold tracking-tight">Ninjago Vault</div>
+          <div class="text-sm text-gray-400">Browse • Request • Pay</div>
+        </div>
+      </div>
 
-  <nav class="main-nav">
-    <button class="nav-item" data-view="catalog">Catalog</button>
-    <button class="nav-item" data-view="rewards">Rewards</button>
-    <button class="nav-item" data-view="requests">Requests</button>
-    <button class="nav-item" data-view="feedback">Feedback</button>
+      <div class="flex items-center gap-3">
+        <a href="https://discord.gg/pzygJPJSCG" target="_blank" class="px-3 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition flex items-center gap-2 text-white text-sm">
+          Join Discord
+        </a>
+        <button id="signupBtn" class="btn small bg-transparent border border-white/10 px-3 py-1 rounded-md text-sm">Sign up / Sign in</button>
+        <button id="cartBtn" class="btn bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md text-sm">🛒 <span id="cartCount">0</span></button>
+      </div>
+    </div>
   </nav>
 
-  <main class="container">
+  <!-- hero / spacer so content isn't hidden under fixed nav -->
+  <div class="pt-20"></div>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <div class="fade-up text-center mb-10">
+      <h1 class="text-5xl font-extrabold">Welcome to Ninjago Vault</h1>
+      <p class="mt-3 text-gray-400">Find sets, blind bags, polybags, books and more.</p>
+    </div>
+
+    <!-- search + controls (kept IDs so JS still works) -->
+    <div class="mb-6 flex gap-3 items-center">
+      <input id="search" class="search flex-1 px-4 py-2 rounded-lg border border-gray-700 bg-transparent" placeholder="Search sets, figures, books...">
+      <button id="themeToggle" class="btn small px-3 py-2 rounded-lg bg-transparent border border-white/10">🌓</button>
+      <a class="btn small px-3 py-2 rounded-lg bg-transparent border border-white/10" href="admin.html" target="_blank" rel="noopener noreferrer">Admin</a>
+    </div>
+
+    <!-- nav menu (kept your original .main-nav so script attaches) -->
+    <nav class="main-nav mb-6">
+      <button class="nav-item" data-view="catalog">Catalog</button>
+      <button class="nav-item" data-view="rewards">Rewards</button>
+      <button class="nav-item" data-view="requests">Requests</button>
+      <button class="nav-item" data-view="feedback">Feedback</button>
+    </nav>
+
     <div class="hint">Tip: click a category tile (e.g., Sets). Click the product image/box to view details.</div>
-    <div id="mainArea" class="main-area"></div>
+    <div id="mainArea" class="main-area mt-4"></div>
   </main>
 
   <!-- modal -->
@@ -39,7 +77,7 @@
     <div id="modal" class="modal" role="dialog" aria-modal="true"></div>
   </div>
 
-  <!-- sign in modal (hidden) -->
+  <!-- signin modal -->
   <div id="signinBackdrop" class="modal-backdrop" aria-hidden="true">
     <div id="signinModal" class="modal" role="dialog" aria-modal="true">
       <h2>Sign up / Sign in</h2>
@@ -176,7 +214,7 @@ function renderCategoryProducts(category, subfilter){
   if(search) items = items.filter(p=> (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(search));
   if(items.length === 0){ cont.innerHTML = '<p class="hint">No items found.</p>'; return; }
 
-  const grid = document.createElement('div'); grid.className='grid';
+  const grid = document.createElement('div'); grid.className = 'grid';
   items.forEach((p,i)=>{
     const img = Array.isArray(p.image) ? p.image[0] : p.image;
     const hard = p.hard_to_find ? `<div class="hard">Hard to find</div>` : '';
@@ -231,7 +269,7 @@ function attachSearch(){
       if(!q) return;
       const results = products.filter(p => (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(q.toLowerCase()));
       if(results.length) {
-        const resWrap = document.createElement('div'); resWrap.className='search-results';
+        const resWrap = document.createElement('div'); resWrap.className = 'search-results';
         resWrap.innerHTML = `<h3 class="section-title">Quick results</h3><div class="grid"></div>`;
         results.forEach(p=> resWrap.querySelector('.grid').insertAdjacentHTML('beforeend', `
           <div class="card show">
@@ -302,6 +340,8 @@ function openDetail(id){
 }
 function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=>$('#modalBackdrop').classList.remove('show'),200); }
 
+/* ---------- rest of your original JS unchanged ---------- */
+
 /* ---------- Cart (per-user) ---------- */
 function loadCart(){
   if(!userEmail) { cart = []; return; }
@@ -331,7 +371,6 @@ $('#cartBtn').onclick = ()=> { if(!userEmail) promptSignin('You must sign in to 
 
 /* ---------- Checkout ---------- */
 function openCheckout(){
-  // show checkout modal, separate buttons for cash and giftcard
   if(!userEmail){ promptSignin('You must sign in to checkout.'); return; }
   $('#modal').innerHTML = checkoutHtml();
   $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
@@ -375,7 +414,6 @@ function handleCashPay(){
   const total = cart.reduce((s,i)=>s + i.price * i.qty, 0);
   const order = { id:'order-'+Date.now(), email:userEmail, method:'cash', total, date, msg, items:cart.slice(), created:Date.now() };
   saveOrder(order);
-  // reward points: 0.5 per SAR
   addPointsFor(userEmail, total);
   cart = []; saveCart(); renderCartCount(); closeModal(); alert('Cash reservation saved. Order ID: ' + order.id);
 }
@@ -383,11 +421,10 @@ function handleGiftPay(){
   const code = $('#giftCode').value.trim() || '';
   const amount = Number($('#giftAmount').value) || 0;
   const total = cart.reduce((s,i)=>s + i.price * i.qty, 0);
-  // simple demo: if amount >= total -> success, else partial
   if(amount < total){ alert('Partial payment recorded (demo). Please pay remaining on pickup.'); }
   const order = { id:'order-'+Date.now(), email:userEmail, method:'giftcard', total, paid:amount, code, items:cart.slice(), created:Date.now() };
   saveOrder(order);
-  addPointsFor(userEmail, Math.min(total, amount)); // give points only for paid amount here
+  addPointsFor(userEmail, Math.min(total, amount));
   cart = []; saveCart(); renderCartCount(); closeModal(); alert('Giftcard payment processed (demo). Order ID: ' + order.id);
 }
 function saveOrder(order){
@@ -406,7 +443,6 @@ $('#btnSaveEmail').onclick = ()=> {
   if(!em || !em.includes('@')){ alert('Enter a valid email'); return; }
   userEmail = em;
   localStorage.setItem('nm_user_email', userEmail);
-  // load user cart
   loadCart();
   renderCartCount();
   closeSignin();
@@ -498,7 +534,6 @@ function renderFeedbackView(){
 }
 
 /* ---------- Admin helper (client-side) ---------- */
-/* Admin page is separate (admin.html) and checks password M.O.D8643 */
 function isLoggedIn(){ return !!userEmail; }
 
 /* ---------- Keyboard close modal ---------- */

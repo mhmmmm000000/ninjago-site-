@@ -14,7 +14,9 @@
       "https://www.lego.com/cdn/cs/set/assets/blt17452f7f0b4a4d08/71799.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"
     ],
     "notes": "",
-    "recommended": ["sets-71816"],
+    "recommended": [
+      "sets-71816"
+    ],
     "hard_to_find": false
   },
   {
@@ -388,5 +390,36 @@
     "condition": "Hardcover — good",
     "notes": "1 week rental",
     "hard_to_find": false
+  },
+
+  {
+    "id": "polyb-30070",
+    "category": "Polybags",
+    "subtheme": "Polybags",
+    "theme": "Ninjago",
+    "title": "30070 — Arin vs Dragonian (Polybag)",
+    "origin": "Polybags / seasonal",
+    "condition": "Sealed",
+    "price_sar": 35,
+    "image": [
+      "https://www.lego.com/cdn/cs/set/assets/blt71d18d4fb84a78b2/30700_Box1_v39_en-gb.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"
+    ],
+    "notes": "Arin vs Dragonian polybag (seasonal polybag)",
+    "hard_to_find": false
+  },
+  {
+    "id": "polyb-30674",
+    "category": "Polybags",
+    "subtheme": "Polybags",
+    "theme": "Ninjago",
+    "title": "30674 — Zane 4-in-1 Car (Polybags, red)",
+    "origin": "Polybags",
+    "condition": "Sealed",
+    "price_sar": 30,
+    "image": [
+      "https://www.lego.com/cdn/cs/set/assets/blt9bfd6b7bdc3863f3/30674_Box1_v39.png?format=webply&fit=bounds&quality=70&width=800&height=800&dpr=1.5"
+    ],
+    "notes": "Zane 4-in-1 Car polybag (red)",
+    "hard_to_find": true
   }
 ]
