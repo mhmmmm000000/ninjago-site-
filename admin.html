@@ -1,67 +1,60 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin — Ninjago Marketplace (Demo)</title>
-<link rel="stylesheet" href="styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ninjago Vault — Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body>
-  <header class="site-header">
-    <div class="logo">Admin — Ninjago Marketplace</div>
-    <div><button id="btnLogout" class="btn small">Logout</button></div>
-  </header>
-
-  <main class="container">
-    <div id="loginArea">
-      <h2>Admin login</h2>
-      <p>Enter admin password</p>
-      <input id="adminPass" class="input" placeholder="Password">
-      <div style="margin-top:8px">
-        <button id="btnLogin" class="btn">Login</button>
-      </div>
-      <p class="hint">(This demo uses client-side password. Password: M.O.D8643)</p>
+<body class="bg-gray-900 text-gray-100">
+  <div class="max-w-6xl mx-auto px-6 py-8">
+    <h1 class="text-3xl font-bold">Admin — Orders</h1>
+    <div id="accessNotice" class="mt-4"></div>
+    <div id="ordersArea" class="mt-6"></div>
+    <div class="mt-6">
+      <button id="clearOrders" class="px-4 py-2 rounded-xl bg-red-600">Clear orders (local demo)</button>
     </div>
-
-    <div id="adminArea" style="display:none">
-      <h2>Orders</h2>
-      <div id="ordersList"></div>
-      <h2>Requests</h2>
-      <div id="requestsList"></div>
-      <h2>Points</h2>
-      <div id="pointsList"></div>
-    </div>
-  </main>
+  </div>
 
 <script>
-const ADMIN_PASSWORD = 'M.O.D8643';
-document.getElementById('btnLogin').onclick = ()=>{
-  const p = document.getElementById('adminPass').value.trim();
-  if(p === ADMIN_PASSWORD){
-    document.getElementById('loginArea').style.display = 'none';
-    document.getElementById('adminArea').style.display = '';
-    loadData();
-  } else alert('Wrong password');
-};
-document.getElementById('btnLogout').onclick = ()=> { document.getElementById('loginArea').style.display=''; document.getElementById('adminArea').style.display='none'; };
-
-function loadData(){
-  const orders = JSON.parse(localStorage.getItem('orders_all') || '[]');
-  const reqs = JSON.parse(localStorage.getItem('requests') || '[]');
-  const ordersList = document.getElementById('ordersList');
-  ordersList.innerHTML = orders.length ? orders.map(o=>`<div style="border:1px solid rgba(0,0,0,0.06);padding:8px;border-radius:6px;margin-bottom:8px"><strong>${o.id}</strong> — ${o.email} — ${o.method} — SAR ${o.total}<div class="meta">Items: ${o.items ? o.items.map(i=>i.title).join(', ') : ''}</div></div>`).join('') : '<div class="meta">No orders</div>';
-  const requestsList = document.getElementById('requestsList');
-  requestsList.innerHTML = reqs.length ? reqs.map(r=>`<div class="req-item">${r.time?new Date(r.time).toLocaleString() : ''} — ${r.text}</div>`).join('') : '<div class="meta">No requests</div>';
-
-  // show points (scan localStorage keys)
-  const points = [];
-  for(let i=0;i<localStorage.length;i++){
-    const k = localStorage.key(i);
-    if(k && k.startsWith('points_')) points.push({ email: k.replace('points_',''), points: Number(localStorage.getItem(k)) });
-  }
-  const pointsList = document.getElementById('pointsList');
-  pointsList.innerHTML = points.length ? points.map(p=>`<div>${p.email} — ${p.points} points</div>`).join('') : '<div class="meta">No points yet</div>';
+function showAccessDenied(){
+  document.getElementById('accessNotice').innerHTML = '<div class="text-red-400">Access denied — admin unlock not found. Use the secret Ctrl+Shift + click on the site logo to open admin.</div>';
+  document.getElementById('ordersArea').innerHTML = '';
+  document.getElementById('clearOrders').style.display = 'none';
 }
+
+function loadOrders(){
+  if(sessionStorage.getItem('admin_unlocked') !== '1') {
+    showAccessDenied();
+    return;
+  }
+  document.getElementById('accessNotice').innerHTML = '<div class="text-green-400">Admin access OK for this session.</div>';
+  const all = JSON.parse(localStorage.getItem('orders_all') || '[]').reverse();
+  if(all.length === 0) {
+    document.getElementById('ordersArea').innerHTML = '<div class="text-gray-400 mt-4">No orders yet.</div>';
+    return;
+  }
+  document.getElementById('ordersArea').innerHTML = all.map(o => {
+    return `<div class="border rounded-xl p-4 mb-3 bg-gray-800">
+      <div class="flex justify-between"><div><strong>Order ID:</strong> ${o.id}</div><div class="text-sm text-gray-400">${new Date(o.created).toLocaleString()}</div></div>
+      <div class="mt-2"><strong>Email:</strong> ${o.email}</div>
+      <div class="mt-2"><strong>Method:</strong> ${o.method} ${o.paid ? ' • paid: ' + o.paid : ''}</div>
+      <div class="mt-2"><strong>Total:</strong> SAR ${o.total}</div>
+      <div class="mt-2"><strong>Items:</strong> ${ (o.items||[]).map(it=>escapeHtml(it.title) + ' ×'+it.qty).join(', ') }</div>
+      <div class="mt-2 text-sm text-gray-400">Note: this admin is client-side demo — orders stored in localStorage.</div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+document.getElementById('clearOrders').onclick = ()=>{
+  if(!confirm('Clear all orders from localStorage for this browser?')) return;
+  localStorage.removeItem('orders_all');
+  loadOrders();
+};
+
+loadOrders();
 </script>
 </body>
 </html>
