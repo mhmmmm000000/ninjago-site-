@@ -5,112 +5,175 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Ninjago Vault</title>
 
-<!-- Tailwind in-browser: same CDN used in your example -->
+<!-- Tailwind (optional) + fallback fonts -->
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 <style>
   :root{
-    --accent: #00c853;
-    --muted: #9aa4b2;
+    --bg:#0b0f13; --surface:#0f1720; --card:#0f1720; --muted:#9aa4b2; --text:#e6eef6; --accent:#00c853; --price:#ff6b6b; --glass:rgba(255,255,255,0.03);
+  }
+  :root[data-theme="light"]{ --bg:#fff; --surface:#f6f7f9; --card:#fff; --muted:#6b7280; --text:#111827; --accent:#0b8f5b; --price:#d22b2b; --glass:rgba(0,0,0,0.04); }
+
+  html,body{height:100%}
+  body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .25s,color .25s}
+  .site-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:var(--surface);border-bottom:1px solid rgba(255,255,255,0.04);position:sticky;top:0;z-index:40}
+  .brand{display:flex;flex-direction:column}
+  .logo{font-weight:900;font-size:18px;cursor:pointer;user-select:none}
+  .subtitle{color:var(--muted);font-size:13px}
+  .header-right{display:flex;align-items:center;gap:10px}
+  .search{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);min-width:200px}
+  .btn{background:#111827;color:#fff;padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+  .btn.small{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px 8px;font-weight:700;color:var(--text)}
+  .container{max-width:1200px;margin:18px auto;padding:0 16px}
+  .hint{color:var(--muted);margin-bottom:12px}
+
+  .main-nav{display:flex;gap:8px;align-items:center;padding:8px 16px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,0.02);background:linear-gradient(0deg, rgba(0,0,0,0.02), transparent)}
+  .nav-item{background:transparent;border:0;color:var(--muted);padding:8px 10px;border-radius:8px;cursor:pointer}
+  .nav-item.active{color:var(--text);background:rgba(255,255,255,0.02);transform:translateY(-2px)}
+  .categories-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:12px}
+  .category-tile{background:var(--card);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transform:translateY(8px);opacity:0;transition:all .45s cubic-bezier(.2,.9,.2,1)}
+  .category-tile.show{opacity:1;transform:none}
+  .cat-emoji{font-size:32px}
+  .cat-title{font-weight:700}
+  .cat-count{color:var(--muted);font-size:13px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .card{background:var(--card);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.03);opacity:0;transform:translateY(14px);transition:all .45s cubic-bezier(.2,.9,.2,1);display:flex;flex-direction:column;gap:6px}
+  .card.show{opacity:1;transform:none}
+  .card .card-image{position:relative;cursor:pointer;border-radius:8px;overflow:hidden}
+  .card img{width:100%;height:180px;object-fit:cover;display:block;transition:transform .35s ease}
+  .card:hover img{transform:scale(1.03)}
+  .card h3{margin:6px 0 4px;font-size:16px;color:var(--text)}
+  .meta{color:var(--muted);font-size:13px}
+  .price{font-weight:800;color:var(--price);margin-top:6px}
+  .contact{display:flex;gap:8px;margin-top:10px;align-items:center}
+  .hard{position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.65);padding:6px;border-radius:6px;font-weight:700;font-size:12px;color:#fff}
+
+  /* modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:80}
+  .modal-backdrop.show{display:flex}
+  .modal{background:var(--card);width:92%;max-width:980px;border-radius:12px;padding:18px;color:var(--text);box-shadow:0 10px 40px rgba(0,0,0,0.4);transform:scale(.98) translateY(8px);opacity:0;transition:all .22s ease}
+  .modal.show{transform:none;opacity:1}
+  .modal-grid{display:grid;grid-template-columns:1fr 320px;gap:20px}
+  .gallery-main img{width:100%;height:320px;object-fit:contain;border-radius:8px;background:var(--glass)}
+  .gallery-thumbs{display:flex;gap:8px;margin-top:8px;overflow:auto}
+  .gallery-thumbs img{width:72px;height:56px;object-fit:cover;border-radius:6px;cursor:pointer;opacity:.9}
+  .gthumb.active{outline:2px solid var(--accent)}
+  .rec{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .rec img{width:64px;height:48px;object-fit:cover;border-radius:6px}
+
+  .cart-mini{background:var(--surface);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
+  .cart-list{max-height:220px;overflow:auto;margin-top:8px}
+  .order-summary{background:var(--glass);padding:12px;border-radius:8px;margin-top:10px}
+  .checkout-forms{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .input,.textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)}
+  .textarea{min-height:80px}
+  .cart-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .cart-row img{width:48px;height:40px;object-fit:cover;border-radius:6px}
+
+  .chat-floating{position:fixed;right:18px;bottom:18px;width:300px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.03);background:var(--card);z-index:90;box-shadow:0 8px 30px rgba(0,0,0,0.4)}
+  .chat-head{padding:8px 10px;background:var(--surface);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.02)}
+  .chat-body{padding:10px}
+  .chat{height:160px;overflow:auto;padding:8px;border-radius:8px;background:var(--glass);display:flex;flex-direction:column;gap:8px}
+  .msg{max-width:78%;padding:8px 10px;border-radius:8px}
+  .msg.user{align-self:flex-end;background:#111827;color:#fff}
+  .msg.owner{align-self:flex-start;background:rgba(255,255,255,0.06);color:var(--text)}
+
+  .timeline{margin-top:10px;border-left:3px solid rgba(255,255,255,0.03);padding-left:14px}
+  .timeline-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.02)}
+  .t-left{width:120px;font-weight:700}
+  .t-right{flex:1}
+
+  /* small screens */
+  @media(max-width:920px){
+    .modal-grid{grid-template-columns:1fr}
+    .gallery-main img{height:220px}
+    .card img{height:160px}
+    .categories-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
   }
 
-  /* small custom animations to match the sample layout */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .fade-up { animation: fadeUp 0.6s ease-out forwards; }
-  .fade-up-delay-1 { animation-delay: .08s; }
-  .fade-up-delay-2 { animation-delay: .16s; }
-  .fade-up-delay-3 { animation-delay: .24s; }
+  /* animations */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+  .fade-up{animation:fadeUp .45s cubic-bezier(.2,.9,.2,1) forwards}
+  .bump { animation: bump .36s cubic-bezier(.2,.9,.2,1); }
+  @keyframes bump { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
 
-  /* small card tweaks */
-  .card-custom { transition: transform .18s ease, box-shadow .18s ease; }
-  .card-custom:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 10px 30px rgba(2,6,23,.35); }
+  /* simple toast */
+  .toast-wrap{position:fixed;right:18px;top:18px;z-index:150;display:flex;flex-direction:column;gap:8px}
+  .toast{background:#111;padding:10px 12px;border-radius:10px;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,0.4);opacity:0;transform:translateY(-8px);animation:toastIn .28s forwards}
+  @keyframes toastIn{to{opacity:1;transform:none}}
+  .toast.success{background:linear-gradient(90deg,#0bb852,#0bce7b)}
+  .toast.warn{background:linear-gradient(90deg,#f6b93b,#f0932b)}
 
-  /* modal backdrop quick tweak */
-  .modal-backdrop { backdrop-filter: blur(6px); }
-
-  /* small responsive fixes for hero spacing */
-  .pt-safe { padding-top: 72px; }
+  /* ensure light theme adjustments */
+  :root[data-theme="light"] .hard{background:rgba(0,0,0,0.06);color:var(--text)}
 </style>
 </head>
-<body class="bg-gray-900 text-gray-100">
-
-  <!-- NAV / HEADER: matches the Tailwind feel you liked -->
-  <nav class="backdrop-blur-md bg-white/5 fixed top-0 left-0 right-0 z-30 border-b border-white/6">
-    <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-      <!-- Logo (secret admin unlock here) -->
-      <div id="logoArea" class="flex items-center gap-3 cursor-pointer select-none">
-        <img src="assets/favicon.png" alt="logo" class="w-10 h-10 rounded-md shadow-sm">
-        <div>
-          <div id="brandName" class="text-lg font-extrabold">Ninjago Vault</div>
-          <div class="text-xs text-gray-400">Browse • Request • Pay</div>
-        </div>
-      </div>
-
-      <!-- top controls (no visible admin link anymore) -->
-      <div class="flex items-center gap-3">
-        <input id="search" class="px-3 py-2 rounded-xl bg-white/6 text-sm placeholder:text-gray-400 outline-none" placeholder="Search sets, figures, books..." />
-        <button id="themeToggle" class="px-3 py-2 rounded-xl bg-white/6 text-sm">🌓</button>
-        <button id="signupBtn" class="px-3 py-2 rounded-xl bg-white/6 text-sm">Sign up / Sign in</button>
-        <button id="cartBtn" class="px-3 py-2 rounded-xl bg-green-600 text-sm">🛒 <span id="cartCount">0</span></button>
-        <!-- admin link removed on purpose (secret unlock used instead) -->
-      </div>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <div id="siteLogo" class="logo">Ninjago Vault</div>
+      <div class="subtitle">Browse • Request • Vault</div>
     </div>
-  </nav>
 
-  <!-- HERO like the example (keeps site from feeling empty) -->
-  <header class="flex items-center justify-center h-48 pt-safe">
-    <div class="text-center space-y-3 fade-up" style="animation-delay:.12s">
-      <h1 class="text-4xl font-extrabold tracking-tight">Ninjago Vault — Marketplace</h1>
-      <p class="text-gray-400">Curated sets, polybags, blind bags and rare finds — sign in to order or request.</p>
-      <div class="mt-3">
-        <a id="browseBtn" href="#" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 transition text-white">Browse catalog</a>
-      </div>
+    <div class="header-right">
+      <input id="search" class="search" placeholder="Search sets, figures, books...">
+      <button id="themeToggle" class="btn small">🌓</button>
+      <button id="signupBtn" class="btn small">Sign up / Sign in</button>
+      <button id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></button>
+      <!-- admin link intentionally removed from visible UI -->
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-6 pb-20">
-    <div class="mt-6">
-      <p class="text-sm text-gray-400">Tip: click a category tile. Click the product image to view details.</p>
-    </div>
+  <nav class="main-nav">
+    <button class="nav-item active" data-view="catalog">Catalog</button>
+    <button class="nav-item" data-view="rewards">Rewards</button>
+    <button class="nav-item" data-view="requests">Requests</button>
+    <button class="nav-item" data-view="feedback">Feedback</button>
+  </nav>
 
-    <div id="mainArea" class="mt-5"></div>
+  <main class="container">
+    <div class="hint">Tip: click a category tile (e.g., Sets). Click the product image/box to view details.</div>
+    <div id="mainArea" class="main-area"></div>
   </main>
 
   <!-- modal -->
-  <div id="modalBackdrop" class="modal-backdrop fixed inset-0 hidden items-center justify-center z-50">
-    <div id="modal" class="bg-gray-800 w-11/12 max-w-3xl rounded-xl p-6 text-white transform scale-95 opacity-0"></div>
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div id="modal" class="modal" role="dialog" aria-modal="true"></div>
   </div>
 
-  <!-- signin modal -->
-  <div id="signinBackdrop" class="modal-backdrop fixed inset-0 hidden items-center justify-center z-50">
-    <div id="signinModal" class="bg-gray-800 w-11/12 max-w-md rounded-xl p-6 text-white transform scale-95 opacity-0">
-      <h2 class="text-xl font-bold mb-2">Sign up / Sign in</h2>
-      <p class="text-sm text-gray-400 mb-3">Only email is required. Stored locally for demo.</p>
-      <input id="inputEmail" class="w-full px-3 py-2 rounded-md bg-gray-900 outline-none" placeholder="Your email">
-      <div class="flex gap-3 mt-4">
-        <button id="btnSaveEmail" class="flex-1 px-4 py-2 rounded-xl bg-green-600">Save & Continue</button>
-        <button id="btnCloseSignin" class="px-4 py-2 rounded-xl bg-white/6">Close</button>
+  <!-- sign in modal -->
+  <div id="signinBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div id="signinModal" class="modal" role="dialog" aria-modal="true" style="max-width:420px;">
+      <h2>Sign up / Sign in</h2>
+      <p class="meta">Only email is required. We store only your email locally (no passwords) to improve checkout.</p>
+      <input id="inputEmail" class="input" placeholder="Your email">
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button id="btnSaveEmail" class="btn">Save & Continue</button>
+        <button id="btnCloseSignin" class="btn small">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- chat floating -->
-  <div id="chatFloating" class="fixed right-6 bottom-6 w-80 bg-gray-800 rounded-xl border border-white/6 shadow-lg">
-    <div class="px-3 py-2 flex justify-between items-center border-b border-white/6">
-      <div>Request product 💬</div>
-      <button id="minimizeChat" class="px-2 py-1 rounded-full bg-white/6">—</button>
+  <!-- request floating -->
+  <div id="chatFloating" class="chat-floating">
+    <div class="chat-head">
+      <span>Request product 💬</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button id="minimizeChat" class="small">—</button>
+      </div>
     </div>
-    <div id="chatBody" class="p-3">
-      <div id="miniChat" class="h-36 overflow-auto text-sm text-gray-200"></div>
-      <div class="flex gap-2 mt-3">
-        <input id="miniReq" class="flex-1 px-3 py-2 rounded-md bg-gray-900" placeholder="Request a set or figure">
-        <button id="miniSend" class="px-3 py-2 rounded-md bg-indigo-600">Send</button>
+    <div id="chatBody" class="chat-body">
+      <div id="miniChat" class="chat"></div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <input id="miniReq" class="input" placeholder="Request a set or figure">
+        <button id="miniSend" class="btn small">Send</button>
       </div>
     </div>
   </div>
+
+  <!-- toasts -->
+  <div id="toastWrap" class="toast-wrap"></div>
 
 <script>
 /* ---------- Utilities ---------- */
@@ -118,28 +181,26 @@ const $ = q => document.querySelector(q);
 const $$ = q => Array.from(document.querySelectorAll(q));
 function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+/* ---------- Toasts (non-blocking) ---------- */
+function showToast(text, type='') {
+  const wrap = $('#toastWrap');
+  if(!wrap) return;
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type || '');
+  t.innerText = text;
+  wrap.appendChild(t);
+  setTimeout(()=> t.style.opacity = '1', 10);
+  setTimeout(()=> { t.style.opacity = '0'; t.style.transform = 'translateY(-6px)'; }, 3500);
+  setTimeout(()=> { if(t.parentNode) t.parentNode.removeChild(t); }, 4000);
+}
+
 /* ---------- State ---------- */
 let products = [];
 let currentView = 'catalog';
 let cart = [];
 let userEmail = localStorage.getItem('nm_user_email') || '';
 const mainArea = $('#mainArea');
-
-/* ---------- Admin secret setup ----------
-   - Clicking the logo while Ctrl+Shift is pressed unlocks admin for this session.
-   - That sets sessionStorage.admin_unlocked = "1" for admin.html to read.
-*/
-const logoArea = document.getElementById('logoArea');
-logoArea.addEventListener('click', (ev) => {
-  if (ev.ctrlKey && ev.shiftKey) {
-    sessionStorage.setItem('admin_unlocked','1');
-    // open admin in new tab
-    window.open('admin.html', '_blank');
-  } else {
-    // optional: if normal click, scroll to catalog
-    document.getElementById('browseBtn').scrollIntoView({behavior:'smooth'});
-  }
-});
+const ADMIN_PASSWORD = 'M.O.D8643';
 
 /* ---------- Load products ---------- */
 async function loadProducts(){
@@ -147,7 +208,7 @@ async function loadProducts(){
     const res = await fetch('products.json');
     products = await res.json();
   }catch(e){
-    mainArea.innerHTML = '<p class="text-red-400">Failed to load products.json — check file.</p>';
+    mainArea.innerHTML = '<p class="error">Failed to load products.json — check file.</p>';
     console.error(e);
     return;
   }
@@ -173,7 +234,33 @@ function setTheme(t){
 }
 initTheme();
 
+/* ---------- Admin hotkey: Ctrl+Shift+Click logo to open admin ---------- */
+$('#siteLogo').addEventListener('click', (ev) => {
+  if (ev.ctrlKey && ev.shiftKey) {
+    // open admin page
+    const win = window.open('admin.html', '_blank');
+    if (win) {
+      showToast('Opening admin (enter password there)', 'success');
+    } else {
+      showToast('Popup blocked — allow popups for this site', 'warn');
+    }
+  } else {
+    // regular click = go home/dashboard
+    currentView = 'catalog';
+    renderView();
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelector('.nav-item[data-view="catalog"]').classList.add('active');
+  }
+});
+
 /* ---------- Navigation ---------- */
+$$('.nav-item').forEach(b => b.addEventListener('click', () => {
+  currentView = b.dataset.view;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  b.classList.add('active');
+  renderView();
+}));
+
 function renderView(){
   if(currentView === 'catalog') renderCategoriesView();
   else if(currentView === 'rewards') renderRewardsView();
@@ -181,7 +268,7 @@ function renderView(){
   else if(currentView === 'feedback') renderFeedbackView();
 }
 
-/* ---------- Categories view (animated) ---------- */
+/* ---------- Categories view ---------- */
 function getCategories(){ return Array.from(new Set(products.map(p=>p.category))); }
 function categoryIcon(cat){
   const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Polybags':'🛍️','Miscs':'📦','Books':'📚','Books (Rent)':'📖'};
@@ -190,14 +277,13 @@ function categoryIcon(cat){
 function renderCategoriesView(){
   mainArea.innerHTML = '';
   const cats = getCategories();
-  const wrap = document.createElement('div'); wrap.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4';
+  const wrap = document.createElement('div'); wrap.className = 'categories-grid';
   cats.forEach((cat,i)=>{
-    const tile = document.createElement('button'); tile.className='p-4 rounded-xl bg-gray-800 border border-white/6 text-left card-custom fade-up';
-    tile.classList.add('fade-up-delay-'+((i%3)+1));
-    tile.style.animationDelay = (i*70)+'ms';
-    tile.innerHTML = `<div class="text-3xl">${categoryIcon(cat)}</div><div class="mt-2 font-bold">${escapeHtml(cat)}</div><div class="text-xs text-gray-400">${products.filter(p=>p.category===cat).length} items</div>`;
+    const tile = document.createElement('button'); tile.className='category-tile';
+    tile.innerHTML = `<div class="cat-emoji">${categoryIcon(cat)}</div><div class="cat-title">${escapeHtml(cat)}</div><div class="cat-count">${products.filter(p=>p.category===cat).length} items</div>`;
     tile.onclick = ()=> renderCategoryPage(cat);
     wrap.appendChild(tile);
+    setTimeout(()=>tile.classList.add('show'), 70*i);
   });
   mainArea.appendChild(wrap);
 }
@@ -205,15 +291,15 @@ function renderCategoriesView(){
 /* ---------- Category page ---------- */
 function renderCategoryPage(category){
   mainArea.innerHTML = `
-    <div class="flex items-center gap-3 mt-3">
-      <button id="catBack" class="px-3 py-1 rounded-xl bg-white/6">← Back</button>
-      <h2 class="text-2xl font-bold">${escapeHtml(category)}</h2>
-      <div class="ml-auto flex items-center gap-2">
-        <select id="subFilter" class="px-3 py-1 rounded-xl bg-white/6"></select>
-        <button id="clearFilter" class="px-3 py-1 rounded-xl bg-white/6">Clear</button>
+    <div class="category-header">
+      <button id="catBack" class="btn small">← Back</button>
+      <h2>${escapeHtml(category)}</h2>
+      <div class="controls-inline">
+        <select id="subFilter" class="small"></select>
+        <button id="clearFilter" class="small">Clear</button>
       </div>
     </div>
-    <div id="categoryProducts" class="mt-4"></div>
+    <div id="categoryProducts"></div>
   `;
   $('#catBack').onclick = ()=> renderCategoriesView();
   const items = products.filter(p=>p.category===category);
@@ -231,29 +317,30 @@ function renderCategoryProducts(category, subfilter){
   let items = products.filter(p=>p.category===category);
   if(subfilter) items = items.filter(p=> (p.subtheme||'')===subfilter);
   if(search) items = items.filter(p=> (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(search));
-  if(items.length === 0){ cont.innerHTML = '<p class="text-gray-400">No items found.</p>'; return; }
+  if(items.length === 0){ cont.innerHTML = '<p class="hint">No items found.</p>'; return; }
 
-  const grid = document.createElement('div'); grid.className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4';
+  const grid = document.createElement('div'); grid.className = 'grid';
   items.forEach((p,i)=>{
     const img = Array.isArray(p.image) ? p.image[0] : p.image;
-    const hard = p.hard_to_find ? `<div class="absolute top-2 left-2 bg-red-600 text-xs px-2 py-1 rounded">Hard</div>` : '';
-    const card = document.createElement('div'); card.className='rounded-xl bg-gray-800 border border-white/6 p-3 card-custom relative fade-up';
-    card.style.animationDelay = (i*50)+'ms';
+    const hard = p.hard_to_find ? `<div class="hard">Hard to find</div>` : '';
+    const card = document.createElement('div'); card.className='card';
     card.innerHTML = `
-      <div class="card-image cursor-pointer rounded-md overflow-hidden mb-2">
-        <img src="${img}" alt="${escapeHtml(p.title)}" class="w-full h-44 object-cover">
+      <div class="card-image" data-id="${p.id}">
+        <img src="${img}" alt="${escapeHtml(p.title)}">
         ${hard}
       </div>
-      <h3 class="font-bold text-lg">${escapeHtml(p.title)}</h3>
-      <div class="text-xs text-gray-400">${escapeHtml(p.origin||'')}</div>
-      <div class="text-xs text-gray-400">${escapeHtml(p.condition||'')}</div>
-      <div class="mt-2 font-extrabold text-green-400">SAR ${p.price_sar ? p.price_sar : '-'}</div>
-      <div class="flex gap-2 mt-3">
-        <button class="add px-3 py-1 rounded-xl bg-white/6 text-sm" data-id="${p.id}">➕ Add</button>
-        <button class="view px-3 py-1 rounded-xl bg-indigo-600 text-sm" data-id="${p.id}">View</button>
+      <h3>${escapeHtml(p.title)}</h3>
+      <div class="meta">${escapeHtml(p.origin||'')}</div>
+      <div class="meta">${escapeHtml(p.condition||'')}</div>
+      <div class="price">SAR ${p.price_sar ? p.price_sar : '-'}</div>
+      <div class="contact">
+        <button class="small add" data-id="${p.id}">➕ Add</button>
+        <button class="btn view" data-id="${p.id}">View</button>
       </div>
     `;
     grid.appendChild(card);
+    setTimeout(()=>card.classList.add('show'), 40*i);
+
     // click image to open detail
     card.querySelector('.card-image').onclick = ()=> openDetail(p.id);
   });
@@ -264,10 +351,10 @@ function renderCategoryProducts(category, subfilter){
 
 /* ---------- Attach card events ---------- */
 function attachCardEvents(){
-  $$('.view').forEach(b => b.onclick = e => openDetail(e.target.dataset.id));
+  $$('.view').forEach(b => b.onclick = e => openDetail(e.currentTarget.dataset.id));
   $$('.add').forEach(b => b.onclick = e => {
-    const id = e.target.dataset.id;
-    addToCart(id);
+    const id = e.currentTarget.dataset.id;
+    addToCart(id, e.currentTarget);
   });
 }
 
@@ -278,29 +365,23 @@ function attachSearch(){
   s.addEventListener('input', ()=> {
     const header = document.querySelector('.category-header');
     if(header) {
-      const cat = header.querySelector('h2') ? header.querySelector('h2').textContent : '';
+      const cat = header.querySelector('h2').textContent;
       const sub = $('#subFilter') ? $('#subFilter').value : '';
-      if(cat) renderCategoryProducts(cat, sub);
+      renderCategoryProducts(cat, sub);
     } else {
       renderCategoriesView();
       const q = s.value.trim();
       if(!q) return;
       const results = products.filter(p => (p.title + (p.origin||'') + (p.subtheme||'')).toLowerCase().includes(q.toLowerCase()));
       if(results.length) {
-        const resWrap = document.createElement('div'); resWrap.className='mt-4';
-        resWrap.innerHTML = `<h3 class="text-xl font-bold mb-3">Quick results</h3><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>`;
-        results.forEach((p,i)=> {
-          const img = Array.isArray(p.image)?p.image[0]:p.image;
-          resWrap.querySelector('.grid').insertAdjacentHTML('beforeend', `
-            <div class="rounded-xl bg-gray-800 border border-white/6 p-3 fade-up" style="animation-delay:${i*40}ms">
-              <div class="card-image mb-2"><img src="${img}" class="w-full h-44 object-cover rounded-md"></div>
-              <h3 class="font-bold">${escapeHtml(p.title)}</h3>
-              <div class="text-xs text-gray-400">${escapeHtml(p.category)}</div>
-              <div class="mt-2 font-extrabold text-green-400">SAR ${p.price_sar}</div>
-              <div class="mt-2"><button class="view px-3 py-1 rounded-xl bg-indigo-600 text-sm" data-id="${p.id}">View</button></div>
-            </div>
-          `);
-        });
+        const resWrap = document.createElement('div'); resWrap.className = 'search-results';
+        resWrap.innerHTML = `<h3 class="section-title">Quick results</h3><div class="grid"></div>`;
+        results.forEach(p=> resWrap.querySelector('.grid').insertAdjacentHTML('beforeend', `
+          <div class="card show">
+            <div class="card-image"><img src="${Array.isArray(p.image)?p.image[0]:p.image}"></div>
+            <h3>${escapeHtml(p.title)}</h3><div class="meta">${escapeHtml(p.category)}</div><div class="price">SAR ${p.price_sar}</div>
+            <div class="contact"><button class="btn view" data-id="${p.id}">View</button></div>
+          </div>`));
         mainArea.appendChild(resWrap);
         attachCardEvents();
       }
@@ -314,47 +395,55 @@ function openDetail(id){
   if(!p) return;
   const imgs = Array.isArray(p.image) ? p.image : [p.image];
   $('#modal').innerHTML = `
-    <div class="flex justify-between items-start gap-3">
-      <div>
-        <h2 class="text-2xl font-bold">${escapeHtml(p.title)}</h2>
-        <div class="text-sm text-gray-400">${escapeHtml(p.origin||'')}</div>
-      </div>
-      <div><button id="closeModal" class="px-3 py-1 rounded-xl bg-white/6">Close</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2>${escapeHtml(p.title)}</h2>
+      <div><button id="closeModal" class="btn small">Close</button></div>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+    <div class="modal-grid">
       <div>
-        <div class="gallery-main rounded-md overflow-hidden bg-gray-900"><img id="galleryMain" src="${imgs[0]}" class="w-full h-72 object-contain"></div>
-        <div class="flex gap-2 mt-2 overflow-auto">${imgs.map((u,i)=>`<img class="gthumb w-20 h-14 object-cover rounded-md cursor-pointer ${i===0? 'border-2 border-indigo-600' : ''}" data-src="${u}" src="${u}">`).join('')}</div>
-      </div>
-      <div>
-        <div class="text-sm text-gray-300">Condition: ${escapeHtml(p.condition||'')}</div>
-        <div class="text-sm text-gray-300 mt-1">${p.piece_count? p.piece_count + ' pcs' : ''} ${p.figures_count? '• ' + p.figures_count + ' figs' : ''}</div>
-        <div class="text-2xl font-extrabold text-green-400 mt-4">SAR ${p.price_sar ? p.price_sar : '-'}</div>
-        <p class="text-gray-300 mt-4">${escapeHtml(p.description || p.notes || '')}</p>
-        <div class="flex gap-2 mt-4">
-          <button class="btn-add px-4 py-2 rounded-xl bg-green-600" id="modalAdd">Add to cart</button>
-          <button class="btn-buy px-4 py-2 rounded-xl bg-indigo-600" id="modalBuy">Buy now</button>
+        <div class="gallery">
+          <div class="gallery-main"><img id="galleryMain" src="${imgs[0]}" alt="${escapeHtml(p.title)}"></div>
+          <div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gthumb ${i===0?'active':''}" data-src="${u}" src="${u}" alt="thumb">`).join('')}</div>
         </div>
 
-        <div class="mt-6">
-          <h4 class="font-bold">Recommended</h4>
-          <div id="recList" class="mt-2"></div>
+        <div class="meta">Origin: ${escapeHtml(p.origin||'')}</div>
+        <div class="meta">Condition: ${escapeHtml(p.condition||'')}</div>
+        <div class="meta">${p.piece_count? p.piece_count + ' pcs' : ''} ${p.figures_count? '• ' + p.figures_count + ' figs' : ''}</div>
+        <div class="price">SAR ${p.price_sar ? p.price_sar : '-'}</div>
+
+        <p class="desc">${escapeHtml(p.description || p.notes || '')}</p>
+
+        <div style="margin-top:8px">
+          <button class="btn" id="modalAdd">Add to cart</button>
+          <button class="small" id="modalBuy">Buy now</button>
+        </div>
+
+        <div class="recommended">
+          <h4>Recommended</h4>
+          ${(p.recommended||[]).map(id=>{ const r = products.find(x=>x.id===id); return r ? `<div class="rec"><img src="${Array.isArray(r.image)?r.image[0]:r.image}"><div><strong>${escapeHtml(r.title)}</strong><div class="meta">SAR ${r.price_sar}</div></div></div>` : '' }).join('')}
         </div>
       </div>
+
+      <aside>
+        <div class="cart-mini">
+          <h4>Quick cart</h4>
+          <div id="quickCartList" class="cart-list"></div>
+          <div class="order-summary" id="quickSummary"></div>
+          <div style="margin-top:8px"><button class="btn" id="gotoCheckout">Go to checkout</button></div>
+        </div>
+      </aside>
     </div>
   `;
-  $('#modalBackdrop').classList.remove('hidden');
-  setTimeout(()=> { $('#modalBackdrop').classList.add('flex'); $('#modal').style.transform='none'; $('#modal').style.opacity='1'; }, 20);
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
   $('#closeModal').onclick = closeModal;
   $('#modalAdd').onclick = ()=>{ addToCart(p.id); updateQuickCart(); }
   $('#modalBuy').onclick = ()=>{ addToCart(p.id); openCheckout(); }
+  $('#gotoCheckout').onclick = openCheckout;
 
-  $$('.gthumb').forEach(t=> t.onclick = ()=> { $('#galleryMain').src = t.dataset.src; $$('.gthumb').forEach(x=>x.classList.remove('border-2')); t.classList.add('border-2'); });
-  // render recommended
-  const recEl = $('#recList'); recEl.innerHTML = (p.recommended||[]).map(id=>{ const r = products.find(x=>x.id===id); return r ? `<div class="flex gap-2 items-center mt-2"><img src="${Array.isArray(r.image)?r.image[0]:r.image}" class="w-12 h-10 object-cover rounded-sm"><div><div class="font-bold">${escapeHtml(r.title)}</div><div class="text-xs text-gray-400">SAR ${r.price_sar}</div></div></div>` : '' }).join('');
+  $$('.gthumb').forEach(t=> t.onclick = ()=> { $('#galleryMain').src = t.dataset.src; $$('.gthumb').forEach(x=>x.classList.remove('active')); t.classList.add('active'); });
   updateQuickCart();
 }
-function closeModal(){ $('#modalBackdrop').classList.add('hidden'); $('#modal').style.transform='scale(.98) translateY(8px)'; $('#modal').style.opacity='0'; }
+function closeModal(){ $('#modal').classList.remove('show'); setTimeout(()=>$('#modalBackdrop').classList.remove('show'),200); }
 
 /* ---------- Cart (per-user) ---------- */
 function loadCart(){
@@ -365,21 +454,36 @@ function saveCart(){
   if(!userEmail) return;
   localStorage.setItem('cart_' + userEmail, JSON.stringify(cart));
 }
-function addToCart(id){
+function addToCart(id, triggerElt){
   if(!userEmail){ promptSignin('You must sign in to add items to your cart.'); return; }
   const p = products.find(x=>x.id===id);
   if(!p) return;
   const it = cart.find(i=>i.id===id);
   if(it) it.qty++; else cart.push({ id:p.id, title:p.title, price:p.price_sar||0, qty:1, image: Array.isArray(p.image)?p.image[0]:p.image });
   saveCart(); renderCartCount(); updateQuickCart();
+
+  // animation: bump cart & pop card
+  const cartBtn = $('#cartBtn');
+  cartBtn.classList.add('bump');
+  setTimeout(()=>cartBtn.classList.remove('bump'), 360);
+
+  if(triggerElt){
+    // find parent card image to apply bump
+    const card = triggerElt.closest('.card');
+    if(card) {
+      card.classList.add('bump');
+      setTimeout(()=>card.classList.remove('bump'), 360);
+    }
+  }
+  showToast('Added to cart', 'success');
 }
 function renderCartCount(){ $('#cartCount').innerText = cart.reduce((s,i)=>s+i.qty,0); }
 function updateQuickCart(){
   const el = $('#quickCartList'), sumEl = $('#quickSummary');
   if(!el) return;
-  el.innerHTML = cart.map(it=>`<div class="cart-row flex items-center gap-2"><img src="${it.image}" class="w-12 h-10 object-cover rounded-sm"><div><strong>${escapeHtml(it.title)}</strong><div class="text-xs text-gray-400">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="text-gray-400">Cart is empty</div>';
+  el.innerHTML = cart.map(it=>`<div class="cart-row"><img src="${it.image}"><div><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
   const total = cart.reduce((s,i)=>s + i.price * i.qty, 0);
-  if(sumEl) sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
+  sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
 $('#cartBtn').onclick = ()=> { if(!userEmail) promptSignin('You must sign in to view your cart and checkout.'); else openCheckout(); };
 
@@ -387,37 +491,38 @@ $('#cartBtn').onclick = ()=> { if(!userEmail) promptSignin('You must sign in to 
 function openCheckout(){
   if(!userEmail){ promptSignin('You must sign in to checkout.'); return; }
   $('#modal').innerHTML = checkoutHtml();
-  $('#modalBackdrop').classList.remove('hidden'); setTimeout(()=> { $('#modalBackdrop').classList.add('flex'); $('#modal').style.transform='none'; $('#modal').style.opacity='1';},20);
+  $('#modalBackdrop').classList.add('show'); setTimeout(()=>$('#modal').classList.add('show'),10);
   renderCheckoutCart();
   $('#closeModal2').onclick = closeModal;
   $('#cashPay').onclick = handleCashPay;
   $('#giftPay').onclick = handleGiftPay;
 }
 function checkoutHtml(){
-  return `<div class="flex justify-between items-center"><h2 class="text-xl font-bold">Checkout</h2><div><button id="closeModal2" class="px-3 py-1 rounded-xl bg-white/6">Close</button></div></div>
-    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <h4 class="font-bold">Cart</h4><div id="checkoutCart" class="mt-2"></div><div id="checkoutSummary" class="mt-2 font-bold"></div>
+  return `<div style="display:flex;justify-content:space-between;align-items:center"><h2>Checkout</h2><div><button id="closeModal2" class="btn small">Close</button></div></div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:320px">
+        <h4>Cart</h4><div id="checkoutCart"></div><div class="order-summary" id="checkoutSummary"></div>
       </div>
-      <div>
-        <h4 class="font-bold">Pay with Cash (Reserve)</h4>
-        <div class="mt-2">
-          <input id="custDate" type="date" class="w-full px-3 py-2 rounded-md bg-gray-900" />
-          <textarea id="custMsg" class="w-full px-3 py-2 rounded-md bg-gray-900 mt-2" placeholder="Message / pickup instructions"></textarea>
-          <button class="w-full mt-3 px-4 py-2 rounded-xl bg-green-600" id="cashPay">Reserve with cash</button>
+      <div style="width:340px">
+        <h4>Pay with Cash (Reserve)</h4>
+        <div class="checkout-forms">
+          <input id="custDate" class="input" type="date" placeholder="Pickup date">
+          <textarea id="custMsg" class="textarea" placeholder="Message / pickup instructions"></textarea>
+          <button class="btn" id="cashPay" style="background:green">Reserve with cash</button>
         </div>
-        <h4 class="font-bold mt-4">Pay with Giftcard</h4>
-        <div class="mt-2">
-          <input id="giftCode" class="w-full px-3 py-2 rounded-md bg-gray-900" placeholder="Giftcard code (demo)">
-          <input id="giftAmount" class="w-full px-3 py-2 rounded-md mt-2 bg-gray-900" placeholder="Amount (SAR)" type="number" min="0" step="0.01">
-          <button class="w-full mt-3 px-4 py-2 rounded-xl bg-indigo-600" id="giftPay">Pay with giftcard</button>
+        <h4 style="margin-top:12px">Pay with Giftcard</h4>
+        <div class="checkout-forms">
+          <input id="giftCode" class="input" placeholder="Giftcard code (demo)">
+          <input id="giftAmount" class="input" placeholder="Amount (SAR)" type="number" min="0" step="0.01">
+          <button class="btn" id="giftPay">Pay with giftcard</button>
         </div>
+        <div class="hint">If giftcard amount > total, difference is given as store credit (points) to your account.</div>
       </div>
     </div>`;
 }
 function renderCheckoutCart(){
   const el = $('#checkoutCart'), sumEl = $('#checkoutSummary');
-  el.innerHTML = cart.map(it=>`<div class="flex items-center gap-2"><img src="${it.image}" class="w-12 h-10 object-cover rounded-sm"><div><strong>${escapeHtml(it.title)}</strong><div class="text-xs text-gray-400">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="text-gray-400">Cart empty</div>';
+  el.innerHTML = cart.map(it=>`<div class="cart-row"><img src="${it.image}"><div><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart empty</div>';
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
@@ -425,57 +530,61 @@ function handleCashPay(){
   const date = $('#custDate').value || '';
   const msg = $('#custMsg').value || '';
   const total = cart.reduce((s,i)=>s + i.price * i.qty, 0);
-  const order = { id:'order-'+Date.now(), email:userEmail, method:'cash', total, date, msg, items:cart.slice(), created:Date.now() };
+  if(total <= 0){ showToast('Cart is empty', 'warn'); return; }
+  const order = { id:'order-'+Date.now(), email:userEmail, method:'cash', total, date, msg, items:cart.slice(), created:Date.now(), status:'new' };
   saveOrder(order);
   addPointsFor(userEmail, total);
-  cart = []; saveCart(); renderCartCount(); closeModal(); alert('Cash reservation saved. Order ID: ' + order.id);
+  cart = []; saveCart(); renderCartCount(); closeModal(); showToast('Cash reservation saved. Order ID: ' + order.id, 'success');
 }
 function handleGiftPay(){
   const code = $('#giftCode').value.trim() || '';
   const amount = Number($('#giftAmount').value) || 0;
   const total = cart.reduce((s,i)=>s + i.price * i.qty, 0);
-  if(amount < total){ alert('Partial payment recorded (demo). Please pay remaining on pickup.'); }
-  const order = { id:'order-'+Date.now(), email:userEmail, method:'giftcard', total, paid:amount, code, items:cart.slice(), created:Date.now() };
+  if(total <= 0){ showToast('Cart is empty', 'warn'); return; }
+  if(amount < total){ showToast('Partial payment recorded (demo). Please pay remaining on pickup.', 'warn'); }
+  const order = { id:'order-'+Date.now(), email:userEmail, method:'giftcard', total, paid:amount, code, items:cart.slice(), created:Date.now(), status:'new' };
   saveOrder(order);
   addPointsFor(userEmail, Math.min(total, amount));
-  cart = []; saveCart(); renderCartCount(); closeModal(); alert('Giftcard payment processed (demo). Order ID: ' + order.id);
+  cart = []; saveCart(); renderCartCount(); closeModal(); showToast('Giftcard payment processed (demo). Order ID: ' + order.id, 'success');
 }
 function saveOrder(order){
   const all = JSON.parse(localStorage.getItem('orders_all') || '[]');
   all.push(order);
   localStorage.setItem('orders_all', JSON.stringify(all));
+  // dispatch a storage event for other tabs
+  window.dispatchEvent(new Event('storage'));
 }
 
 /* ---------- Sign-in flow ---------- */
 $('#signupBtn').onclick = ()=> openSignin();
-function openSignin(){ $('#signinBackdrop').classList.remove('hidden'); setTimeout(()=> { $('#signinBackdrop').classList.add('flex'); $('#signinModal').style.transform='none'; $('#signinModal').style.opacity='1'; }, 20); $('#inputEmail').focus(); }
+function openSignin(){ $('#signinBackdrop').classList.add('show'); setTimeout(()=>$('#signinModal').classList.add('show'),10); $('#inputEmail').focus(); }
 $('#btnCloseSignin').onclick = ()=> closeSignin();
-function closeSignin(){ $('#signinBackdrop').classList.add('hidden'); $('#signinModal').style.transform='scale(.98)'; $('#signinModal').style.opacity='0'; }
+function closeSignin(){ $('#signinModal').classList.remove('show'); setTimeout(()=>$('#signinBackdrop').classList.remove('show'),200); }
 $('#btnSaveEmail').onclick = ()=> {
   const em = $('#inputEmail').value.trim().toLowerCase();
-  if(!em || !em.includes('@')){ alert('Enter a valid email'); return; }
+  if(!em || !em.includes('@')){ showToast('Enter a valid email', 'warn'); return; }
   userEmail = em;
   localStorage.setItem('nm_user_email', userEmail);
   loadCart();
   renderCartCount();
   closeSignin();
-  alert('Signed in as ' + userEmail);
+  showToast('Signed in as ' + userEmail, 'success');
 };
 
 /* ---------- Prompt sign in when required ---------- */
 function promptSignin(msg){
-  $('#signinBackdrop').classList.remove('hidden'); setTimeout(()=> { $('#signinBackdrop').classList.add('flex'); $('#signinModal').style.transform='none'; $('#signinModal').style.opacity='1'; }, 20);
-  if(msg) alert(msg);
+  $('#signinBackdrop').classList.add('show'); setTimeout(()=>$('#signinModal').classList.add('show'),10);
+  if(msg) showToast(msg, 'warn');
 }
 
 /* ---------- Load cart on init if email exists ---------- */
 if(userEmail) loadCart();
 
-/* ---------- Quick cart display (in modal when opened) ---------- */
+/* ---------- Quick cart display ---------- */
 function updateQuickCart(){
-  const el = $('#quickCartList'), sumEl = $('#quickSummary');
+  const el = $('#quickCartList'); const sumEl = $('#quickSummary');
   if(!el) return;
-  el.innerHTML = cart.map(it=>`<div class="flex items-center gap-2"><img src="${it.image}" class="w-12 h-10 object-cover rounded-sm"><div><strong>${escapeHtml(it.title)}</strong><div class="text-xs text-gray-400">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="text-gray-400">Cart is empty</div>';
+  el.innerHTML = cart.map(it=>`<div class="cart-row"><img src="${it.image}"><div><strong>${escapeHtml(it.title)}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('') || '<div class="meta">Cart is empty</div>';
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
   if(sumEl) sumEl.innerHTML = `<div>Total: SAR ${total.toFixed(2)}</div>`;
 }
@@ -502,7 +611,7 @@ function loadChat(){
 function renderMiniChat(){
   const mini = $('#miniChat');
   const all = JSON.parse(localStorage.getItem('requests')||'[]');
-  mini.innerHTML = all.map(m=>`<div class="py-1"><div class="${m.from==='user' ? 'text-right text-green-300' : 'text-left text-gray-300'}">${escapeHtml(m.text)}</div></div>`).join('') || '<div class="text-gray-400">No requests yet.</div>';
+  mini.innerHTML = all.map(m=>`<div class="msg ${m.from==='user'?'user':'owner'}">${escapeHtml(m.text)}</div>`).join('') || '<div class="meta">No requests yet.</div>';
 }
 loadChat();
 
@@ -518,17 +627,20 @@ function getPoints(email){ return Number(localStorage.getItem('points_' + email)
 function renderRewardsView(){
   const points = getPoints(userEmail || '') || 0;
   mainArea.innerHTML = `
-    <div class="mt-4">
-      <h2 class="text-2xl font-bold">Rewards & Milestones</h2>
-      <div class="text-gray-400 mt-2">You earn 0.5 points per SAR spent. Sign in to collect and redeem.</div>
-      <div class="timeline mt-4 border-l border-white/6 pl-4 space-y-3">
-        <div><strong>100 points</strong> — Dragon Rising blind bag</div>
-        <div><strong>250 points</strong> — Blind bag of your choice</div>
-        <div><strong>500 points</strong> — 30070 polybag</div>
-        <div><strong>750 points</strong> — Any $10 set</div>
-        <div><strong>1000 points</strong> — Special mystery reward</div>
-      </div>
-      <div class="mt-4 text-gray-300">Your points: <strong>${points}</strong></div>
+    <div class="rewards-header">
+      <h2>Rewards & Milestones</h2>
+      <div class="meta">You earn 0.5 points per SAR spent. Sign in to collect and redeem.</div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item"><div class="t-left">100 points</div><div class="t-right">Dragon Rising blind bag</div></div>
+      <div class="timeline-item"><div class="t-left">250 points</div><div class="t-right">Blind bag of your choice</div></div>
+      <div class="timeline-item"><div class="t-left">500 points</div><div class="t-right">30070 polybag</div></div>
+      <div class="timeline-item"><div class="t-left">750 points</div><div class="t-right">Any $10 set</div></div>
+      <div class="timeline-item"><div class="t-left">1000 points</div><div class="t-right">Special mystery reward</div></div>
+    </div>
+    <div style="margin-top:18px">
+      <div class="meta">Your points: <strong>${points}</strong></div>
+      <div class="hint">Points are stored per account (email). Spend to claim rewards via admin (demo).</div>
     </div>
   `;
 }
@@ -536,12 +648,20 @@ function renderRewardsView(){
 /* ---------- Requests & Feedback views ---------- */
 function renderRequestsView(){
   const all = JSON.parse(localStorage.getItem('requests')||'[]');
-  mainArea.innerHTML = `<h2 class="text-2xl font-bold mt-4">Requests</h2><div class="mt-3">${all.map(r=>`<div class="py-2"><div class="${r.from==='user'?'text-right text-green-300':'text-left text-gray-300'}">${escapeHtml(r.text)}</div></div>`).join('') || '<div class="text-gray-400">No requests yet.</div>'}</div>`;
+  mainArea.innerHTML = `<h2>Requests</h2><div class="requests-list">${all.map(r=>`<div class="req-item"><div class="msg ${r.from==='user'?'user':'owner'}">${escapeHtml(r.text)}</div></div>`).join('') || '<div class="meta">No requests yet.</div>'}</div>`;
 }
 function renderFeedbackView(){
   const fb = JSON.parse(localStorage.getItem('feedbacks')||'[]');
-  mainArea.innerHTML = `<h2 class="text-2xl font-bold mt-4">Feedback</h2><div class="mt-3">${fb.map(f=>`<div class="py-2"><strong>${escapeHtml(f.email||'Anonymous')}</strong><div class="text-gray-300">${escapeHtml(f.text)}</div></div>`).join('') || '<div class="text-gray-400">No feedback yet.</div>'}</div>`;
+  mainArea.innerHTML = `<h2>Feedback</h2><div>${fb.map(f=>`<div class="fb-item"><strong>${escapeHtml(f.email||'Anonymous')}</strong><div class="meta">${escapeHtml(f.text)}</div></div>`).join('') || '<div class="meta">No feedback yet.</div>'}</div>`;
 }
+
+/* ---------- Admin helper (client-side) ---------- */
+function isLoggedIn(){ return !!userEmail; }
+
+/* ---------- Storage event (update admin in other tabs) ---------- */
+window.addEventListener('storage', ()=> {
+  // nothing heavy here but admin page listens too
+});
 
 /* ---------- Keyboard close modal ---------- */
 document.addEventListener('keydown', e=> { if(e.key === 'Escape'){ closeModal(); closeSignin(); } });

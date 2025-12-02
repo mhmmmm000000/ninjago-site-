@@ -1,60 +1,125 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Ninjago Vault — Admin</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+  body{font-family:Inter,system-ui,Arial;background:#0b0f13;color:#e6eef6;padding:18px}
+  .wrap{max-width:980px;margin:0 auto}
+  h1{margin:6px 0 18px}
+  .order{background:#0f1720;padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.04)}
+  .meta{color:#9aa4b2;font-size:13px}
+  button{padding:8px 10px;border-radius:8px;border:0;background:#00c853;color:#012;cursor:pointer}
+  .btn-ful{background:#f6b93b;color:#111}
+  .hidden{display:none}
+  input{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);width:260px;margin-right:8px}
+</style>
 </head>
-<body class="bg-gray-900 text-gray-100">
-  <div class="max-w-6xl mx-auto px-6 py-8">
-    <h1 class="text-3xl font-bold">Admin — Orders</h1>
-    <div id="accessNotice" class="mt-4"></div>
-    <div id="ordersArea" class="mt-6"></div>
-    <div class="mt-6">
-      <button id="clearOrders" class="px-4 py-2 rounded-xl bg-red-600">Clear orders (local demo)</button>
+<body>
+  <div class="wrap">
+    <h1>Ninjago Vault — Admin</h1>
+
+    <div id="authArea">
+      <p class="meta">Enter admin password</p>
+      <input id="pw" placeholder="password"/>
+      <button id="btnAuth">Unlock</button>
+      <div id="authMsg" class="meta"></div>
+    </div>
+
+    <div id="adminUI" class="hidden">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <button id="refresh">Refresh</button>
+        <button id="clearAll" class="btn-ful">Clear all orders</button>
+      </div>
+      <div id="ordersList"></div>
     </div>
   </div>
 
 <script>
-function showAccessDenied(){
-  document.getElementById('accessNotice').innerHTML = '<div class="text-red-400">Access denied — admin unlock not found. Use the secret Ctrl+Shift + click on the site logo to open admin.</div>';
-  document.getElementById('ordersArea').innerHTML = '';
-  document.getElementById('clearOrders').style.display = 'none';
-}
+const ADMIN_PASSWORD = 'M.O.D8643';
+const btnAuth = document.getElementById('btnAuth');
+const pw = document.getElementById('pw');
+const authMsg = document.getElementById('authMsg');
+const adminUI = document.getElementById('adminUI');
+const authArea = document.getElementById('authArea');
+const ordersList = document.getElementById('ordersList');
 
-function loadOrders(){
-  if(sessionStorage.getItem('admin_unlocked') !== '1') {
-    showAccessDenied();
-    return;
+btnAuth.onclick = ()=> {
+  if(pw.value === ADMIN_PASSWORD){
+    authArea.classList.add('hidden');
+    adminUI.classList.remove('hidden');
+    loadOrders();
+  } else {
+    authMsg.innerText = 'Wrong password';
+    setTimeout(()=> authMsg.innerText = '', 2500);
   }
-  document.getElementById('accessNotice').innerHTML = '<div class="text-green-400">Admin access OK for this session.</div>';
-  const all = JSON.parse(localStorage.getItem('orders_all') || '[]').reverse();
-  if(all.length === 0) {
-    document.getElementById('ordersArea').innerHTML = '<div class="text-gray-400 mt-4">No orders yet.</div>';
-    return;
-  }
-  document.getElementById('ordersArea').innerHTML = all.map(o => {
-    return `<div class="border rounded-xl p-4 mb-3 bg-gray-800">
-      <div class="flex justify-between"><div><strong>Order ID:</strong> ${o.id}</div><div class="text-sm text-gray-400">${new Date(o.created).toLocaleString()}</div></div>
-      <div class="mt-2"><strong>Email:</strong> ${o.email}</div>
-      <div class="mt-2"><strong>Method:</strong> ${o.method} ${o.paid ? ' • paid: ' + o.paid : ''}</div>
-      <div class="mt-2"><strong>Total:</strong> SAR ${o.total}</div>
-      <div class="mt-2"><strong>Items:</strong> ${ (o.items||[]).map(it=>escapeHtml(it.title) + ' ×'+it.qty).join(', ') }</div>
-      <div class="mt-2 text-sm text-gray-400">Note: this admin is client-side demo — orders stored in localStorage.</div>
-    </div>`;
-  }).join('');
-}
-
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-document.getElementById('clearOrders').onclick = ()=>{
-  if(!confirm('Clear all orders from localStorage for this browser?')) return;
-  localStorage.removeItem('orders_all');
-  loadOrders();
 };
 
-loadOrders();
+function loadOrders(){
+  const all = JSON.parse(localStorage.getItem('orders_all') || '[]');
+  ordersList.innerHTML = '';
+  if(all.length === 0){
+    ordersList.innerHTML = '<div class="meta">No orders yet</div>';
+    return;
+  }
+  all.slice().reverse().forEach(o=>{
+    const div = document.createElement('div'); div.className = 'order';
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <div>
+          <strong>${o.id}</strong> <div class="meta">${new Date(o.created).toLocaleString()}</div>
+          <div class="meta">By: ${o.email || '—'}</div>
+          <div class="meta">Method: ${o.method || '—'}</div>
+          <div class="meta">Status: <span class="status">${o.status || 'new'}</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="ful">Mark complete</button>
+          <button class="del">Delete</button>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <strong>Items</strong>
+        <div>${(o.items||[]).map(i=>`<div class="meta">${i.qty}× ${i.title} — SAR ${i.price}</div>`).join('')}</div>
+      </div>
+      <div style="margin-top:8px" class="meta">Notes: ${o.msg || ''}</div>
+    `;
+    ordersList.appendChild(div);
+
+    div.querySelector('.ful').onclick = ()=> {
+      markFulfilled(o.id);
+    };
+    div.querySelector('.del').onclick = ()=> {
+      deleteOrder(o.id);
+    };
+  });
+}
+
+function saveOrders(arr){
+  localStorage.setItem('orders_all', JSON.stringify(arr));
+  loadOrders();
+}
+
+function markFulfilled(id){
+  const all = JSON.parse(localStorage.getItem('orders_all') || '[]');
+  const idx = all.findIndex(x=>x.id === id);
+  if(idx !== -1){
+    all[idx].status = 'fulfilled';
+    saveOrders(all);
+    alert('Marked fulfilled');
+  }
+}
+
+function deleteOrder(id){
+  let all = JSON.parse(localStorage.getItem('orders_all') || '[]');
+  all = all.filter(x=>x.id !== id);
+  saveOrders(all);
+}
+
+document.getElementById('refresh').onclick = loadOrders;
+document.getElementById('clearAll').onclick = ()=> { localStorage.setItem('orders_all','[]'); loadOrders(); };
+
+window.addEventListener('storage', ()=> { if(!adminUI.classList.contains('hidden')) loadOrders(); });
 </script>
 </body>
 </html>
