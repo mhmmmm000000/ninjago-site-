@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>liteeeeeeee</title>
+<title>Ninjago Vault</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
@@ -104,19 +104,18 @@
   .toast.success{background:linear-gradient(90deg,#0bb852,#0bce7b)}
   .toast.warn{background:linear-gradient(90deg,#f6b93b,#f0932b)}
 
-  /* ensure light theme adjustments */
   :root[data-theme="light"] .hard{background:rgba(0,0,0,0.06);color:var(--text)}
 </style>
 </head>
 <body>
   <header class="site-header">
     <div class="brand">
-      <div id="siteLogo" class="logo">liteeeeeeee</div>
-      <div class="subtitle">yo • random shit</div>
+      <div id="siteLogo" class="logo">Ninjago Vault</div>
+      <div id="subtitle" class="subtitle">Vault • Collect • Reserve</div>
     </div>
 
     <div class="header-right">
-      <input id="search" class="search" placeholder="Search...">
+      <input id="search" class="search" placeholder="Search sets, figures, books...">
       <button id="themeToggle" class="btn small">🌓</button>
       <button id="signupBtn" class="btn small">Sign up / Sign in</button>
       <button id="cartBtn" class="btn">🛒 <span id="cartCount">0</span></button>
@@ -128,6 +127,7 @@
     <button class="nav-item" data-view="rewards">Rewards</button>
     <button class="nav-item" data-view="requests">Requests</button>
     <button class="nav-item" data-view="feedback">Feedback</button>
+    <button class="nav-item" data-view="game">Game (coming soon)</button>
   </nav>
 
   <main class="container">
@@ -198,7 +198,6 @@ const mainArea = $('#mainArea');
 /* ---------- Load products ---------- */
 async function loadProducts(){
   try{
-    // Make sure you have a file named "products.json" in the same folder!
     const res = await fetch('products.json');
     products = await res.json();
   }catch(e){
@@ -228,15 +227,20 @@ function setTheme(t){
 }
 initTheme();
 
-/* ---------- Navigation ---------- */
+/* ---------- Admin shortcut: Ctrl+Shift + click logo ---------- */
 $('#siteLogo').addEventListener('click', (ev) => {
-  // admin shortcut removed for safety, just resets view
-  currentView = 'catalog';
-  renderView();
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(ev.ctrlKey && ev.shiftKey){
+    // open admin interface in new tab (admin.html) — localStorage orders are accessible
+    window.open('admin.html', '_blank');
+    return;
+  }
+  // regular click: go to catalog
+  currentView = 'catalog'; document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelector('.nav-item[data-view="catalog"]').classList.add('active');
+  renderView();
 });
 
+/* ---------- Navigation ---------- */
 $$('.nav-item').forEach(b => b.addEventListener('click', () => {
   currentView = b.dataset.view;
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -249,20 +253,21 @@ function renderView(){
   else if(currentView === 'rewards') renderRewardsView();
   else if(currentView === 'requests') renderRequestsView();
   else if(currentView === 'feedback') renderFeedbackView();
+  else if(currentView === 'game') {
+    mainArea.innerHTML = `<div class="hint">Game is coming soon — stay tuned!</div>`;
+  }
 }
 
 /* ---------- Categories view ---------- */
 function getCategories(){ return Array.from(new Set(products.map(p=>p.category))); }
 function categoryIcon(cat){
-  // You can customize icons for your specific categories here
-  const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Polybags':'🛍️','Miscs':'📦','Books':'📚','Physical Media':'💿'};
+  const map = {'Sets':'🏗️','Figures':'🧍','Blind Bags':'🎁','Polybags':'🛍️','Miscs':'📦','Books':'📚','Books (Rent)':'📖'}; 
   return map[cat]||'📦';
 }
 function renderCategoriesView(){
   mainArea.innerHTML = '';
   const cats = getCategories();
   if(cats.length === 0) { mainArea.innerHTML = '<p>No categories found in products.json</p>'; return; }
-  
   const wrap = document.createElement('div'); wrap.className = 'categories-grid';
   cats.forEach((cat,i)=>{
     const tile = document.createElement('button'); tile.className='category-tile';
@@ -454,7 +459,6 @@ function addToCart(id, triggerElt){
   setTimeout(()=>cartBtn.classList.remove('bump'), 360);
 
   if(triggerElt){
-    // find parent card image to apply bump
     const card = triggerElt.closest('.card');
     if(card) {
       card.classList.add('bump');
@@ -511,7 +515,7 @@ function handleCashPay(){
   if(total <= 0){ showToast('Cart is empty', 'warn'); return; }
   const order = { id:'order-'+Date.now(), email:userEmail, method:'cash', total, date, msg, items:cart.slice(), created:Date.now(), status:'new' };
   
-  // Save order to local storage (in a real app, send to server)
+  // Save order to local storage (admin reads orders_all)
   const all = JSON.parse(localStorage.getItem('orders_all') || '[]');
   all.push(order);
   localStorage.setItem('orders_all', JSON.stringify(all));
@@ -546,7 +550,6 @@ if(userEmail) loadCart();
 
 /* ---------- Request chat (floating) ---------- */
 function loadChat(){
-  const msgs = JSON.parse(localStorage.getItem('requests') || '[]');
   if(!document.querySelector('#chatFloating')) return;
   $('#miniSend').onclick = ()=> {
     const text = $('#miniReq').value.trim(); if(!text) return;
@@ -587,9 +590,9 @@ function renderRewardsView(){
       <div class="meta">You earn 0.5 points per SAR spent. Sign in to collect and redeem.</div>
     </div>
     <div class="timeline">
-      <div class="timeline-item"><div class="t-left">100 points</div><div class="t-right">Level 1 Reward</div></div>
-      <div class="timeline-item"><div class="t-left">250 points</div><div class="t-right">Level 2 Reward</div></div>
-      <div class="timeline-item"><div class="t-left">500 points</div><div class="t-right">Level 3 Reward</div></div>
+      <div class="timeline-item"><div class="t-left">100 points</div><div class="t-right">Dragon Rising blind bag</div></div>
+      <div class="timeline-item"><div class="t-left">250 points</div><div class="t-right">Blind bag of your choice</div></div>
+      <div class="timeline-item"><div class="t-left">500 points</div><div class="t-right">30070 polybag</div></div>
     </div>
     <div style="margin-top:18px">
       <div class="meta">Your points: <strong>${points}</strong></div>

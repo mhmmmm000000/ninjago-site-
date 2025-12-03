@@ -1,125 +1,82 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Ninjago Vault — Admin</title>
-<style>
-  body{font-family:Inter,system-ui,Arial;background:#0b0f13;color:#e6eef6;padding:18px}
-  .wrap{max-width:980px;margin:0 auto}
-  h1{margin:6px 0 18px}
-  .order{background:#0f1720;padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.04)}
-  .meta{color:#9aa4b2;font-size:13px}
-  button{padding:8px 10px;border-radius:8px;border:0;background:#00c853;color:#012;cursor:pointer}
-  .btn-ful{background:#f6b93b;color:#111}
-  .hidden{display:none}
-  input{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);width:260px;margin-right:8px}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ninjago Vault — Admin</title>
+  <style>
+    body{font-family:Inter,system-ui,Arial;background:#0b0f13;color:#e6eef6;padding:20px}
+    .wrap{max-width:980px;margin:0 auto}
+    h1{margin:0 0 16px}
+    .order{background:#10151b;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);margin-bottom:12px}
+    .order h3{margin:0 0 8px}
+    .meta{color:#9aa4b2;font-size:13px}
+    .items{margin-top:8px}
+    .item{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+    img{width:48px;height:40px;object-fit:cover;border-radius:6px}
+    select{padding:6px;border-radius:6px;background:#0f1720;color:#fff;border:1px solid rgba(255,255,255,0.04)}
+    button{padding:8px 10px;border-radius:8px;background:#00c853;border:0;color:#03110a;font-weight:700;cursor:pointer}
+    .empty{color:#9aa4b2}
+  </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Ninjago Vault — Admin</h1>
-
-    <div id="authArea">
-      <p class="meta">Enter admin password</p>
-      <input id="pw" placeholder="password"/>
-      <button id="btnAuth">Unlock</button>
-      <div id="authMsg" class="meta"></div>
-    </div>
-
-    <div id="adminUI" class="hidden">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-        <button id="refresh">Refresh</button>
-        <button id="clearAll" class="btn-ful">Clear all orders</button>
-      </div>
-      <div id="ordersList"></div>
-    </div>
+    <h1>Ninjago Vault — Admin dashboard</h1>
+    <p class="meta">Orders are stored in localStorage (demo). Use Ctrl+Shift+Click on the main site logo to open this page from the site.</p>
+    <div id="orders"></div>
   </div>
 
 <script>
-const ADMIN_PASSWORD = 'M.O.D8643';
-const btnAuth = document.getElementById('btnAuth');
-const pw = document.getElementById('pw');
-const authMsg = document.getElementById('authMsg');
-const adminUI = document.getElementById('adminUI');
-const authArea = document.getElementById('authArea');
-const ordersList = document.getElementById('ordersList');
-
-btnAuth.onclick = ()=> {
-  if(pw.value === ADMIN_PASSWORD){
-    authArea.classList.add('hidden');
-    adminUI.classList.remove('hidden');
-    loadOrders();
-  } else {
-    authMsg.innerText = 'Wrong password';
-    setTimeout(()=> authMsg.innerText = '', 2500);
-  }
-};
-
 function loadOrders(){
-  const all = JSON.parse(localStorage.getItem('orders_all') || '[]');
-  ordersList.innerHTML = '';
+  const container = document.getElementById('orders');
+  const all = JSON.parse(localStorage.getItem('orders_all') || '[]').reverse();
   if(all.length === 0){
-    ordersList.innerHTML = '<div class="meta">No orders yet</div>';
+    container.innerHTML = '<p class="empty">No orders yet.</p>';
     return;
   }
-  all.slice().reverse().forEach(o=>{
-    const div = document.createElement('div'); div.className = 'order';
-    div.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-        <div>
-          <strong>${o.id}</strong> <div class="meta">${new Date(o.created).toLocaleString()}</div>
-          <div class="meta">By: ${o.email || '—'}</div>
-          <div class="meta">Method: ${o.method || '—'}</div>
-          <div class="meta">Status: <span class="status">${o.status || 'new'}</span></div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <button class="ful">Mark complete</button>
-          <button class="del">Delete</button>
-        </div>
+  container.innerHTML = '';
+  all.forEach(o => {
+    const el = document.createElement('div');
+    el.className = 'order';
+    el.innerHTML = `
+      <h3>Order ${o.id}</h3>
+      <div class="meta">By: ${o.email} • Total: SAR ${o.total.toFixed(2)} • Created: ${new Date(o.created).toLocaleString()}</div>
+      <div style="margin-top:8px">Pickup date: <strong>${o.date||'—'}</strong></div>
+      <div style="margin-top:8px">${o.msg ? '<div class="meta">Message: '+o.msg+'</div>' : ''}</div>
+      <div class="items">
+        ${o.items.map(it=>`<div class="item"><img src="${it.image}"><div><strong>${it.title}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('')}
       </div>
-      <div style="margin-top:8px">
-        <strong>Items</strong>
-        <div>${(o.items||[]).map(i=>`<div class="meta">${i.qty}× ${i.title} — SAR ${i.price}</div>`).join('')}</div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+        <label class="meta">Status:</label>
+        <select data-id="${o.id}" class="status">
+          <option ${o.status==='new'?'selected':''} value="new">new</option>
+          <option ${o.status==='processing'?'selected':''} value="processing">processing</option>
+          <option ${o.status==='ready'?'selected':''} value="ready">ready</option>
+          <option ${o.status==='completed'?'selected':''} value="completed">completed</option>
+        </select>
+        <button data-id="${o.id}" class="save">Save</button>
       </div>
-      <div style="margin-top:8px" class="meta">Notes: ${o.msg || ''}</div>
     `;
-    ordersList.appendChild(div);
+    container.appendChild(el);
+  });
 
-    div.querySelector('.ful').onclick = ()=> {
-      markFulfilled(o.id);
-    };
-    div.querySelector('.del').onclick = ()=> {
-      deleteOrder(o.id);
-    };
+  // attach save listeners
+  document.querySelectorAll('.save').forEach(b => b.onclick = (ev) => {
+    const id = ev.currentTarget.dataset.id;
+    const sel = document.querySelector(`select[data-id="${id}"]`);
+    const newStatus = sel.value;
+    const allOrders = JSON.parse(localStorage.getItem('orders_all') || '[]');
+    const idx = allOrders.findIndex(x => x.id === id);
+    if(idx >= 0){
+      allOrders[idx].status = newStatus;
+      localStorage.setItem('orders_all', JSON.stringify(allOrders));
+      alert('Saved — order ' + id + ' status: ' + newStatus);
+      loadOrders();
+    }
   });
 }
 
-function saveOrders(arr){
-  localStorage.setItem('orders_all', JSON.stringify(arr));
-  loadOrders();
-}
-
-function markFulfilled(id){
-  const all = JSON.parse(localStorage.getItem('orders_all') || '[]');
-  const idx = all.findIndex(x=>x.id === id);
-  if(idx !== -1){
-    all[idx].status = 'fulfilled';
-    saveOrders(all);
-    alert('Marked fulfilled');
-  }
-}
-
-function deleteOrder(id){
-  let all = JSON.parse(localStorage.getItem('orders_all') || '[]');
-  all = all.filter(x=>x.id !== id);
-  saveOrders(all);
-}
-
-document.getElementById('refresh').onclick = loadOrders;
-document.getElementById('clearAll').onclick = ()=> { localStorage.setItem('orders_all','[]'); loadOrders(); };
-
-window.addEventListener('storage', ()=> { if(!adminUI.classList.contains('hidden')) loadOrders(); });
+loadOrders();
 </script>
 </body>
 </html>
