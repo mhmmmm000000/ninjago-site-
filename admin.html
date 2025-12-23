@@ -1,82 +1,100 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Ninjago Vault — Admin</title>
-  <style>
-    body{font-family:Inter,system-ui,Arial;background:#0b0f13;color:#e6eef6;padding:20px}
-    .wrap{max-width:980px;margin:0 auto}
-    h1{margin:0 0 16px}
-    .order{background:#10151b;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);margin-bottom:12px}
-    .order h3{margin:0 0 8px}
-    .meta{color:#9aa4b2;font-size:13px}
-    .items{margin-top:8px}
-    .item{display:flex;gap:10px;align-items:center;margin-bottom:6px}
-    img{width:48px;height:40px;object-fit:cover;border-radius:6px}
-    select{padding:6px;border-radius:6px;background:#0f1720;color:#fff;border:1px solid rgba(255,255,255,0.04)}
-    button{padding:8px 10px;border-radius:8px;background:#00c853;border:0;color:#03110a;font-weight:700;cursor:pointer}
-    .empty{color:#9aa4b2}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ninjago Vault — Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+  body{min-height:100vh;background:#08101a;color:#e6eef6;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+  .wrap{max-width:960px;margin:28px auto;padding:16px}
+  .order{background:#0f1720;padding:12px;border-radius:8px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.03)}
+  .meta{color:#9aa4b2;font-size:13px}
+  .btn{padding:8px 10px;border-radius:8px;background:#0bb852;color:#042;cursor:pointer}
+  .small{padding:6px 8px;border-radius:6px;background:#111827;color:#fff}
+</style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Ninjago Vault — Admin dashboard</h1>
-    <p class="meta">Orders are stored in localStorage (demo). Use Ctrl+Shift+Click on the main site logo to open this page from the site.</p>
-    <div id="orders"></div>
+    <h1 style="font-weight:900;font-size:20px">Ninjago Vault — Admin</h1>
+    <p class="meta">Orders are read from localStorage key <code>orders_all</code>. This is a demo admin for local use.</p>
+
+    <div style="margin-top:12px">
+      <button id="refreshBtn" class="small">Refresh</button>
+      <button id="clearBtn" class="small" style="margin-left:8px;background:#7c3aed">Clear all orders</button>
+    </div>
+
+    <div id="ordersWrap" style="margin-top:14px"></div>
   </div>
 
 <script>
-function loadOrders(){
-  const container = document.getElementById('orders');
-  const all = JSON.parse(localStorage.getItem('orders_all') || '[]').reverse();
-  if(all.length === 0){
-    container.innerHTML = '<p class="empty">No orders yet.</p>';
-    return;
+  function loadOrders(){
+    return JSON.parse(localStorage.getItem('orders_all') || '[]');
   }
-  container.innerHTML = '';
-  all.forEach(o => {
-    const el = document.createElement('div');
-    el.className = 'order';
-    el.innerHTML = `
-      <h3>Order ${o.id}</h3>
-      <div class="meta">By: ${o.email} • Total: SAR ${o.total.toFixed(2)} • Created: ${new Date(o.created).toLocaleString()}</div>
-      <div style="margin-top:8px">Pickup date: <strong>${o.date||'—'}</strong></div>
-      <div style="margin-top:8px">${o.msg ? '<div class="meta">Message: '+o.msg+'</div>' : ''}</div>
-      <div class="items">
-        ${o.items.map(it=>`<div class="item"><img src="${it.image}"><div><strong>${it.title}</strong><div class="meta">SAR ${it.price} × ${it.qty}</div></div></div>`).join('')}
-      </div>
-      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
-        <label class="meta">Status:</label>
-        <select data-id="${o.id}" class="status">
-          <option ${o.status==='new'?'selected':''} value="new">new</option>
-          <option ${o.status==='processing'?'selected':''} value="processing">processing</option>
-          <option ${o.status==='ready'?'selected':''} value="ready">ready</option>
-          <option ${o.status==='completed'?'selected':''} value="completed">completed</option>
-        </select>
-        <button data-id="${o.id}" class="save">Save</button>
-      </div>
-    `;
-    container.appendChild(el);
+
+  function saveOrders(arr){
+    localStorage.setItem('orders_all', JSON.stringify(arr));
+  }
+
+  function renderOrders(){
+    const wrap = document.getElementById('ordersWrap');
+    const orders = loadOrders().slice().reverse(); // newest first
+    if(!orders.length){ wrap.innerHTML = '<div class="meta">No orders yet.</div>'; return; }
+    wrap.innerHTML = '';
+    orders.forEach(o => {
+      const div = document.createElement('div'); div.className = 'order';
+      div.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong>Order: </strong>${o.id} <span class="meta">• ${new Date(o.created).toLocaleString()}</span><br>
+            <span class="meta">Email: ${o.email || 'guest'}</span>
+          </div>
+          <div>
+            <select data-id="${o.id}" class="status">
+              <option ${o.status==='new'?'selected':''} value="new">new</option>
+              <option ${o.status==='processing'?'selected':''} value="processing">processing</option>
+              <option ${o.status==='ready'?'selected':''} value="ready">ready</option>
+              <option ${o.status==='completed'?'selected':''} value="completed">completed</option>
+            </select>
+            <button data-id="${o.id}" class="small" style="margin-left:8px">Save</button>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="meta">Items:</div>
+          <ul>
+            ${ (o.items||[]).map(it=>`<li>${it.qty} × ${it.title} — SAR ${it.price}</li>`).join('') }
+          </ul>
+        </div>
+        <div style="margin-top:10px" class="meta">Notes: ${o.msg || ''}</div>
+      `;
+      wrap.appendChild(div);
+    });
+
+    // attach handlers
+    document.querySelectorAll('.order .small').forEach(btn=>{
+      btn.onclick = function(){
+        const id = this.getAttribute('data-id');
+        const sel = document.querySelector('.status[data-id="'+id+'"]');
+        const newStatus = sel.value;
+        const all = loadOrders();
+        const i = all.findIndex(x=>x.id === id);
+        if(i !== -1){
+          all[i].status = newStatus;
+          saveOrders(all);
+          alert('Status updated for ' + id);
+        } else alert('Order not found (localStorage mismatch)');
+      };
+    });
+  }
+
+  document.getElementById('refreshBtn').addEventListener('click', renderOrders);
+  document.getElementById('clearBtn').addEventListener('click', ()=> {
+    if(!confirm('Clear ALL orders from localStorage?')) return;
+    localStorage.removeItem('orders_all');
+    renderOrders();
   });
 
-  // attach save listeners
-  document.querySelectorAll('.save').forEach(b => b.onclick = (ev) => {
-    const id = ev.currentTarget.dataset.id;
-    const sel = document.querySelector(`select[data-id="${id}"]`);
-    const newStatus = sel.value;
-    const allOrders = JSON.parse(localStorage.getItem('orders_all') || '[]');
-    const idx = allOrders.findIndex(x => x.id === id);
-    if(idx >= 0){
-      allOrders[idx].status = newStatus;
-      localStorage.setItem('orders_all', JSON.stringify(allOrders));
-      alert('Saved — order ' + id + ' status: ' + newStatus);
-      loadOrders();
-    }
-  });
-}
-
-loadOrders();
+  renderOrders();
 </script>
 </body>
 </html>

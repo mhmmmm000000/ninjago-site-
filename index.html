@@ -226,6 +226,173 @@ async function loadProducts(){
   loadChat();
 }
 loadProducts();
+/* -------- gallery controls: card + modal (append at end of your existing script) -------- */
+
+(function(){
+  // Small helper for fading switch
+  function crossfadeImg(imgEl, newSrc){
+    if(!imgEl) return;
+    imgEl.classList.add('fade-out');
+    // after fade-out swap src then fade-in
+    setTimeout(()=> {
+      imgEl.src = newSrc;
+      imgEl.classList.remove('fade-out');
+      imgEl.classList.add('fade-in');
+      setTimeout(()=> imgEl.classList.remove('fade-in'), 300);
+    }, 180);
+  }
+
+  // Initialize gallery overlay controls for product cards (call after cards rendered)
+  function initCardGalleries(){
+    // for each card, if its product has >1 image add nav buttons
+    document.querySelectorAll('.card').forEach(card => {
+      const cardImage = card.querySelector('.card-image');
+      if(!cardImage) return;
+      const dataId = cardImage.dataset.id || (card.querySelector('.add') && card.querySelector('.add').dataset.id);
+      if(!dataId) return;
+      const prod = products.find(p => p.id === dataId);
+      if(!prod) return;
+      const imgs = Array.isArray(prod.image) ? prod.image : (prod.image ? [prod.image] : []);
+      if(imgs.length <= 1) return; // nothing to do
+
+      // Avoid adding controls multiple times
+      if(cardImage.querySelector('.card-nav')) return;
+
+      // create nav container (right-side)
+      const nav = document.createElement('div');
+      nav.className = 'card-nav';
+      const btnPrev = document.createElement('button');
+      btnPrev.className = 'nav-btn prev';
+      btnPrev.innerHTML = '◀';
+      const btnNext = document.createElement('button');
+      btnNext.className = 'nav-btn next';
+      btnNext.innerHTML = '▶';
+      nav.appendChild(btnPrev); nav.appendChild(btnNext);
+      cardImage.appendChild(nav);
+
+      // track index on the image element
+      const imgEl = cardImage.querySelector('img');
+      let idx = 0;
+      btnPrev.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        idx = (idx - 1 + imgs.length) % imgs.length;
+        crossfadeImg(imgEl, imgs[idx]);
+      });
+      btnNext.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        idx = (idx + 1) % imgs.length;
+        crossfadeImg(imgEl, imgs[idx]);
+      });
+
+      // also keep card image click opening the modal to show the product detail (existing behaviour)
+      // but if user clicks the image itself, we should not change the idx here — modal will show first image as normal
+    });
+  }
+
+  // Initialize modal gallery controls when opening a product detail
+  function initModalGallery(){
+    const modal = document.getElementById('modal');
+    if(!modal) return;
+
+    const gallery = modal.querySelector('.gallery');
+    if(!gallery) return;
+    const mainImg = modal.querySelector('#galleryMain');
+    const thumbs = Array.from(modal.querySelectorAll('.gthumb'));
+    // collect images from DOM (data-src on thumbs) or fallback to main src
+    let images = thumbs.map(t => t.dataset.src).filter(Boolean);
+    if(images.length === 0 && mainImg && mainImg.src) images = [mainImg.src];
+
+    // remove previous nav if exists
+    const oldNavPrev = modal.querySelector('.gallery .nav-btn.prev');
+    const oldNavNext = modal.querySelector('.gallery .nav-btn.next');
+    if(oldNavPrev) oldNavPrev.remove();
+    if(oldNavNext) oldNavNext.remove();
+
+    // create nav if more than one image
+    if(images.length > 1){
+      const btnPrev = document.createElement('button'); btnPrev.className = 'nav-btn prev'; btnPrev.innerHTML = '◀';
+      const btnNext = document.createElement('button'); btnNext.className = 'nav-btn next'; btnNext.innerHTML = '▶';
+      gallery.appendChild(btnPrev); gallery.appendChild(btnNext);
+
+      let mIdx = 0;
+      function setMainIndex(i){
+        mIdx = (i + images.length) % images.length;
+        crossfadeImg(mainImg, images[mIdx]);
+        // update thumbs active
+        thumbs.forEach((t,ii)=> t.classList.toggle('active', ii === mIdx));
+      }
+      btnPrev.onclick = (e)=> { e.stopPropagation(); setMainIndex(mIdx - 1); };
+      btnNext.onclick = (e)=> { e.stopPropagation(); setMainIndex(mIdx + 1); };
+
+      // thumbs already wired in your code — ensure clicking a thumb sets active index
+      thumbs.forEach((t,ii)=>{
+        t.onclick = (ev) => {
+          $('#galleryMain').src = t.dataset.src;
+          thumbs.forEach(x=>x.classList.remove('active'));
+          t.classList.add('active');
+          // update mIdx to match
+          mIdx = ii;
+        };
+      });
+
+      // keyboard navigation while modal open
+      function onKey(e){
+        if(!modal.classList.contains('show')) return;
+        if(e.key === 'ArrowLeft') setMainIndex(mIdx - 1);
+        if(e.key === 'ArrowRight') setMainIndex(mIdx + 1);
+      }
+      document.addEventListener('keydown', onKey);
+
+      // cleanup when modal closes (remove handler)
+      const closeBtn = modal.querySelector('#closeModal');
+      if(closeBtn){
+        const origClose = closeBtn.onclick;
+        closeBtn.onclick = function(){
+          document.removeEventListener('keydown', onKey);
+          if(typeof origClose === 'function') origClose();
+        };
+      }
+    }
+  }
+
+  // Hook into render flows:
+  // - after listing cards are rendered, call initCardGalleries()
+  // - after modal html is inserted, call initModalGallery()
+  const origRenderCategoryProducts = window.renderCategoryProducts;
+  if(typeof origRenderCategoryProducts === 'function'){
+    window.renderCategoryProducts = function(category, subfilter){
+      origRenderCategoryProducts(category, subfilter);
+      // small delay so DOM painted
+      setTimeout(()=> initCardGalleries(), 80);
+    };
+  } else {
+    // if not available, try to run once on load
+    setTimeout(initCardGalleries, 400);
+  }
+
+  // patch openDetail to init modal gallery after it sets innerHTML
+  const origOpenDetail = window.openDetail;
+  if(typeof origOpenDetail === 'function'){
+    window.openDetail = function(id){
+      origOpenDetail(id);
+      // give it a tick for DOM inside modal
+      setTimeout(()=> initModalGallery(), 70);
+    };
+  } else {
+    // fallback: attempt to init when modal shown
+    document.addEventListener('click', ()=> setTimeout(initModalGallery, 120));
+  }
+
+  // also run for search results and initial load
+  document.addEventListener('DOMContentLoaded', ()=> {
+    setTimeout(()=> initCardGalleries(), 250);
+  });
+
+  // Expose for debugging if you need to call manually
+  window.initCardGalleries = initCardGalleries;
+  window.initModalGallery = initModalGallery;
+})();
+  
 
 /* ---------- Theme ---------- */
 function initTheme(){
@@ -451,6 +618,19 @@ function openDetail(id){
           <div class="gallery-main"><img id="galleryMain" src="${imgs[0]}" alt="${escapeHtml(p.title)}"></div>
           <div class="gallery-thumbs">${imgs.map((u,i)=>`<img class="gthumb ${i===0?'active':''}" data-src="${u}" src="${u}" alt="thumb">`).join('')}</div>
         </div>
+
+        <div class="product-image-carousel">
+  <button class="carousel-btn left">‹</button>
+
+  <img
+    class="product-image"
+    src=""
+    alt="Product image"
+    data-index="0"
+  />
+
+  <button class="carousel-btn right">›</button>
+</div>
 
         <div class="meta">Origin: ${escapeHtml(p.origin||'')}</div>
         <div class="meta">Condition: ${escapeHtml(p.condition||'')}</div>
